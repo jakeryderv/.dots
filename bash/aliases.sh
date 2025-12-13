@@ -16,6 +16,7 @@ alias fcd='cd $(fdfind --type d | fzf)'
 alias tks='tmux list-sessions | fzf | cut -d: -f1 | xargs tmux kill-session -t'
 alias tkill='tmux kill-server'
 alias tls='tmux ls'
+alias tma='tmux attach -t $(tmux ls -F "#{session_name}" | fzf)'
 
 # Bat
 alias bat='batcat'
