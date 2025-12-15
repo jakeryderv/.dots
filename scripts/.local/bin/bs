@@ -107,7 +107,7 @@ from_week()  { _awk "\$1 >= $((now - 604800))"; }
 # Sorts: how to order
 by_time()    { _sort -k1 -rn; }
 by_size()    { _sort -k3 -rn; }
-by_name()    { _sort -k5; }
+by_name()    { _awk '{ print ($5 ~ /^[a-zA-Z]/ ? "1" : "0") OFS $0 }' | _sort -k1,1 -k6f | _awk '{ $1=""; print substr($0,2) }'; }
 
 # Reverse wrapper
 reversed()   { tac; }
@@ -574,6 +574,7 @@ run_bs() {
         elif (( ONLY_FILES )); then only_files
         elif (( ONLY_EXEC )); then only_exec
         elif (( ONLY_LINKS )); then only_links
+        elif (( EDIT )); then only_files  # edit mode implies files only
         else cat; fi
     } | {
         # Filter: extension
@@ -600,7 +601,7 @@ run_bs() {
             case "$SORT" in
                 by_time) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS $0 }' | _sort -k1,1 -k2rn | _awk '{ $1=""; print substr($0,2) }' ;;
                 by_size) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS $0 }' | _sort -k1,1 -k4rn | _awk '{ $1=""; print substr($0,2) }' ;;
-                by_name) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS $0 }' | _sort -k1,1 -k6   | _awk '{ $1=""; print substr($0,2) }' ;;
+                by_name) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS ($5 ~ /^\.?[a-zA-Z]/ ? "1" : "0") OFS $0 }' | _sort -k1,1 -k2,2 -k7f | _awk '{ $1=""; $2=""; print substr($0,3) }' ;;
             esac
         else
             "$SORT"
