@@ -1,12 +1,8 @@
 #!/bin/bash
 # Aliases
 
-# Navigation
-alias windows="cd /mnt/c/Users/jaker/"
-
 # Nvim config
-alias nvc='cd ~/.config/nvim && nvim .'
-alias nvconf='nvim ~/.config/nvim'
+alias nvimc='nvim ~/.config/nvim'
 
 # FZF
 alias ff='nvim $(fzf --preview "cat {}")'
