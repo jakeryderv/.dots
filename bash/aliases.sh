@@ -1,6 +1,9 @@
 #!/bin/bash
 # Aliases
 
+# source ~/.bashrc easily
+alias brc='source ~/.bashrc'
+
 # Nvim config
 alias nvimc='nvim ~/.config/nvim'
 
