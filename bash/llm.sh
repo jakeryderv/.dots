@@ -61,6 +61,11 @@ manai() {
 ######################################################################
 
 why() {
+  if [ -t 0 ]; then
+    echo "usage: why < stdin" >&2
+    return 2
+  fi
+
   llm "Explain what went wrong and how to fix it" < /dev/stdin \
     | _llm_render
 }
@@ -84,8 +89,52 @@ howto() {
 ######################################################################
 
 summarize() {
+  if [ -t 0 ]; then
+    echo "usage: summarize < stdin" >&2
+    return 2
+  fi
+
   llm "Summarize this concisely" < /dev/stdin \
     | _llm_render
+}
+
+######################################################################
+# grepask — search then ask (targeted for large files)
+######################################################################
+
+# Context lines around each match (default: 20)
+export GREPASK_CONTEXT=20
+
+grepask() {
+  if [ $# -lt 3 ]; then
+    echo "usage: grepask <pattern> <file> <question>" >&2
+    echo "  set GREPASK_CONTEXT to adjust context window (default: 20)" >&2
+    return 2
+  fi
+
+  local pattern="$1"
+  local file="$2"
+  shift 2
+
+  if [ ! -f "$file" ]; then
+    echo "grepask: file not found: $file" >&2
+    return 1
+  fi
+
+  local ctx="${GREPASK_CONTEXT:-20}"
+  local total_lines=$(wc -l < "$file")
+  local match_count=$(grep -c "$pattern" "$file" || echo 0)
+
+  {
+    echo "File: $file ($total_lines lines total)"
+    echo "Pattern: $pattern ($match_count matches)"
+    echo ""
+    echo "=== Match locations ==="
+    grep -n "$pattern" "$file"
+    echo ""
+    echo "=== Expanded context ($ctx lines around each match) ==="
+    grep -n -B "$ctx" -A "$ctx" "$pattern" "$file"
+  } | llm "$*" | _llm_render
 }
 
 ######################################################################
