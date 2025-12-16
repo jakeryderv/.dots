@@ -233,3 +233,48 @@ ask() {
     | _llm_render
 }
 
+######################################################################
+# chunkask — ask a question across a large file via chunking
+######################################################################
+
+# Default chunk size (bytes)
+export CHUNKASK_SIZE=40000
+
+chunkask() {
+  if [ $# -lt 2 ]; then
+    echo "usage: chunkask <file> <question>" >&2
+    return 2
+  fi
+
+  local file="$1"
+  shift
+  local question="$*"
+
+  if [ ! -f "$file" ]; then
+    echo "chunkask: file not found: $file" >&2
+    return 1
+  fi
+
+  local size="${CHUNKASK_SIZE:-40000}"
+  local tmpdir
+  tmpdir=$(mktemp -d)
+
+  split -b "$size" "$file" "$tmpdir/chunk_"
+
+  # Ask the question of each chunk
+  local answers="$tmpdir/answers.txt"
+  > "$answers"
+
+  for chunk in "$tmpdir"/chunk_*; do
+    llm "Given this excerpt, answer the question: $question" < "$chunk" >> "$answers"
+    echo -e "\n---\n" >> "$answers"
+  done
+
+  # Reduce step
+  llm "Combine the following partial answers into a single coherent answer to the question: $question" \
+    < "$answers" \
+    | _llm_render
+
+  rm -rf "$tmpdir"
+}
+
