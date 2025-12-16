@@ -12,8 +12,7 @@ _llm_render() {
   case "$MANAI_RENDERER" in
     glow)
       if command -v glow >/dev/null 2>&1; then
-        #glow --pager=false
-	glow
+        glow
       else
         cat
       fi
