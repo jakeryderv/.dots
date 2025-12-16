@@ -278,3 +278,15 @@ chunkask() {
   rm -rf "$tmpdir"
 }
 
+
+######################################################################
+# llmq - ask good model ml questions
+######################################################################
+
+llmq() {
+	llm -m qwen2.5-coder:14b \
+	--no-stream \
+	--system "You are an expert machine learning researcher. Be precise, technical, and concise." \
+	"$@" | _llm_render
+}
+
