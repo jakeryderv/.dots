@@ -176,7 +176,7 @@ summarize() {
     return 2
   fi
 
-  llm "Summarize this concisely" < /dev/stdin \
+  llm -m mistral-nemo "Summarize this concisely" < /dev/stdin \
     | _llm_render
 }
 
