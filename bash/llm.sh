@@ -51,8 +51,15 @@ manai() {
     return 1
   fi
 
+  # MANAI_PREPEND / MANAI_APPEND: static text to wrap the prompt
+  local prepend="${MANAI_PREPEND:-You are a Unix expert providing answers/help based on provided manpage.}"
+  local append="${MANAI_APPEND:-Be concise and straight to the point, always format outputs in strict universal markdown syntax.}"
+
+  local prompt="${*:-Explain this command and show common usage.}"
+  local full_prompt="${prepend:+$prepend }${prompt}${append:+ $append}"
+
   man "$cmd" | col -bx \
-    | llm "${*:-Explain this command and show common usage.}" \
+    | llm "$full_prompt" \
     | _llm_render
 }
 
