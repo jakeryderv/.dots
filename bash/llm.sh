@@ -176,7 +176,7 @@ summarize() {
     return 2
   fi
 
-  llm -m mistral-nemo "Summarize this concisely" < /dev/stdin \
+  llm "Summarize the following text concisely. Output only the summary, no preamble." < /dev/stdin \
     | _llm_render
 }
 
