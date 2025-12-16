@@ -39,12 +39,32 @@ _llm_render() {
 
 manai() {
   if [ -z "$1" ]; then
-    echo "usage: manai <command> [question]" >&2
+    echo "usage: manai <command> [-- question]" >&2
     return 2
   fi
 
-  cmd="$1"
-  shift
+  # Split on -- : left side is command, right side is question
+  local cmd=""
+  local question_parts=()
+  local seen_separator=false
+
+  for arg in "$@"; do
+    if [ "$arg" = "--" ]; then
+      seen_separator=true
+    elif $seen_separator; then
+      question_parts+=("$arg")
+    elif [ -z "$cmd" ]; then
+      cmd="$arg"
+    else
+      # No separator, treat remaining args as question (backwards compat)
+      question_parts+=("$arg")
+    fi
+  done
+
+  if [ -z "$cmd" ]; then
+    echo "manai: no command specified" >&2
+    return 2
+  fi
 
   if ! man -w "$cmd" >/dev/null 2>&1; then
     echo "manai: no man page found for '$cmd'" >&2
@@ -52,13 +72,68 @@ manai() {
   fi
 
   # MANAI_PREPEND / MANAI_APPEND: static text to wrap the prompt
-  local prepend="${MANAI_PREPEND:-You are a Unix expert providing answers/help based on provided manpage.}"
-  local append="${MANAI_APPEND:-Be concise and straight to the point, always format outputs in strict universal markdown syntax.}"
+  local prepend="${MANAI_PREPEND:-You are a Unix expert providing help based on provided manpage.}"
+  local append="${MANAI_APPEND:-Be concise and straight to the point, always format outputs nicely and in strict universal markdown syntax.}"
 
-  local prompt="${*:-Explain this command and show common usage.}"
+  local prompt="${question_parts[*]:-Explain and show common usage.}"
   local full_prompt="${prepend:+$prepend }${prompt}${append:+ $append}"
 
   man "$cmd" | col -bx \
+    | llm "$full_prompt" \
+    | _llm_render
+}
+
+######################################################################
+# helpai — explain command help using llm
+######################################################################
+
+helpai() {
+  if [ -z "$1" ]; then
+    echo "usage: helpai <command> [subcommand...] [-- question]" >&2
+    return 2
+  fi
+
+  # Split on -- : left side is command, right side is question
+  local cmd_parts=()
+  local question_parts=()
+  local seen_separator=false
+
+  for arg in "$@"; do
+    if [ "$arg" = "--" ]; then
+      seen_separator=true
+    elif $seen_separator; then
+      question_parts+=("$arg")
+    else
+      cmd_parts+=("$arg")
+    fi
+  done
+
+  if [ ${#cmd_parts[@]} -eq 0 ]; then
+    echo "helpai: no command specified" >&2
+    return 2
+  fi
+
+  if ! command -v "${cmd_parts[0]}" >/dev/null 2>&1; then
+    echo "helpai: command not found: '${cmd_parts[0]}'" >&2
+    return 1
+  fi
+
+  # Try --help first, fall back to -h (capture both stdout and stderr)
+  local help_text
+  help_text=$("${cmd_parts[@]}" --help 2>&1) || help_text=$("${cmd_parts[@]}" -h 2>&1)
+
+  if [ -z "$help_text" ]; then
+    echo "helpai: no help output from '${cmd_parts[*]}'" >&2
+    return 1
+  fi
+
+  local prepend="${HELPAI_PREPEND:-You are a Unix expert providing help based on command help output.}"
+  local append="${HELPAI_APPEND:-Be concise and straight to the point, always format outputs nicely and in strict universal markdown syntax.}"
+
+  local prompt="${question_parts[*]:-Explain and show common usage.}"
+  local full_prompt="${prepend:+$prepend }${prompt}${append:+ $append}"
+
+  echo "$help_text" \
     | llm "$full_prompt" \
     | _llm_render
 }
