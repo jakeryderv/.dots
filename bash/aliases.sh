@@ -12,10 +12,14 @@ alias ff='nvim $(fzf --preview "cat {}")'
 alias fcd='cd $(fdfind --type d | fzf)'
 
 # Tmux
-alias tks='tmux list-sessions | fzf | cut -d: -f1 | xargs tmux kill-session -t'
-alias tkill='tmux kill-server'
-alias tls='tmux ls'
+alias tmls='tmux ls'
 alias tma='tmux attach -t $(tmux ls -F "#{session_name}" | fzf)'
+tms() {
+	tmux new-session -A -s "$1"
+}
+
+alias tmks='tmux list-sessions | fzf | cut -d: -f1 | xargs tmux kill-session -t'
+alias tmka='tmux kill-server'
 
 # Bat
 alias bat='batcat'
