@@ -12,6 +12,10 @@ C_GIT_D=$'\033[1;31m'  # deleted
 C_GIT_R=$'\033[1;35m'  # renamed
 C_DIM=$'\033[2m'       # dim for targets
 
+# Cleanup temp files on exit
+cleanup() { rm -f /tmp/bs_total_$$ /tmp/bs_summary_$$; }
+trap cleanup EXIT INT TERM
+
 # ============ CONFIG ============
 
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bs"
@@ -22,11 +26,17 @@ parse_size() {
     local size="$1"
     local num="${size%[KMGkmg]*}"
     local unit="${size##*[0-9]}"
+    # Validate numeric part
+    if ! [[ "$num" =~ ^[0-9]+$ ]]; then
+        echo "error: invalid size '$size' - must be a number optionally followed by K, M, or G" >&2
+        exit 1
+    fi
     case "${unit^^}" in
         K) echo $((num * 1024)) ;;
         M) echo $((num * 1048576)) ;;
         G) echo $((num * 1073741824)) ;;
-        *) echo "$num" ;;
+        "") echo "$num" ;;
+        *) echo "error: invalid size unit '$unit' - use K, M, or G" >&2; exit 1 ;;
     esac
 }
 
@@ -99,15 +109,15 @@ only_files() { _awk '$4 == "f"'; }
 only_exec()  { _awk '$4 == "f" && $2 ~ /x/'; }
 only_links() { _awk '$4 == "l"'; }
 
-# Age filters
-now=$(date +%s)
-from_today() { _awk "\$1 >= $((now - 86400))"; }
-from_week()  { _awk "\$1 >= $((now - 604800))"; }
+# Age filters (compute now at call time for --watch accuracy)
+from_today() { _awk "\$1 >= $(($(date +%s) - 86400))"; }
+from_week()  { _awk "\$1 >= $(($(date +%s) - 604800))"; }
 
 # Sorts: how to order
 by_time()    { _sort -k1 -rn; }
 by_size()    { _sort -k3 -rn; }
 by_name()    { _awk '{ print ($5 ~ /^[a-zA-Z]/ ? "1" : "0") OFS $0 }' | _sort -k1,1 -k6f | _awk '{ $1=""; print substr($0,2) }'; }
+by_ext_sort() { _awk '{ n=$5; ext=(match(n,/\.[^.]+$/) ? substr(n,RSTART+1) : ""); print ext OFS $0 }' | _sort -k1,1f -k6f | _awk '{ $1=""; print substr($0,2) }'; }
 
 # Reverse wrapper
 reversed()   { tac; }
@@ -115,6 +125,7 @@ reversed()   { tac; }
 # Transforms: modify fields
 prettify() {
     local use_relative="$1"
+    local now=$(date +%s)
     awk -F"$D" -v OFS="$D" -v rel="$use_relative" -v now="$now" '{
         if (rel == "1") {
             diff = now - int($1)
@@ -142,12 +153,12 @@ count_summary() {
     while IFS="$D" read -r time perms size ftype name owner group target; do
         printf '%s\n' "${time}${D}${perms}${D}${size}${D}${ftype}${D}${name}${D}${owner}${D}${group}${D}${target}"
         case "$ftype" in
-            d) ((dirs++)) ;;
-            l) ((links++)) ;;
-            f) ((files++)) ;;
+            d) ((dirs++)) || true ;;
+            l) ((links++)) || true ;;
+            f) ((files++)) || true ;;
         esac
     done
-    echo "${files}:${dirs}:${links}" >&3
+    echo "${files}:${dirs}:${links}" > /tmp/bs_summary_$$
 }
 
 # Nerd font icons (using printf for proper Unicode)
@@ -328,6 +339,17 @@ names_only() {
     done
 }
 
+# JSON escape special characters
+json_escape() {
+    local s="$1"
+    s="${s//\\/\\\\}"    # backslash
+    s="${s//\"/\\\"}"    # quote
+    s="${s//$'\t'/\\t}"  # tab
+    s="${s//$'\n'/\\n}"  # newline
+    s="${s//$'\r'/\\r}"  # carriage return
+    printf '%s' "$s"
+}
+
 # JSON output
 json_output() {
     local first=1
@@ -335,7 +357,7 @@ json_output() {
     while IFS="$D" read -r time perms size ftype name owner group target; do
         [[ "$first" == "1" ]] && first=0 || printf ',\n'
         printf '  {"name":"%s","type":"%s","perms":"%s","size":"%s","time":"%s","owner":"%s","group":"%s","target":"%s"}' \
-            "$name" "$ftype" "$perms" "$size" "$time" "$owner" "$group" "$target"
+            "$(json_escape "$name")" "$ftype" "$perms" "$size" "$time" "$owner" "$group" "$(json_escape "$target")"
     done
     printf '\n]\n'
 }
@@ -347,7 +369,7 @@ calc_total() {
         printf '%s\n' "${time}${D}${perms}${D}${size}${D}${ftype}${D}${name}${D}${owner}${D}${group}${D}${target}"
         (( total += size )) || true
     done
-    echo "$total" >&3
+    echo "$total" > /tmp/bs_total_$$
 }
 
 format_total() {
@@ -386,11 +408,13 @@ SORTING:
   -t, --time          sort by time (default)
   -s, --size          sort by size
   -n, --name          sort by name
+  -E, --sort-ext      sort by extension
   -r, --reverse       reverse sort order
   -H, --group         group hidden files first
 
 OUTPUT:
   -1, --oneline       names only, one per line
+  -c, --count         show count only (no listing)
   -L, --long          show owner and group
   -T, --target        show symlink targets
   --icons             show nerd font icons
@@ -433,7 +457,7 @@ ALL=0 SORT=by_time REVERSE=0 PAT="" EXT="" EXCLUDE=""
 ONLY_DIRS=0 ONLY_FILES=0 ONLY_EXEC=0 ONLY_LINKS=0
 MIN_SIZE="" MAX_SIZE=""
 TODAY=0 WEEK=0
-ONELINE=0 NO_COLOR=0 JSON=0 TOTAL=0 TREE=0 SUMMARY=0
+ONELINE=0 NO_COLOR=0 JSON=0 TOTAL=0 TREE=0 SUMMARY=0 COUNT=0
 LONG=0 TARGET=0 ICONS=0 RELATIVE=0
 FZF=0 PREVIEW=0 EDIT=0 MULTI=0
 RECURSIVE=0 DEPTH="" GIT=0 GROUP_HIDDEN=0
@@ -457,13 +481,14 @@ expand_flags() {
 }
 
 # Load preset first if --preset is in args
+i=1
 for arg in "$@"; do
     if [[ "$arg" == "--preset" ]]; then
-        shift
-        PRESET="$1"
-        shift
+        PRESET="${@:$((i+1)):1}"
+        set -- "${@:1:$((i-1))}" "${@:$((i+2))}"
         break
     fi
+    ((i++))
 done
 
 # Load preset args
@@ -508,9 +533,11 @@ while [[ $# -gt 0 ]]; do
         -t|--time)      SORT=by_time ;;
         -s|--size)      SORT=by_size ;;
         -n|--name)      SORT=by_name ;;
+        -E|--sort-ext)  SORT=by_ext_sort ;;
         -r|--reverse)   REVERSE=1 ;;
         -H|--group)     GROUP_HIDDEN=1 ;;
         -1|--oneline)   ONELINE=1 ;;
+        -c|--count)     COUNT=1 ;;
         -L|--long)      LONG=1 ;;
         -T|--target)    TARGET=1 ;;
         --icons)        ICONS=1 ;;
@@ -530,6 +557,7 @@ while [[ $# -gt 0 ]]; do
         --watch)        WATCH=1; [[ "${2:-}" =~ ^[0-9]+$ ]] && { WATCH_INTERVAL="$2"; shift; } ;;
         --preset)       shift ;;  # already handled
         -h|--help)      usage; exit 0 ;;
+        --)             shift; [[ $# -gt 0 ]] && DIR="$1"; break ;;
         -*)             echo "unknown: $1"; exit 1 ;;
         *)              DIR="$1" ;;
     esac
@@ -552,7 +580,12 @@ run_bs() {
             if [[ -n "$rel_prefix" && "$file" == "$rel_prefix/"* ]]; then
                 file="${file#$rel_prefix/}"
             fi
-            [[ "$file" != */* ]] && git_status_map["$file"]="$status"
+            # In recursive mode, track all files; otherwise only immediate children
+            if [[ "$RECURSIVE" == "1" ]]; then
+                git_status_map["$file"]="$status"
+            else
+                [[ "$file" != */* ]] && git_status_map["$file"]="$status"
+            fi
         done < <(git -C "$DIR" status --porcelain 2>/dev/null)
     fi
 
@@ -602,6 +635,7 @@ run_bs() {
                 by_time) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS $0 }' | _sort -k1,1 -k2rn | _awk '{ $1=""; print substr($0,2) }' ;;
                 by_size) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS $0 }' | _sort -k1,1 -k4rn | _awk '{ $1=""; print substr($0,2) }' ;;
                 by_name) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS ($5 ~ /^\.?[a-zA-Z]/ ? "1" : "0") OFS $0 }' | _sort -k1,1 -k2,2 -k7f | _awk '{ $1=""; $2=""; print substr($0,3) }' ;;
+                by_ext_sort) _awk '{ n=$5; ext=(match(n,/\.[^.]+$/) ? substr(n,RSTART+1) : ""); print ($5 ~ /^\./ ? "0" : "1") OFS ext OFS $0 }' | _sort -k1,1 -k2,2f -k7f | _awk '{ $1=""; $2=""; print substr($0,3) }' ;;
             esac
         else
             "$SORT"
@@ -612,22 +646,22 @@ run_bs() {
     } | {
         # Total (calculate before prettify changes size)
         if (( TOTAL )); then
-            exec 3>&1
-            calc_total 3> >(read -r t; echo "$t" > /tmp/bs_total_$$)
+            calc_total
         else
             cat
         fi
     } | {
         # Summary count
         if (( SUMMARY )); then
-            exec 3>&1
-            count_summary 3> >(read -r s; echo "$s" > /tmp/bs_summary_$$)
+            count_summary
         else
             cat
         fi
     } | {
         # Output format
-        if (( JSON )); then
+        if (( COUNT )); then
+            wc -l | tr -d ' '
+        elif (( JSON )); then
             json_output
         elif (( ONELINE )); then
             names_only "$DIR" "$((1 - NO_COLOR))" "$ICONS"
