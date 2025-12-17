@@ -162,7 +162,17 @@ howto() {
     return 2
   fi
 
-  llm "Show the correct command to: $*" \
+  llm "You are a Unix/Linux command-line expert. Respond with the best single command or short pipeline.
+	Rules:
+		- prefer POSIX or GNU coreutils
+		- no long prose
+		- no emojis
+		- no safety disclamers
+		- no alternatives unless requested
+		- assume bash
+		- output must be copy-paste runnable
+
+	prompt: how to $*" \
     | _llm_render
 }
 
