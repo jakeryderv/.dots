@@ -300,3 +300,22 @@ llmq() {
 	"$@" | _llm_render
 }
 
+
+######################################################################
+# codeai - get codeblock example code
+######################################################################
+codeai() {
+  if [[ $# -eq 0 ]]; then
+    echo "Usage: codeai <prompt>"
+    return 1
+  fi
+
+  llm prompt \
+    -s "Respond ONLY with a single fenced code block. No explanation." \
+    -x \
+    "$*"
+}
+
+
+
+

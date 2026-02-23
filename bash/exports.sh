@@ -21,3 +21,7 @@ export PATH=/home/jake/.opencode/bin:$PATH
 
 # EZA colors (if you add them)
 # export EZA_COLORS="di=1;34"
+
+
+# scikit-learn data path
+export SCIKIT_LEARN_DATA=/home/jake/.scikit_learn_data

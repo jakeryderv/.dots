@@ -84,3 +84,14 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 -- vim: ts=2 sts=2 sw=2 et
+
+-- vim.opt.termguicolors = true
+
+vim.api.nvim_create_autocmd('ColorScheme', {
+  callback = function()
+    vim.cmd([[
+      hi Normal guibg=NONE ctermbg=NONE
+      hi NormalNC guibg=NONE ctermbg=NONE
+    ]])
+  end,
+})

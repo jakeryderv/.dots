@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# wezterm wrapper for wsl
+exec wezterm.exe "$@"
