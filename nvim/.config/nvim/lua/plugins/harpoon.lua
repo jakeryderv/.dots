@@ -6,8 +6,6 @@ return {
     local harpoon = require('harpoon')
     harpoon:setup()
 
-    -- Harpoon commands all under <leader>h
-
     vim.keymap.set('n', '<leader>ha', function()
       harpoon:list():add()
     end, { desc = 'Harpoon add file' })
@@ -17,8 +15,6 @@ return {
     vim.keymap.set('n', '<leader>hd', function()
       harpoon:list():remove()
     end, { desc = 'Harpoon delete file' })
-
-    -- Jump to files
 
     vim.keymap.set('n', '<leader>h1', function()
       harpoon:list():select(1)
@@ -36,7 +32,6 @@ return {
       harpoon:list():select(5)
     end, { desc = 'Harpoon file 5' })
 
-    -- Cycle through harpoon list
     vim.keymap.set('n', '<leader>hn', function()
       harpoon:list():next()
     end, { desc = 'Harpoon next' })
