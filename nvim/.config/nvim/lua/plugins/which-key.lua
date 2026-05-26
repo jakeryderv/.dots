@@ -42,6 +42,7 @@ return {
       { '<leader>g', group = '[G]it', mode = { 'n', 'v' } },
       { '<leader>h', group = '[H]arpoon' },
       { '<leader>c', group = '[C]ode' },
+      { '<leader>r', group = '[R]ename' },
     },
   },
 }
