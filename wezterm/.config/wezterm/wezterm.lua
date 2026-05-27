@@ -52,12 +52,7 @@ config.window_padding = {
 }
 
 config.audible_bell = "Disabled"
-config.visual_bell = {
-	fade_in_duration_ms = 75,
-	fade_out_duration_ms = 75,
-	fade_in_function = "EaseIn",
-	fade_out_function = "EaseOut",
-}
+-- Visual bell handled manually in update-status (icon in top-right corner)
 config.enable_scroll_bar = true
 config.status_update_interval = 500
 
@@ -138,6 +133,13 @@ local clock_icon = wezterm.nerdfonts.fa_clock_o or "TIME"
 local ram_icon = wezterm.nerdfonts.md_memory or wezterm.nerdfonts.fa_database or "M"
 local cpu_icon = wezterm.nerdfonts.fa_microchip or "C"
 local gpu_icon = wezterm.nerdfonts.md_gpu or wezterm.nerdfonts.fa_television or "G"
+local bell_icon = wezterm.nerdfonts.fa_bell or wezterm.nerdfonts.md_bell or "BELL"
+
+-- Track bell timestamps per window for the top-right flash indicator
+local bell_times = {}
+wezterm.on("bell", function(window, pane)
+	bell_times[tostring(window:window_id())] = os.time()
+end)
 
 -- RAM used in GB (from /proc/meminfo)
 local function ram_usage()
@@ -253,7 +255,13 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, conf, hover, max_width
 		end
 	end
 
-	return " " .. cwd .. ": " .. process .. " "
+	local fg = tab.is_active and "#f2f4f8" or "#6e6f70"
+	return wezterm.format({
+		{ Foreground = { Color = "#535353" } },
+		{ Text = " [" .. (tab.tab_index + 1) .. "] " },
+		{ Foreground = { Color = fg } },
+		{ Text = cwd .. ": " .. process .. " " },
+	})
 end)
 
 wezterm.on("update-status", function(window, pane)
@@ -283,8 +291,17 @@ wezterm.on("update-status", function(window, pane)
 		{ Text = "| " },
 	}))
 
-	-- Right: cleared
-	window:set_right_status("")
+	-- Right: bell indicator (3s pulse after bell event), otherwise empty
+	local last_bell = bell_times[tostring(window:window_id())]
+	if last_bell and (os.time() - last_bell < 3) then
+		window:set_right_status(wezterm.format({
+			{ Attribute = { Intensity = "Bold" } },
+			{ Foreground = { Color = "#ee5396" } },
+			{ Text = " " .. bell_icon .. " " },
+		}))
+	else
+		window:set_right_status("")
+	end
 end)
 
 return config
