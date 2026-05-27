@@ -46,10 +46,10 @@ config.colors = {
 }
 
 config.window_padding = {
-	left = 4,
-	right = 4,
-	top = 4,
-	bottom = 4,
+	left = 20,
+	right = 20,
+	top = 20,
+	bottom = 20,
 }
 
 config.audible_bell = "Disabled"
