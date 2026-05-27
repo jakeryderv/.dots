@@ -59,6 +59,12 @@ config.visual_bell = {
 	fade_out_function = "EaseOut",
 }
 config.enable_scroll_bar = true
+config.status_update_interval = 500
+
+config.window_frame = {
+	active_titlebar_bg = "#2a2a2a",
+	inactive_titlebar_bg = "#2a2a2a",
+}
 
 config.inactive_pane_hsb = {
 	hue = 1.0,
@@ -140,8 +146,8 @@ local function ram_usage()
 		if total and available then break end
 	end
 	f:close()
-	if total and available then
-		return string.format("%.2f GB", (total - available) / 1024 / 1024)
+	if total and available and total > 0 then
+		return string.format("%.1f%%", ((total - available) / total) * 100)
 	end
 	return "?"
 end
@@ -208,7 +214,47 @@ local function battery_pct()
 	return "?"
 end
 
+-- Mode -> color (carbonfox palette)
+local mode_colors = {
+	NORMAL = "#78a9ff",       -- blue
+	COPY_MODE = "#25be6a",    -- green
+	SEARCH_MODE = "#08bdba",  -- teal
+}
+
+-- Tab title: "<process> · <cwd-basename>"
+local function basename(path)
+	if not path or path == "" then return "" end
+	return path:match("([^/\\]+)/?$") or path
+end
+
+wezterm.on("format-tab-title", function(tab, tabs, panes, conf, hover, max_width)
+	local pane = tab.active_pane
+	local process = basename(pane.foreground_process_name) or "shell"
+
+	local cwd = "?"
+	local raw_cwd = pane.current_working_dir
+	if raw_cwd then
+		if type(raw_cwd) == "string" then
+			cwd = basename((raw_cwd:gsub("^file://[^/]*", "")))
+		elseif raw_cwd.file_path then
+			cwd = basename(raw_cwd.file_path)
+		end
+	end
+
+	return " " .. cwd .. ": " .. process .. " "
+end)
+
 wezterm.on("update-status", function(window, pane)
+	-- Left: mode indicator (color shifts based on active key table)
+	local mode = (window:active_key_table() or "NORMAL"):upper()
+	local mode_color = mode_colors[mode] or "#ee5396"  -- pink for unknown modes
+	window:set_left_status(wezterm.format({
+		{ Foreground = { Color = mode_color } },
+		{ Attribute = { Intensity = "Bold" } },
+		{ Text = " [" .. mode .. "] " },
+	}))
+
+	-- Right: system metrics
 	local right = string.format(
 		"[RAM %s] [CPU %s] [GPU %s] [%s %s] [%s %s]",
 		ram_usage(), cpu_usage(), gpu_usage(),
@@ -216,8 +262,7 @@ wezterm.on("update-status", function(window, pane)
 		clock_icon, os.date("%Y-%m-%d %H:%M")
 	)
 	window:set_right_status(wezterm.format({
-		{ Background = { Color = "#78a9ff" } },
-		{ Foreground = { Color = "#0c0c0c" } },
+		{ Foreground = { Color = "#78a9ff" } },
 		{ Attribute = { Intensity = "Bold" } },
 		{ Text = " " .. right .. " " },
 	}))
