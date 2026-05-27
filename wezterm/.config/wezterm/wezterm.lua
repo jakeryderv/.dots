@@ -28,11 +28,10 @@ config.window_background_image_hsb = {
 }
 config.window_background_opacity = 1.0
 
-config.use_fancy_tab_bar = false
+config.use_fancy_tab_bar = true
 config.enable_tab_bar = true
 config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = false
-config.tab_max_width = 999
 config.show_new_tab_button_in_tab_bar = false
 
 config.colors = {
@@ -122,14 +121,5 @@ config.keys = {
 	{ key = "v", mods = "CTRL|ALT", action = act.ActivateCopyMode },
 	{ key = "Space", mods = "CTRL|ALT", action = act.QuickSelect },
 }
-
-wezterm.on("format-tab-title", function(tab, tabs, panes, conf, hover, max_width)
-	local title = tab.active_pane.title
-	title = wezterm.truncate_right(title, max_width)
-	local pad = max_width - #title
-	local left = math.floor(pad / 2)
-	local right = pad - left
-	return string.rep(" ", left) .. title .. string.rep(" ", right)
-end)
 
 return config
