@@ -48,6 +48,47 @@ config.inactive_pane_hsb = {
 	brightness = 0.8,
 }
 
+-- ============================================
+-- Keybindings
+-- ============================================
+local act = wezterm.action
+
+config.keys = {
+	-- Tabs
+	{ key = "t", mods = "CTRL|ALT", action = act.SpawnTab("CurrentPaneDomain") },
+	{ key = "w", mods = "CTRL|ALT", action = act.CloseCurrentTab({ confirm = true }) },
+	{ key = "n", mods = "CTRL|ALT", action = act.ActivateTabRelative(1) },
+	{ key = "p", mods = "CTRL|ALT", action = act.ActivateTabRelative(-1) },
+	{ key = "n", mods = "CTRL|ALT|SHIFT", action = act.MoveTabRelative(1) },
+	{ key = "p", mods = "CTRL|ALT|SHIFT", action = act.MoveTabRelative(-1) },
+	{ key = "1", mods = "CTRL|ALT", action = act.ActivateTab(0) },
+	{ key = "2", mods = "CTRL|ALT", action = act.ActivateTab(1) },
+	{ key = "3", mods = "CTRL|ALT", action = act.ActivateTab(2) },
+	{ key = "4", mods = "CTRL|ALT", action = act.ActivateTab(3) },
+	{ key = "5", mods = "CTRL|ALT", action = act.ActivateTab(4) },
+	{ key = "6", mods = "CTRL|ALT", action = act.ActivateTab(5) },
+	{ key = "7", mods = "CTRL|ALT", action = act.ActivateTab(6) },
+	{ key = "8", mods = "CTRL|ALT", action = act.ActivateTab(7) },
+	{ key = "9", mods = "CTRL|ALT", action = act.ActivateTab(8) },
+
+	-- Windows
+	{ key = "w", mods = "CTRL|ALT|SHIFT", action = act.SpawnWindow },
+
+	-- Panes / Splits
+	{ key = "\\", mods = "CTRL|ALT", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+	{ key = "-", mods = "CTRL|ALT", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
+	{ key = "x", mods = "CTRL|ALT", action = act.CloseCurrentPane({ confirm = true }) },
+	{ key = "z", mods = "CTRL|ALT", action = act.TogglePaneZoomState },
+	{ key = "h", mods = "CTRL|ALT", action = act.ActivatePaneDirection("Left") },
+	{ key = "j", mods = "CTRL|ALT", action = act.ActivatePaneDirection("Down") },
+	{ key = "k", mods = "CTRL|ALT", action = act.ActivatePaneDirection("Up") },
+	{ key = "l", mods = "CTRL|ALT", action = act.ActivatePaneDirection("Right") },
+	{ key = "h", mods = "CTRL|ALT|SHIFT", action = act.AdjustPaneSize({ "Left", 5 }) },
+	{ key = "j", mods = "CTRL|ALT|SHIFT", action = act.AdjustPaneSize({ "Down", 5 }) },
+	{ key = "k", mods = "CTRL|ALT|SHIFT", action = act.AdjustPaneSize({ "Up", 5 }) },
+	{ key = "l", mods = "CTRL|ALT|SHIFT", action = act.AdjustPaneSize({ "Right", 5 }) },
+}
+
 wezterm.on("format-tab-title", function(tab, tabs, panes, conf, hover, max_width)
 	local title = tab.active_pane.title
 	title = wezterm.truncate_right(title, max_width)
