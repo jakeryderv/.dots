@@ -63,6 +63,21 @@ config.window_frame = {
 
 config.force_reverse_video_cursor = true
 
+-- Slow down mouse wheel scrolling
+config.alternate_buffer_wheel_scroll_speed = 1
+config.mouse_bindings = {
+	{
+		event = { Down = { streak = 1, button = { WheelUp = 1 } } },
+		mods = "NONE",
+		action = wezterm.action.ScrollByLine(-2),
+	},
+	{
+		event = { Down = { streak = 1, button = { WheelDown = 1 } } },
+		mods = "NONE",
+		action = wezterm.action.ScrollByLine(2),
+	},
+}
+
 config.inactive_pane_hsb = {
 	hue = 1.0,
 	saturation = 0.75,
