@@ -4,6 +4,13 @@ local config = wezterm.config_builder()
 config.font = wezterm.font("0xProto Nerd Font")
 config.color_scheme = "carbonfox"
 config.window_decorations = "RESIZE"
+config.window_background_image = "/home/jake/Pictures/wallpapers/dark-space-blur-s5.jpg"
+config.window_background_image_hsb = {
+	brightness = 0.15,
+	saturation = 1.0,
+	hue = 1.0,
+}
+config.window_background_opacity = 1.0
 
 config.use_fancy_tab_bar = false
 config.enable_tab_bar = true
