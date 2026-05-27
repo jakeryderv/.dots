@@ -2,6 +2,17 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 config.font = wezterm.font("0xProto Nerd Font")
+config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
+config.font_size = 12.0
+config.font_dirs = {}
+config.font_shaper = "Harfbuzz"
+config.bold_brightens_ansi_colors = true
+config.freetype_load_flags = "DEFAULT"
+config.freetype_load_target = "Normal"
+config.freetype_render_target = "Normal"
+config.cell_width = 1.0
+config.line_height = 1.0
+
 config.color_scheme = "carbonfox"
 config.window_decorations = "RESIZE"
 config.window_background_image = "/home/jake/Pictures/wallpapers/dark-space-blur-s5.jpg"
