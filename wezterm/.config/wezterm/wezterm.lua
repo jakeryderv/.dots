@@ -39,8 +39,26 @@ config.colors = {
 	tab_bar = {
 		background = "#2a2a2a",
 		inactive_tab = { bg_color = "#2a2a2a", fg_color = "#6e6f70" },
+		active_tab = { bg_color = "#78a9ff", fg_color = "#0c0c0c" },
 	},
+	visual_bell = "#78a9ff",
 }
+
+config.window_padding = {
+	left = 8,
+	right = 8,
+	top = 4,
+	bottom = 4,
+}
+
+config.audible_bell = "Disabled"
+config.visual_bell = {
+	fade_in_duration_ms = 75,
+	fade_out_duration_ms = 75,
+	fade_in_function = "EaseIn",
+	fade_out_function = "EaseOut",
+}
+config.enable_scroll_bar = true
 
 config.inactive_pane_hsb = {
 	hue = 1.0,
