@@ -1,7 +1,12 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
-config.font = wezterm.font("0xProto Nerd Font Mono")
+config.font = wezterm.font_with_fallback({
+	"0xProto Nerd Font Mono",
+	"JetBrains Mono",
+	"Symbols Nerd Font Mono",
+	"Noto Color Emoji",
+})
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 config.font_size = 12.0
 config.font_dirs = {}
