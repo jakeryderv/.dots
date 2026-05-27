@@ -36,12 +36,12 @@ config.show_new_tab_button_in_tab_bar = false
 
 config.colors = {
 	tab_bar = {
-		background = "#2a2a2a",
-		inactive_tab = { bg_color = "#2a2a2a", fg_color = "#6e6f70" },
-		active_tab = { bg_color = "#78a9ff", fg_color = "#0c0c0c" },
+		background = "#161616",
+		inactive_tab = { bg_color = "#161616", fg_color = "#6e6f70" },
+		active_tab = { bg_color = "#2a2a2a", fg_color = "#f2f4f8" },
 	},
 	visual_bell = "#78a9ff",
-	split = "#78a9ff",
+	split = "#2a2a2a",
 }
 
 config.window_padding = {
@@ -62,9 +62,11 @@ config.enable_scroll_bar = true
 config.status_update_interval = 500
 
 config.window_frame = {
-	active_titlebar_bg = "#2a2a2a",
-	inactive_titlebar_bg = "#2a2a2a",
+	active_titlebar_bg = "#161616",
+	inactive_titlebar_bg = "#161616",
 }
+
+config.force_reverse_video_cursor = true
 
 config.inactive_pane_hsb = {
 	hue = 1.0,
@@ -219,9 +221,16 @@ end
 
 -- Mode -> color (carbonfox palette)
 local mode_colors = {
-	NORMAL = "#78a9ff",       -- blue
+	NORMAL = "#f2f4f8",       -- white
 	COPY_MODE = "#25be6a",    -- green
 	SEARCH_MODE = "#08bdba",  -- teal
+}
+
+-- Mode -> single-char label
+local mode_labels = {
+	NORMAL = "N",
+	COPY_MODE = "C",
+	SEARCH_MODE = "S",
 }
 
 -- Tab title: "<cwd-basename>: <process>"
@@ -251,11 +260,15 @@ wezterm.on("update-status", function(window, pane)
 	-- Left: mode indicator (color shifts) + system metrics (color-coded)
 	local mode = (window:active_key_table() or "NORMAL"):upper()
 	local mode_color = mode_colors[mode] or "#ee5396"
+	local mode_label = mode_labels[mode] or "?"
 	window:set_left_status(wezterm.format({
 		{ Attribute = { Intensity = "Bold" } },
 		-- Mode (shifting color)
 		{ Foreground = { Color = mode_color } },
-		{ Text = " [" .. mode .. "]  " },
+		{ Text = " [" .. mode_label .. "] " },
+		-- Separator
+		{ Foreground = { Color = "#535353" } },
+		{ Text = "| " },
 		-- RAM (blue)
 		{ Foreground = { Color = "#78a9ff" } },
 		{ Text = ram_icon .. " " .. ram_usage() .. "  " },
@@ -265,6 +278,9 @@ wezterm.on("update-status", function(window, pane)
 		-- GPU (green)
 		{ Foreground = { Color = "#25be6a" } },
 		{ Text = gpu_icon .. " " .. gpu_usage() .. " " },
+		-- Separator before tabs
+		{ Foreground = { Color = "#535353" } },
+		{ Text = "| " },
 	}))
 
 	-- Right: cleared
