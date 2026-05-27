@@ -62,8 +62,8 @@ config.enable_scroll_bar = true
 
 config.inactive_pane_hsb = {
 	hue = 1.0,
-	saturation = 0.8,
-	brightness = 0.7,
+	saturation = 0.75,
+	brightness = 0.4,
 }
 
 -- ============================================
