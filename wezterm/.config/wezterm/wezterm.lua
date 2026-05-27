@@ -63,6 +63,8 @@ config.window_frame = {
 
 config.force_reverse_video_cursor = true
 
+config.enable_kitty_keyboard = true
+
 -- Slow down mouse wheel scrolling
 config.alternate_buffer_wheel_scroll_speed = 1
 config.mouse_bindings = {
