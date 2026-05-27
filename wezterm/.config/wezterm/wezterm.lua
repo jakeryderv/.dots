@@ -87,6 +87,16 @@ config.keys = {
 	{ key = "j", mods = "CTRL|ALT|SHIFT", action = act.AdjustPaneSize({ "Down", 5 }) },
 	{ key = "k", mods = "CTRL|ALT|SHIFT", action = act.AdjustPaneSize({ "Up", 5 }) },
 	{ key = "l", mods = "CTRL|ALT|SHIFT", action = act.AdjustPaneSize({ "Right", 5 }) },
+
+	-- Scrolling
+	{ key = "b", mods = "CTRL|ALT", action = act.ScrollByPage(-1) },
+	{ key = "f", mods = "CTRL|ALT", action = act.ScrollByPage(1) },
+	{ key = "u", mods = "CTRL|ALT", action = act.ScrollByPage(-0.5) },
+	{ key = "d", mods = "CTRL|ALT", action = act.ScrollByPage(0.5) },
+	{ key = "g", mods = "CTRL|ALT", action = act.ScrollToTop },
+	{ key = "g", mods = "CTRL|ALT|SHIFT", action = act.ScrollToBottom },
+	{ key = "[", mods = "CTRL|ALT", action = act.ScrollToPrompt(-1) },
+	{ key = "]", mods = "CTRL|ALT", action = act.ScrollToPrompt(1) },
 }
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, conf, hover, max_width)
