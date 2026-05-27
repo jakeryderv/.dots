@@ -16,6 +16,16 @@ return {
   config = function()
     require('telescope').setup {
       defaults = {
+        winblend = 10,
+        borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰' },
+        layout_config = {
+          horizontal = { preview_width = 0.55 },
+          width = 0.9,
+          height = 0.85,
+        },
+        sorting_strategy = 'ascending',
+        prompt_prefix = '  ',
+        selection_caret = '  ',
         mappings = {
           i = {
             ['<C-j>'] = require('telescope.actions').move_selection_next,

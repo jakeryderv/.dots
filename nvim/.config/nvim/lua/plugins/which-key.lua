@@ -43,6 +43,7 @@ return {
       { '<leader>h', group = '[H]arpoon' },
       { '<leader>c', group = '[C]ode' },
       { '<leader>r', group = '[R]ename' },
+      { '<leader>x', group = 'Trouble' },
     },
   },
 }
