@@ -42,11 +42,12 @@ config.colors = {
 		active_tab = { bg_color = "#78a9ff", fg_color = "#0c0c0c" },
 	},
 	visual_bell = "#78a9ff",
+	split = "#78a9ff",
 }
 
 config.window_padding = {
-	left = 8,
-	right = 8,
+	left = 4,
+	right = 4,
 	top = 4,
 	bottom = 4,
 }
