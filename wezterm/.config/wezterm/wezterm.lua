@@ -133,6 +133,9 @@ config.keys = {
 -- ============================================
 local battery_icon = wezterm.nerdfonts.fa_battery_full or "BAT"
 local clock_icon = wezterm.nerdfonts.fa_clock_o or "TIME"
+local ram_icon = wezterm.nerdfonts.md_memory or wezterm.nerdfonts.fa_database or "M"
+local cpu_icon = wezterm.nerdfonts.fa_microchip or "C"
+local gpu_icon = wezterm.nerdfonts.md_gpu or wezterm.nerdfonts.fa_television or "G"
 
 -- RAM used in GB (from /proc/meminfo)
 local function ram_usage()
@@ -221,7 +224,7 @@ local mode_colors = {
 	SEARCH_MODE = "#08bdba",  -- teal
 }
 
--- Tab title: "<process> · <cwd-basename>"
+-- Tab title: "<cwd-basename>: <process>"
 local function basename(path)
 	if not path or path == "" then return "" end
 	return path:match("([^/\\]+)/?$") or path
@@ -245,27 +248,27 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, conf, hover, max_width
 end)
 
 wezterm.on("update-status", function(window, pane)
-	-- Left: mode indicator (color shifts based on active key table)
+	-- Left: mode indicator (color shifts) + system metrics (color-coded)
 	local mode = (window:active_key_table() or "NORMAL"):upper()
-	local mode_color = mode_colors[mode] or "#ee5396"  -- pink for unknown modes
+	local mode_color = mode_colors[mode] or "#ee5396"
 	window:set_left_status(wezterm.format({
-		{ Foreground = { Color = mode_color } },
 		{ Attribute = { Intensity = "Bold" } },
-		{ Text = " [" .. mode .. "] " },
+		-- Mode (shifting color)
+		{ Foreground = { Color = mode_color } },
+		{ Text = " [" .. mode .. "]  " },
+		-- RAM (blue)
+		{ Foreground = { Color = "#78a9ff" } },
+		{ Text = ram_icon .. " " .. ram_usage() .. "  " },
+		-- CPU (orange)
+		{ Foreground = { Color = "#f9a826" } },
+		{ Text = cpu_icon .. " " .. cpu_usage() .. "  " },
+		-- GPU (green)
+		{ Foreground = { Color = "#25be6a" } },
+		{ Text = gpu_icon .. " " .. gpu_usage() .. " " },
 	}))
 
-	-- Right: system metrics
-	local right = string.format(
-		"[RAM %s] [CPU %s] [GPU %s] [%s %s] [%s %s]",
-		ram_usage(), cpu_usage(), gpu_usage(),
-		battery_icon, battery_pct(),
-		clock_icon, os.date("%Y-%m-%d %H:%M")
-	)
-	window:set_right_status(wezterm.format({
-		{ Foreground = { Color = "#78a9ff" } },
-		{ Attribute = { Intensity = "Bold" } },
-		{ Text = " " .. right .. " " },
-	}))
+	-- Right: cleared
+	window:set_right_status("")
 end)
 
 return config
