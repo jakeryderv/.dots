@@ -97,6 +97,11 @@ config.keys = {
 	{ key = "g", mods = "CTRL|ALT|SHIFT", action = act.ScrollToBottom },
 	{ key = "[", mods = "CTRL|ALT", action = act.ScrollToPrompt(-1) },
 	{ key = "]", mods = "CTRL|ALT", action = act.ScrollToPrompt(1) },
+
+	-- Search & Selection
+	{ key = "/", mods = "CTRL|ALT", action = act.Search({ CaseSensitiveString = "" }) },
+	{ key = "v", mods = "CTRL|ALT", action = act.ActivateCopyMode },
+	{ key = "Space", mods = "CTRL|ALT", action = act.QuickSelect },
 }
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, conf, hover, max_width)
