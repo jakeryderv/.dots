@@ -30,7 +30,7 @@ config.window_background_opacity = 1.0
 
 config.use_fancy_tab_bar = true
 config.enable_tab_bar = true
-config.hide_tab_bar_if_only_one_tab = false
+config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = false
 config.show_new_tab_button_in_tab_bar = false
 
@@ -161,13 +161,21 @@ end)
 -- RAM used in GB (from /proc/meminfo)
 local function ram_usage()
 	local f = io.open("/proc/meminfo", "r")
-	if not f then return "?" end
+	if not f then
+		return "?"
+	end
 	local total, available
 	for line in f:lines() do
 		local k, v = line:match("^(%w+):%s+(%d+)")
-		if k == "MemTotal" then total = tonumber(v) end
-		if k == "MemAvailable" then available = tonumber(v) end
-		if total and available then break end
+		if k == "MemTotal" then
+			total = tonumber(v)
+		end
+		if k == "MemAvailable" then
+			available = tonumber(v)
+		end
+		if total and available then
+			break
+		end
 	end
 	f:close()
 	if total and available and total > 0 then
@@ -191,7 +199,9 @@ local function cpu_usage()
 				nums[#nums + 1] = tonumber(n)
 			end
 			local total = 0
-			for _, n in ipairs(nums) do total = total + n end
+			for _, n in ipairs(nums) do
+				total = total + n
+			end
 			local idle = nums[4]
 			local total_diff = total - cpu_prev.total
 			local idle_diff = idle - cpu_prev.idle
@@ -211,8 +221,7 @@ local gpu_cache = { value = "--", time = 0 }
 local function gpu_usage()
 	local now = os.time()
 	if now - gpu_cache.time > 3 then
-		local handle =
-			io.popen("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits 2>/dev/null")
+		local handle = io.popen("nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits 2>/dev/null")
 		if handle then
 			local result = handle:read("*l")
 			handle:close()
@@ -232,7 +241,9 @@ local function battery_pct()
 		if f then
 			local pct = f:read("*l")
 			f:close()
-			if pct then return pct .. "%" end
+			if pct then
+				return pct .. "%"
+			end
 		end
 	end
 	return "?"
@@ -240,9 +251,9 @@ end
 
 -- Mode -> color (carbonfox palette)
 local mode_colors = {
-	NORMAL = "#f2f4f8",       -- white
-	COPY_MODE = "#25be6a",    -- green
-	SEARCH_MODE = "#08bdba",  -- teal
+	NORMAL = "#f2f4f8", -- white
+	COPY_MODE = "#25be6a", -- green
+	SEARCH_MODE = "#08bdba", -- teal
 }
 
 -- Mode -> single-char label
@@ -254,7 +265,9 @@ local mode_labels = {
 
 -- Tab title: "<cwd-basename>: <process>"
 local function basename(path)
-	if not path or path == "" then return "" end
+	if not path or path == "" then
+		return ""
+	end
 	return path:match("([^/\\]+)/?$") or path
 end
 
