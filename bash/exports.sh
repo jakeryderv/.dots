@@ -1,11 +1,14 @@
 #!/bin/bash
 # Environment variables and exports
 
+# Path
+export PATH="$HOME/.local/bin:$PATH"
+
 # Editor
 if [[ -n $SSH_CONNECTION ]]; then
-	export EDITOR='vim'
+    export EDITOR='vim'
 else
-	export EDITOR='nvim'
+    export EDITOR='nvim'
 fi
 
 # NVM
@@ -21,7 +24,6 @@ export PATH=/home/jake/.opencode/bin:$PATH
 
 # EZA colors (if you add them)
 # export EZA_COLORS="di=1;34"
-
 
 # scikit-learn data path
 export SCIKIT_LEARN_DATA=/home/jake/.scikit_learn_data
