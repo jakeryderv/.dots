@@ -9,19 +9,21 @@ return {
       draw = { animation = require('mini.indentscope').gen_animation.none() },
     }
 
-    local disable_fts = {
-      'snacks_dashboard', 'dashboard', 'starter', 'alpha',
-      'help', 'man', 'lazy', 'mason', 'lspinfo', 'checkhealth',
-      'noice', 'notify', 'NvimTree', 'neo-tree', 'oil',
-      'TelescopePrompt', 'TelescopeResults', 'Trouble', 'trouble',
-      'toggleterm', 'gitcommit', 'markdown',
+    -- Disabled everywhere by default — only enabled on code filetypes
+    vim.g.miniindentscope_disable = true
+
+    local enable_fts = {
+      'python', 'lua', 'rust', 'go', 'c', 'cpp', 'java', 'ruby', 'php',
+      'javascript', 'javascriptreact', 'typescript', 'typescriptreact',
+      'html', 'css', 'scss', 'sass', 'less', 'vue', 'svelte',
+      'sh', 'bash', 'zsh', 'fish',
+      'yaml', 'toml', 'json', 'jsonc', 'xml',
+      'vim', 'sql', 'dockerfile', 'make',
     }
-    vim.api.nvim_create_autocmd({ 'FileType', 'BufWinEnter' }, {
-      pattern = disable_fts,
+    vim.api.nvim_create_autocmd('FileType', {
+      pattern = enable_fts,
       callback = function(args)
-        vim.b[args.buf].miniindentscope_disable = true
-        local ok, ind = pcall(require, 'mini.indentscope')
-        if ok and ind.undraw then pcall(ind.undraw) end
+        vim.b[args.buf].miniindentscope_disable = false
       end,
     })
 

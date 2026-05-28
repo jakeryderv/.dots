@@ -2,6 +2,22 @@ return {
   'folke/snacks.nvim',
   priority = 1000,
   lazy = false,
+  init = function()
+    vim.api.nvim_create_autocmd({ 'FileType', 'BufWinEnter', 'WinEnter' }, {
+      pattern = 'snacks_dashboard',
+      callback = function()
+        vim.opt_local.cursorline   = false
+        vim.opt_local.cursorcolumn = false
+        vim.opt_local.signcolumn   = 'no'
+        vim.opt_local.foldcolumn   = '0'
+        vim.opt_local.list         = false
+        vim.opt_local.number       = false
+        vim.opt_local.relativenumber = false
+        vim.opt_local.colorcolumn  = ''
+        vim.b.miniindentscope_disable = true
+      end,
+    })
+  end,
   opts = {
     styles = {
       dashboard = {
