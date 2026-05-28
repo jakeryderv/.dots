@@ -32,12 +32,6 @@ style = "Bold Italic"
 style = { shape = "Block", blinking = "Off" }
 unfocused_hollow = false
 
-[colors.cursor]
-text = "0x000000"
-cursor = "0xffffff"
-
-
-
 # Nightfox Alacritty Colors
 ## name: carbonfox
 ## upstream: https://github.com/edeneast/nightfox.nvim/raw/main/extra/carbonfox/alacritty.toml
@@ -48,9 +42,9 @@ foreground = "#f2f4f8"
 dim_foreground = "#b6b8bb"
 bright_foreground = "#f9fbff"
 
-#[colors.cursor]
-#text = "#f2f4f8"
-#cursor = "#b6b8bb"
+[colors.cursor]
+text = "#161616"
+cursor = "#f2f4f8"
 
 [colors.vi_mode_cursor]
 text = "#f2f4f8"

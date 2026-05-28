@@ -3,24 +3,7 @@ return {
   dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' },
   ft = { 'markdown', 'norg', 'typst', 'rmd' },
   config = function()
-    -- carbonfox palette
-    local c = {
-      bg       = '#161616',
-      bg2      = '#1c1c1c',
-      bg3      = '#252525',
-      bg4      = '#535353',
-      fg       = '#f2f4f8',
-      fg_mute  = '#b6b8bb',
-      fg_dim   = '#6e6f70',
-      blue     = '#78a9ff',
-      cyan     = '#33b1ff',
-      teal     = '#08bdba',
-      green    = '#25be6a',
-      magenta  = '#be95ff',
-      pink     = '#ee5396',
-      orange   = '#f9a826',
-      red      = '#fa4d56',
-    }
+    local c = require('colors')
 
     -- highlight groups
     local function hl(name, opts) vim.api.nvim_set_hl(0, name, opts) end
