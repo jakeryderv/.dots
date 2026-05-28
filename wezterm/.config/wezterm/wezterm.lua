@@ -65,6 +65,12 @@ config.force_reverse_video_cursor = true
 
 config.enable_kitty_keyboard = true
 
+-- Newer GPU renderer (often faster on Wayland)
+config.front_end = 'WebGpu'
+
+-- Don't prompt when closing the window
+config.window_close_confirmation = 'NeverPrompt'
+
 -- Slow down mouse wheel scrolling
 config.alternate_buffer_wheel_scroll_speed = 1
 config.mouse_bindings = {
