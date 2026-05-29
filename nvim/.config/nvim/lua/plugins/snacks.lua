@@ -14,11 +14,35 @@ return {
         vim.opt_local.number = false
         vim.opt_local.relativenumber = false
         vim.opt_local.colorcolumn = ''
-        vim.b.miniindentscope_disable = true
       end,
     })
   end,
   opts = {
+    indent = {
+      enabled = true,
+      -- Faint dotted guides on every indent level (distinct from mini.indentscope's solid │)
+      indent = {
+        char = '┊',
+        only_scope = false,
+        only_current = false,
+      },
+      -- Current-scope highlighting is handled by mini.indentscope; don't double-draw it here
+      scope = { enabled = false },
+      animate = { enabled = false },
+      -- Normal file buffers only; skip special UIs and noisy filetypes
+      filter = function(buf)
+        local ft = vim.bo[buf].filetype
+        local skip = {
+          help = true, dashboard = true, snacks_dashboard = true,
+          ['neo-tree'] = true, Trouble = true, lazy = true, mason = true,
+          notify = true, toggleterm = true, markdown = true, text = true,
+        }
+        return vim.g.snacks_indent ~= false
+          and vim.b[buf].snacks_indent ~= false
+          and vim.bo[buf].buftype == ''
+          and not skip[ft]
+      end,
+    },
     styles = {
       dashboard = {
         wo = {
