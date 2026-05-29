@@ -1,0 +1,5 @@
+# Pi — never commit secrets or tool-managed state
+pi/.pi/agent/auth.json
+pi/.pi/agent/sessions/
+pi/.pi/agent/bin/
+pi/.pi/agent/settings.json.bak
