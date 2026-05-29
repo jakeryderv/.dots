@@ -121,6 +121,12 @@ return {
         },
         bashls = {},
         pyright = {},
+
+        -- Web: HTML/CSS/JS/TS. vtsls handles JS embedded in HTML <script> tags.
+        html = {},
+        cssls = {},
+        emmet_language_server = {},
+        vtsls = {},
       }
 
       local ensure_installed = vim.tbl_keys(servers or {})
@@ -128,6 +134,8 @@ return {
         'stylua',
         'shfmt',
         'shellcheck',
+        'prettierd',
+        'eslint_d',
       })
       require('mason-tool-installer').setup({ ensure_installed = ensure_installed })
 

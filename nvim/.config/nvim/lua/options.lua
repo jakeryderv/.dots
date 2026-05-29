@@ -34,6 +34,20 @@ vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.expandtab = true
 
+-- 2-space indent for web filetypes (matches prettier's default)
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = {
+    'html', 'css', 'scss', 'sass', 'less',
+    'javascript', 'javascriptreact', 'typescript', 'typescriptreact',
+    'json', 'jsonc', 'yaml', 'markdown',
+  },
+  callback = function()
+    vim.bo.tabstop = 2
+    vim.bo.shiftwidth = 2
+    vim.bo.softtabstop = 2
+  end,
+})
+
 vim.o.splitright = true
 vim.o.splitbelow = true
 
