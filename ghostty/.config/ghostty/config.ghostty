@@ -1,0 +1,14 @@
+# Font family (Bold + Italic auto-detected from the same family)
+font-family = "0xProto Nerd Font Mono"
+
+# Font size in points (default is ~12; bump up slightly)
+font-size = 12
+
+# Disable programming ligatures — delete this line to keep them
+font-feature = -calt
+
+# Extra line spacing (10% taller cells)
+adjust-cell-height = 10%
+
+# font-thicken is macOS-only and has no effect on Linux — left off
+# font-thicken = true
