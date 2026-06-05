@@ -15,3 +15,26 @@ adjust-cell-height = 10%
 
 # Theme — carbonfox (palette vendored from nightfox; see carbonfox.ghostty)
 config-file = carbonfox.ghostty
+
+# --- Background image ---
+# Dark-space wallpaper (tracked in ~/.dots/_wallpapers, not stowed)
+background-image = ~/.dots/_wallpapers/dark-space-blur-s5.jpg
+
+# Fill the window, preserving aspect ratio (may clip edges)
+background-image-fit = cover
+
+# Anchor point for the image (this is the default; here for clarity)
+background-image-position = center
+
+# Don't tile the image (irrelevant when fit = cover, but documents intent)
+background-image-repeat = false
+
+# Image visibility, relative to background-opacity. Raise toward 1.0 for a
+# more prominent wallpaper; lower it if text over the bright nebula is hard to read.
+background-image-opacity = 0.20
+
+# Related window-transparency options (left at defaults; uncomment to change):
+#   background-opacity keeps the window solid (1) so the image sits on the carbonfox bg
+#   background-blur blurs the desktop behind the window, and only applies when opacity < 1
+# background-opacity = 1
+# background-blur = 20
