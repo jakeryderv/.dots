@@ -16,6 +16,12 @@ adjust-cell-height = 10%
 # Theme — carbonfox (palette vendored from nightfox; see carbonfox.ghostty)
 config-file = carbonfox.ghostty
 
+# Local overrides — loaded AFTER the theme so values here win over it.
+# (Ghostty processes config-file includes at the end of the parent file, in the
+#  order listed, and an included file overrides the parent. So to override a
+#  theme value it must live in an include that comes after the theme include.)
+config-file = local.ghostty
+
 # --- Background image ---
 # Dark-space wallpaper (tracked in ~/.dots/_wallpapers, not stowed)
 background-image = ~/.dots/_wallpapers/dark-space-blur-s5.jpg
@@ -43,3 +49,25 @@ background-image-opacity = 0.20
 # Remove title bar and borders (matches kitty's hide_window_decorations and
 # alacritty's decorations = "None"). Valid: none | auto | client | server.
 window-decoration = none
+
+# --- Cursor ---
+# Block cursor, no blinking
+cursor-style = block
+cursor-style-blink = false
+
+# Glyph under the cursor uses the cell's background color — the other half of
+# the invert. The cursor's own color (cursor-color = cell-foreground) lives in
+# local.ghostty so it can override the theme's cursor-color; see note up top.
+cursor-text = cell-background
+
+# Fully opaque cursor
+cursor-opacity = 1
+
+# Click in the prompt to move the cursor there (needs shell integration / OSC 133)
+cursor-click-to-move = true
+
+# Make the block cursor apply at the PROMPT too. By default Ghostty's shell
+# integration forces a bar at the prompt; "no-cursor" disables just that. The
+# rest of this list is the documented v1.3.1 default set, kept explicit so the
+# other features (title, path) stay on regardless of merge semantics.
+shell-integration-features = no-cursor,no-sudo,title,no-ssh-env,no-ssh-terminfo,path

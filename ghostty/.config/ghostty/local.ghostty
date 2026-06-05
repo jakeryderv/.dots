@@ -1,0 +1,13 @@
+# Local overrides for Ghostty.
+#
+# Loaded via `config-file = local.ghostty` AFTER carbonfox.ghostty, so values
+# here win over the vendored theme. (Ghostty processes config-file includes at
+# the end of the parent file, in order, and an included file overrides the
+# parent — so theme overrides must live here, after the theme include.)
+#
+# Keeps carbonfox.ghostty byte-for-byte faithful to the nightfox upstream.
+
+# Cursor uses the cell's foreground color (overrides the theme's static
+# cursor-color = #f2f4f8). Pairs with cursor-text = cell-background in
+# config.ghostty for a clean color-inverting block cursor.
+cursor-color = cell-foreground
