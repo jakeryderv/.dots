@@ -50,6 +50,17 @@ background-image-opacity = 0.20
 # alacritty's decorations = "None"). Valid: none | auto | client | server.
 window-decoration = none
 
+# Padding between the terminal cells and the window edges (default is only 2)
+window-padding-x = 5
+window-padding-y = 5
+
+# Distribute leftover pixels (from cell-size vs window-size mismatch) evenly
+# across all four edges instead of piling them on one side
+window-padding-balance = true
+
+# Don't show the dimensions popup when resizing the window
+resize-overlay = never
+
 # --- Cursor ---
 # Block cursor, no blinking
 cursor-style = block
@@ -71,3 +82,15 @@ cursor-click-to-move = true
 # rest of this list is the documented v1.3.1 default set, kept explicit so the
 # other features (title, path) stay on regardless of merge semantics.
 shell-integration-features = no-cursor,no-sudo,title,no-ssh-env,no-ssh-terminfo,path
+
+# --- Behavior ---
+# Hide the mouse pointer as soon as you start typing
+mouse-hide-while-typing = true
+
+# Desktop notifications: drop the "copied to clipboard" toast, keep config-reload
+# (default is clipboard-copy,config-reload)
+app-notifications = no-clipboard-copy
+
+# confirm-close-surface is left at its default (true). Shell integration already
+# suppresses the prompt when you're sitting at a shell prompt, so it only asks
+# when a command is actually running.
