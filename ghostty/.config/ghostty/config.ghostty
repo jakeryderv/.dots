@@ -12,3 +12,6 @@ adjust-cell-height = 10%
 
 # font-thicken is macOS-only and has no effect on Linux — left off
 # font-thicken = true
+
+# Theme — carbonfox (palette vendored from nightfox; see carbonfox.ghostty)
+config-file = carbonfox.ghostty
