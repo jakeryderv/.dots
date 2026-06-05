@@ -38,3 +38,8 @@ background-image-opacity = 0.20
 #   background-blur blurs the desktop behind the window, and only applies when opacity < 1
 # background-opacity = 1
 # background-blur = 20
+
+# --- Window ---
+# Remove title bar and borders (matches kitty's hide_window_decorations and
+# alacritty's decorations = "None"). Valid: none | auto | client | server.
+window-decoration = none
