@@ -20,7 +20,7 @@ config.line_height = 1.0
 
 config.color_scheme = "carbonfox"
 config.window_decorations = "RESIZE"
-config.window_background_image = "/home/jake/Pictures/wallpapers/dark-space-blur-s5.jpg"
+config.window_background_image = "/home/jake/.dots/_wallpapers/dark-space-blur-s5.jpg"
 config.window_background_image_hsb = {
 	brightness = 0.15,
 	saturation = 1.0,
@@ -66,10 +66,10 @@ config.force_reverse_video_cursor = true
 config.enable_kitty_keyboard = true
 
 -- Newer GPU renderer (often faster on Wayland)
-config.front_end = 'WebGpu'
+config.front_end = "WebGpu"
 
 -- Don't prompt when closing the window
-config.window_close_confirmation = 'NeverPrompt'
+config.window_close_confirmation = "NeverPrompt"
 
 -- Slow down mouse wheel scrolling
 config.alternate_buffer_wheel_scroll_speed = 1
