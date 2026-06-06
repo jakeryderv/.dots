@@ -125,3 +125,33 @@ bell-features = no-system,no-audio,attention,no-title,border
 # launches still work). Set explicitly for clarity. (true = always shared,
 # false = always separate.)
 gtk-single-instance = detect
+
+# --- Keybinds: tabs & splits (ctrl+alt scheme, consistent with wezterm) ---
+# These ADD to Ghostty's ctrl+shift defaults (left as-is). All ctrl+alt-based,
+# so no clash with tmux (prefix Alt+a; vim-tmux-navigator's root Ctrl+hjkl).
+
+# Tabs: cycle and move
+keybind = ctrl+alt+n=next_tab
+keybind = ctrl+alt+p=previous_tab
+keybind = ctrl+alt+shift+n=move_tab:1
+keybind = ctrl+alt+shift+p=move_tab:-1
+
+# Splits: create (\ = side-by-side, - = stacked)
+keybind = ctrl+alt+\=new_split:right
+keybind = ctrl+alt+-=new_split:down
+
+# Splits: close & zoom the active pane
+keybind = ctrl+alt+x=close_surface
+keybind = ctrl+alt+z=toggle_split_zoom
+
+# Splits: navigate (vim h/j/k/l; the default ctrl+alt+arrows still work too)
+keybind = ctrl+alt+h=goto_split:left
+keybind = ctrl+alt+j=goto_split:down
+keybind = ctrl+alt+k=goto_split:up
+keybind = ctrl+alt+l=goto_split:right
+
+# Splits: resize by 5 cells (arrow keys, per your request)
+keybind = ctrl+alt+shift+arrow_left=resize_split:left,5
+keybind = ctrl+alt+shift+arrow_down=resize_split:down,5
+keybind = ctrl+alt+shift+arrow_up=resize_split:up,5
+keybind = ctrl+alt+shift+arrow_right=resize_split:right,5
