@@ -108,6 +108,14 @@ mouse-scroll-multiplier = precision:1,discrete:3
 # (default is clipboard-copy,config-reload)
 app-notifications = no-clipboard-copy
 
+# Bell behavior — full list written explicitly for clarity.
+#   on:  attention (nudge the desktop / GNOME notification when the bell rings
+#        while Ghostty is unfocused), border (flash a border around the terminal
+#        until refocused — the in-window cue that matters since we have no titlebar)
+#   off: title (the 🔔-in-title is mostly invisible with window-decoration = none),
+#        system (OS alert sound), audio (custom sound, macOS-only anyway)
+bell-features = no-system,no-audio,attention,no-title,border
+
 # confirm-close-surface is left at its default (true). Shell integration already
 # suppresses the prompt when you're sitting at a shell prompt, so it only asks
 # when a command is actually running.
