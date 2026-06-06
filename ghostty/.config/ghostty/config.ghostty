@@ -77,11 +77,13 @@ cursor-opacity = 1
 # Click in the prompt to move the cursor there (needs shell integration / OSC 133)
 cursor-click-to-move = true
 
-# Make the block cursor apply at the PROMPT too. By default Ghostty's shell
-# integration forces a bar at the prompt; "no-cursor" disables just that. The
-# rest of this list is the documented v1.3.1 default set, kept explicit so the
-# other features (title, path) stay on regardless of merge semantics.
-shell-integration-features = no-cursor,no-sudo,title,no-ssh-env,no-ssh-terminfo,path
+# Make the block cursor apply at the PROMPT too: by default Ghostty's shell
+# integration forces a bar at the prompt; "no-cursor" disables just that.
+# Also enable ssh-env + ssh-terminfo (both off by default): installs Ghostty's
+# terminfo on remote hosts (one-time per host, cached) and forwards
+# COLORTERM/TERM_PROGRAM so colors/keys render correctly over SSH. The remaining
+# features (no-sudo, title, path) match the v1.3.1 defaults.
+shell-integration-features = no-cursor,no-sudo,title,ssh-env,ssh-terminfo,path
 
 # --- Behavior ---
 # Hide the mouse pointer as soon as you start typing
