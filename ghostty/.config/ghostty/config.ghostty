@@ -57,8 +57,8 @@ minimum-contrast = 1.1
 window-decoration = none
 
 # Padding between the terminal cells and the window edges (default is only 2)
-window-padding-x = 5
-window-padding-y = 5
+window-padding-x = 0
+window-padding-y = 0
 
 # Distribute leftover pixels (from cell-size vs window-size mismatch) evenly
 # across all four edges instead of piling them on one side
