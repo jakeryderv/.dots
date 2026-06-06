@@ -99,6 +99,11 @@ shell-integration-features = no-cursor,no-sudo,title,ssh-env,ssh-terminfo,path
 # Hide the mouse pointer as soon as you start typing
 mouse-hide-while-typing = true
 
+# Scroll speed — these ARE the defaults, set explicitly so it's easy to tweak
+# per-machine. discrete = notched mouse wheels (lines/notch); precision = hi-res
+# touchpad. Raise/lower if scrolling feels off on another machine. Range 0.01–10000.
+mouse-scroll-multiplier = precision:1,discrete:3
+
 # Desktop notifications: drop the "copied to clipboard" toast, keep config-reload
 # (default is clipboard-copy,config-reload)
 app-notifications = no-clipboard-copy
