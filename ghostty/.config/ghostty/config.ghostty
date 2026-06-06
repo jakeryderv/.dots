@@ -106,3 +106,9 @@ app-notifications = no-clipboard-copy
 # confirm-close-surface is left at its default (true). Shell integration already
 # suppresses the prompt when you're sitting at a shell prompt, so it only asks
 # when a command is actually running.
+
+# Application instancing. detect (the default) = one shared process for normal
+# launches, but a separate instance when launched with CLI args (so custom-config
+# launches still work). Set explicitly for clarity. (true = always shared,
+# false = always separate.)
+gtk-single-instance = detect
