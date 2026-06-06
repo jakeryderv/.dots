@@ -5,29 +5,28 @@ return {
   event = 'VeryLazy',
   config = function()
     local c = require('colors')
+    local bar = c.bg2 -- #1c1c1c, shared bar background with lualine
     require('bufferline').setup({
       options = {
         mode = 'buffers',
         separator_style = 'thin',
+        indicator = { style = 'none' },
         always_show_bufferline = true,
         show_buffer_close_icons = false,
         show_close_icon = false,
         diagnostics = 'nvim_lsp',
-        numbers = function(opts)
-          return string.format('[%s]', opts.ordinal)
-        end,
       },
       highlights = {
-        fill               = { bg = c.bg },
-        background         = { bg = c.bg,  fg = c.fg_dim },
-        buffer_selected    = { bg = c.sel, fg = c.fg,     bold = true },
-        buffer_visible     = { bg = c.bg,  fg = c.fg_dim },
-        separator          = { fg = c.bg,  bg = c.bg },
-        separator_selected = { fg = c.bg,  bg = c.sel },
-        separator_visible  = { fg = c.bg,  bg = c.bg },
-        numbers            = { bg = c.bg,  fg = c.bg4 },
-        numbers_selected   = { bg = c.sel, fg = c.bg4,    bold = true },
-        numbers_visible    = { bg = c.bg,  fg = c.bg4 },
+        fill               = { bg = bar },
+        -- inactive: dim
+        background         = { bg = bar, fg = c.fg_dim },
+        buffer_visible     = { bg = bar, fg = c.fg_mute },
+        -- active: just bright + bold, no marker
+        buffer_selected    = { bg = bar, fg = c.fg, bold = true },
+        -- separators vanish into the bar for a flat spacing look
+        separator          = { fg = bar, bg = bar },
+        separator_selected = { fg = bar, bg = bar },
+        separator_visible  = { fg = bar, bg = bar },
       },
     })
   end,

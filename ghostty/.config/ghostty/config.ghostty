@@ -37,7 +37,7 @@ background-image-repeat = false
 
 # Image visibility, relative to background-opacity. Raise toward 1.0 for a
 # more prominent wallpaper; lower it if text over the bright nebula is hard to read.
-background-image-opacity = 0.75
+background-image-opacity = 0.5
 
 # Force a minimum text/background contrast ratio (WCAG scale: 1 = off … 21 = max)
 # so text stays legible over the brighter parts of the wallpaper. 1.1 just
