@@ -18,6 +18,11 @@ return {
     })
   end,
   opts = {
+    -- Top-right notification toasts (replaces noice's toasts; only hooks vim.notify, never the cmdline)
+    notifier = {
+      enabled = true,
+      timeout = 3000, -- ms before a notification fades
+    },
     indent = {
       enabled = true,
       -- Faint dotted guides on every indent level (distinct from mini.indentscope's solid │)
@@ -58,7 +63,7 @@ return {
       },
     },
     dashboard = {
-      enabled = true,
+      enabled = false,
       preset = {
         header = [[]],
         keys = {

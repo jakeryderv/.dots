@@ -19,11 +19,12 @@ return {
         winblend = 10,
         borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰' },
         layout_config = {
+          prompt_position = 'bottom',
           horizontal = { preview_width = 0.55 },
           width = 0.9,
           height = 0.85,
         },
-        sorting_strategy = 'ascending',
+        sorting_strategy = 'descending',
         prompt_prefix = '  ',
         selection_caret = '  ',
         mappings = {
@@ -35,7 +36,10 @@ return {
       },
       extensions = {
         ['ui-select'] = {
-          require('telescope.themes').get_dropdown(),
+          require('telescope.themes').get_dropdown {
+            sorting_strategy = 'descending',
+            layout_config = { prompt_position = 'bottom' },
+          },
         },
       },
     }
@@ -59,6 +63,8 @@ return {
       builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
         winblend = 10,
         previewer = false,
+        sorting_strategy = 'descending',
+        layout_config = { prompt_position = 'bottom' },
       })
     end, { desc = '[/] Fuzzily search in current buffer' })
 
