@@ -98,8 +98,14 @@ return {
         },
       })
 
+      -- Completion capabilities from blink, applied to every server via the
+      -- '*' default config (replaces the old per-handler capabilities merge).
       local capabilities = require('blink.cmp').get_lsp_capabilities()
+      vim.lsp.config('*', { capabilities = capabilities })
 
+      -- Per-server settings. An empty table = nvim-lspconfig's base config
+      -- (shipped in its lsp/ dir) plus the capabilities above. We layer our
+      -- settings on top with vim.lsp.config(), then enable explicitly below.
       local servers = {
         lua_ls = {
           settings = {
@@ -120,27 +126,33 @@ return {
         vtsls = {},
       }
 
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua',
-        'shfmt',
-        'shellcheck',
-        'prettierd',
-        'eslint_d',
-      })
-      require('mason-tool-installer').setup({ ensure_installed = ensure_installed })
+      for name, cfg in pairs(servers) do
+        vim.lsp.config(name, cfg)
+      end
 
+      -- Install the servers (mason-lspconfig translates lspconfig -> mason
+      -- package names) plus the formatters/linters used by conform/nvim-lint.
+      -- automatic_enable = false so ONLY the servers we vim.lsp.enable() below
+      -- start -- this stops mason-lspconfig 2.x from auto-enabling extras like
+      -- stylua's LSP mode.
       require('mason-lspconfig').setup({
-        ensure_installed = {},
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
+        ensure_installed = vim.tbl_keys(servers),
+        automatic_enable = false,
+      })
+      require('mason-tool-installer').setup({
+        ensure_installed = {
+          'stylua',
+          'shfmt',
+          'shellcheck',
+          'prettierd',
+          'eslint_d',
+          'tree-sitter-cli', -- needed by nvim-treesitter (main) to build parsers
         },
       })
+
+      -- Start the servers (on matching filetypes). This replaces the removed
+      -- mason-lspconfig `handlers` mechanism.
+      vim.lsp.enable(vim.tbl_keys(servers))
     end,
   },
 }

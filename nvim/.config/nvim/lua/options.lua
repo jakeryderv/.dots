@@ -32,3 +32,7 @@ vim.o.inccommand = 'split'
 vim.o.cursorline = true
 vim.o.scrolloff = 10
 vim.o.confirm = true
+
+-- Default border for floating windows that don't set their own (e.g. LSP hover,
+-- signature help) -> matches the rounded style used by Telescope/diagnostics
+vim.o.winborder = 'rounded'
