@@ -25,7 +25,7 @@ return {
       documentation = { auto_show = false, auto_show_delay_ms = 500 },
     },
     sources = {
-      default = { 'lsp', 'path', 'snippets', 'lazydev' },
+      default = { 'lsp', 'path', 'snippets', 'lazydev', 'buffer' },
       providers = {
         lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
       },
@@ -33,5 +33,12 @@ return {
     snippets = { preset = 'luasnip' },
     fuzzy = { implementation = 'prefer_rust_with_warning' },
     signature = { enabled = true },
+    -- Auto-show the cmdline completion menu as you type (default only shows it
+    -- in the cmdwin / on <Tab>). Keymap stays the built-in 'cmdline' preset.
+    cmdline = {
+      completion = {
+        menu = { auto_show = true },
+      },
+    },
   },
 }
