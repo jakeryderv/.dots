@@ -25,14 +25,17 @@ return {
     },
     indent = {
       enabled = true,
-      -- Faint dotted guides on every indent level (distinct from mini.indentscope's solid │)
+      -- Faint dotted guides on every indent level (distinct from the solid current-scope │)
       indent = {
         char = '┊',
         only_scope = false,
         only_current = false,
       },
-      -- Current-scope highlighting is handled by mini.indentscope; don't double-draw it here
-      scope = { enabled = false },
+      -- Solid │ on the current scope (replaces mini.indentscope)
+      scope = {
+        enabled = true,
+        char = '│',
+      },
       animate = { enabled = false },
       -- Normal file buffers only; skip special UIs and noisy filetypes
       filter = function(buf)

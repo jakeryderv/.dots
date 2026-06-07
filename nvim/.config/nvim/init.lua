@@ -13,6 +13,7 @@ end
 
 require('options')
 require('keymaps')
+require('autocmds')
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -25,8 +26,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = {} },
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
   { import = 'plugins' },
 }, {
   ui = {
