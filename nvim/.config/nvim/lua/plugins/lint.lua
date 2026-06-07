@@ -4,6 +4,7 @@ return {
   config = function()
     local lint = require('lint')
     lint.linters_by_ft = {
+      -- ruff is system-managed (not via Mason). Install with: uv tool install ruff
       python = { 'ruff' },
       sh = { 'shellcheck' },
       bash = { 'shellcheck' },

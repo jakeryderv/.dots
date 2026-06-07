@@ -29,6 +29,7 @@ return {
       lua = { 'stylua' },
       sh = { 'shfmt' },
       bash = { 'shfmt' },
+      -- ruff is system-managed (not via Mason). Install with: uv tool install ruff
       python = { 'ruff_organize_imports', 'ruff_format' },
       html = { 'prettierd', 'prettier', stop_after_first = true },
       css = { 'prettierd', 'prettier', stop_after_first = true },
