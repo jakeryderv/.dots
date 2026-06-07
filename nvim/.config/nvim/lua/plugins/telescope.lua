@@ -16,7 +16,7 @@ return {
   config = function()
     require('telescope').setup {
       defaults = {
-        winblend = 10,
+        winblend = 0,
         borderchars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰' },
         layout_config = {
           prompt_position = 'bottom',
@@ -61,7 +61,7 @@ return {
 
     vim.keymap.set('n', '<leader>/', function()
       builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-        winblend = 10,
+        winblend = 0,
         previewer = false,
         sorting_strategy = 'descending',
         layout_config = { prompt_position = 'bottom' },
