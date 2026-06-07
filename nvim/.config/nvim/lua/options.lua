@@ -35,4 +35,4 @@ vim.o.confirm = true
 
 -- Default border for floating windows that don't set their own (e.g. LSP hover,
 -- signature help) -> matches the rounded style used by Telescope/diagnostics
-vim.o.winborder = 'rounded'
+vim.o.winborder = 'none'
