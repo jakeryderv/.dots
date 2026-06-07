@@ -36,3 +36,9 @@ vim.o.confirm = true
 -- Default border for floating windows that don't set their own (e.g. LSP hover,
 -- signature help) -> matches the rounded style used by Telescope/diagnostics
 vim.o.winborder = 'none'
+
+-- Treesitter-based folding: folds follow code structure (functions, blocks…).
+-- foldlevelstart = 99 means files open with everything UNfolded; you fold on demand.
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.o.foldlevelstart = 99

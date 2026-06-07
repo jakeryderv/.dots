@@ -38,6 +38,7 @@ return {
     },
     spec = {
       { '<leader>s', group = '[S]earch' },
+      { '<leader>S', group = '[S]ession' },
       { '<leader>t', group = '[T]oggle' },
       { '<leader>g', group = '[G]it', mode = { 'n', 'v' } },
       { '<leader>h', group = '[H]arpoon' },
