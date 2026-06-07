@@ -23,34 +23,6 @@ return {
       enabled = true,
       timeout = 3000, -- ms before a notification fades
     },
-    indent = {
-      enabled = true,
-      -- Faint dotted guides on every indent level (distinct from the solid current-scope │)
-      indent = {
-        char = '┊',
-        only_scope = false,
-        only_current = false,
-      },
-      -- Solid │ on the current scope (replaces mini.indentscope)
-      scope = {
-        enabled = true,
-        char = '│',
-      },
-      animate = { enabled = false },
-      -- Normal file buffers only; skip special UIs and noisy filetypes
-      filter = function(buf)
-        local ft = vim.bo[buf].filetype
-        local skip = {
-          help = true, dashboard = true, snacks_dashboard = true,
-          ['neo-tree'] = true, Trouble = true, lazy = true, mason = true,
-          notify = true, toggleterm = true, markdown = true, text = true,
-        }
-        return vim.g.snacks_indent ~= false
-          and vim.b[buf].snacks_indent ~= false
-          and vim.bo[buf].buftype == ''
-          and not skip[ft]
-      end,
-    },
     styles = {
       dashboard = {
         wo = {

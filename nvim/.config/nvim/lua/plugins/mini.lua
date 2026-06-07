@@ -5,6 +5,6 @@ return {
     require('mini.surround').setup()
 
     -- mini.statusline removed in favor of lualine.nvim
-    -- mini.indentscope removed in favor of snacks.indent's scope renderer
+    -- mini.indentscope removed in favor of indent-blankline (ibl)
   end,
 }
