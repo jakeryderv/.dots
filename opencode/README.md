@@ -7,10 +7,10 @@ secrets and tool-managed machinery are left in place and ignored.
 
 | Tracked | Tool-managed (NOT tracked) |
 |---------|----------------------------|
-| `opencode.json` — model, permissions, providers | `node_modules/`, `package*.json`, `bun.lock` — plugin machinery (opencode regenerates these) |
+| `opencode.json` — model, permissions, providers, MCP servers | `node_modules/`, `package*.json`, `bun.lock` — plugin machinery (opencode regenerates these) |
 | `AGENTS.md` — global rules | `~/.local/share/opencode/` — `auth.json`, `account.json`, `opencode.db`, state (separate data dir) |
-| `commands/` — custom `/commands` (`test`, `lint`, `cov`) | |
-| `agents/` — subagents (`explore`, `review`, `plan`, `tdd`) | |
+| `commands/` — custom `/commands` (`test`, `lint`, `cov`, `council`) | |
+| `agents/` — subagents (`explore`, `review`, `plan`, `tdd`, `council-a/b/c`) | |
 | `skills/` — on-demand instruction sets (`uv-python`) | |
 | `themes/`, `modes/`, `tools/`, `plugins/` *(if added later)* | |
 
