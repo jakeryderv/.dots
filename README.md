@@ -52,6 +52,7 @@ To remove a package's symlinks: `stow -D <package>`.
 | Script                          | Installs                       |
 | ------------------------------- | ------------------------------ |
 | `install-fzf.sh`                | fzf (cloned to `~/.fzf`)       |
+| `install-glow.sh`               | glow (markdown renderer for `llm.sh`) |
 | `install-lazygit.sh`            | lazygit                        |
 | `install-tmux-sessionizer.sh`   | tmux-sessionizer               |
 | `update-nvim.sh`                | latest Neovim (AppImage)       |
