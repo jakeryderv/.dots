@@ -6,3 +6,7 @@ pi/.pi/agent/settings.json.bak
 
 # Bash — machine-specific config (use local.sh.example as template)
 bash/local.sh
+
+# Python build cruft (e.g. qutebrowser config.py)
+**/__pycache__/
+**/.ruff_cache/
