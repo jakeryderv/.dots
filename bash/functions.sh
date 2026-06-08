@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Custom functions
 
 # Add functions here as you create them

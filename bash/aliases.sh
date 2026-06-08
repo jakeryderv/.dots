@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 # Aliases
 
 # scratchpad
@@ -27,5 +26,22 @@ alias tmka='tmux kill-server'
 # Bat
 alias bat='batcat'
 
-# fallbask basic ls stuff
+# kitty stuff
+alias icat="kitten icat"
+
+# python venv shortcut
+alias activate="source .venv/bin/activate"
+
+# color aliases
 alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# alert for long running commands, e.g.  sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'

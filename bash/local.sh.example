@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# =====================================================================
+# local.sh — machine-specific bash config (NOT committed to git)
+# =====================================================================
+#
+# This file is the per-machine layer on top of the portable modules in
+# ~/.dots/bash. The real `local.sh` is git-ignored; this `.example` is
+# the committed template. Put anything here that:
+#   - has hardcoded / machine-specific paths (CUDA version, toolkits)
+#   - may not exist on every machine (guard with `command -v` or `[ -f ]`)
+#   - is secret and must not be committed (API keys, tokens)
+#   - overrides a committed module for this box only
+#
+# Loaded LAST by _init_.sh, so it can override earlier modules.
+#
+# Set up on a new machine:
+#   cp ~/.dots/bash/local.sh.example ~/.dots/bash/local.sh
+#   then uncomment / edit the bits that apply.
+# =====================================================================
+
+# --- Secrets / env (examples) ----------------------------------------
+# export OPENAI_API_KEY="..."
+# export ANTHROPIC_API_KEY="..."
+
+# --- PATH additions --------------------------------------------------
+# export PATH="$HOME/.local/some-tool/bin:$PATH"
+
+# --- fzf -------------------------------------------------------------
+# [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# --- opencode --------------------------------------------------------
+# export PATH="$HOME/.opencode/bin:$PATH"
+
+# --- nvm (node version manager) --------------------------------------
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# --- starship prompt -------------------------------------------------
+# command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
+
+# --- CUDA toolkit (match the version installed on this machine) -------
+# export PATH="/usr/local/cuda-XX.X/bin:$PATH"
+# export LD_LIBRARY_PATH="/usr/local/cuda-XX.X/lib64:$LD_LIBRARY_PATH"
+
+# --- ROS -------------------------------------------------------------
+# source /opt/ros/jazzy/setup.bash
+
+# --- envman ----------------------------------------------------------
+# [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"

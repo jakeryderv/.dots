@@ -1,8 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Environment variables and exports
 
 # Path
 export PATH="$HOME/.local/bin:$PATH"
+
+# ls colors (LS_COLORS)
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
 
 # Editor
 if [[ -n $SSH_CONNECTION ]]; then
@@ -10,20 +15,3 @@ if [[ -n $SSH_CONNECTION ]]; then
 else
     export EDITOR='nvim'
 fi
-
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-# Opencode
-export PATH=/home/jake/.opencode/bin:$PATH
-
-# Cargo
-. "$HOME/.cargo/env"
-
-# EZA colors (if you add them)
-# export EZA_COLORS="di=1;34"
-
-# scikit-learn data path
-export SCIKIT_LEARN_DATA=/home/jake/.scikit_learn_data
