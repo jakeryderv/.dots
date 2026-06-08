@@ -1,5 +1,6 @@
 ---
 description: Council member — rigorous, risk and edge-case focused
+model: openrouter/~anthropic/claude-sonnet-latest
 mode: subagent
 hidden: true
 temperature: 0.4

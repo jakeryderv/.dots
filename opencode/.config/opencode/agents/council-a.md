@@ -1,5 +1,6 @@
 ---
 description: Council member — pragmatic, MVP-first perspective
+model: openrouter/~openai/gpt-latest
 mode: subagent
 hidden: true
 temperature: 0.3

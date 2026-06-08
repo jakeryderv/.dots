@@ -1,5 +1,6 @@
 ---
 description: Council member — creative, alternative approaches
+model: openrouter/~google/gemini-pro-latest
 mode: subagent
 hidden: true
 temperature: 0.8

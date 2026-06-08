@@ -1,5 +1,6 @@
 ---
 description: Fast read-only codebase exploration
+model: openrouter/~google/gemini-flash-latest
 mode: subagent
 permission:
   edit: deny

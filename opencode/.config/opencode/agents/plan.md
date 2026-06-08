@@ -1,5 +1,6 @@
 ---
 description: Read-only planning / architecture
+model: openrouter/~anthropic/claude-sonnet-latest
 mode: subagent
 permission:
   edit: deny

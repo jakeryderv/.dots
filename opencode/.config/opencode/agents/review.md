@@ -1,5 +1,6 @@
 ---
 description: Read-only code review
+model: openrouter/~anthropic/claude-sonnet-latest
 mode: subagent
 permission:
   edit: deny
