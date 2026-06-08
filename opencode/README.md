@@ -9,8 +9,8 @@ secrets and tool-managed machinery are left in place and ignored.
 |---------|----------------------------|
 | `opencode.json` — model, permissions, providers | `node_modules/`, `package*.json`, `bun.lock` — plugin machinery (opencode regenerates these) |
 | `AGENTS.md` — global rules | `~/.local/share/opencode/` — `auth.json`, `account.json`, `opencode.db`, state (separate data dir) |
-| `commands/` — custom `/commands` (`test`, `lint`) | |
-| `agents/` — read-only subagents (`explore`, `review`) | |
+| `commands/` — custom `/commands` (`test`, `lint`, `cov`) | |
+| `agents/` — subagents (`explore`, `review`, `plan`, `tdd`) | |
 | `themes/`, `modes/` *(if added later)* | |
 
 Secrets live in `~/.local/share/opencode/`, not in the config dir, so nothing
