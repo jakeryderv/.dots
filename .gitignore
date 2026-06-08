@@ -7,6 +7,11 @@ pi/.pi/agent/settings.json.bak
 # Bash — machine-specific config (use local.sh.example as template)
 bash/local.sh
 
+# opencode — track only opencode.json; ignore plugin machinery
+opencode/.config/opencode/node_modules/
+opencode/.config/opencode/package*.json
+opencode/.config/opencode/bun.lock
+
 # Python build cruft (e.g. qutebrowser config.py)
 **/__pycache__/
 **/.ruff_cache/

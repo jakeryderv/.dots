@@ -18,6 +18,7 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 | `tmux`         | `~/.tmux.conf`              | tmux config                         |
 | `starship`     | `~/.config/starship.toml`   | Starship prompt                     |
 | `qutebrowser`  | `~/.config/qutebrowser/`    | qutebrowser config                  |
+| `opencode`     | `~/.config/opencode/`       | opencode agent config (see `opencode/README.md`) |
 | `fonts`        | `~/.local/share/fonts/`     | Nerd Fonts                          |
 | `scripts`      | `~/.local/bin/`             | Personal scripts                    |
 | `pi`           | `~/.pi/agent/`              | Pi coding-agent config (see `pi/README.md`) |
