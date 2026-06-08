@@ -9,8 +9,8 @@ secrets and tool-managed machinery are left in place and ignored.
 |---------|----------------------------|
 | `opencode.json` — OpenRouter (default) + Ollama providers, per-role model routing, permissions, MCP servers | `node_modules/`, `package*.json`, `bun.lock` — plugin machinery (opencode regenerates these) |
 | `AGENTS.md` — global rules | `~/.local/share/opencode/` — `auth.json`, `account.json`, `opencode.db`, state (separate data dir) |
-| `commands/` — custom `/commands` (`test`, `lint`, `cov`, `council`) | |
-| `agents/` — subagents (`explore`, `review`, `plan`, `tdd`, `council-a/b/c`) | |
+| `commands/` — custom `/commands` (`test`, `lint`, `cov`, `council`, `tune-config`) | |
+| `agents/` — subagents (`explore`, `review`, `plan`, `tdd`, `council-a/b/c`) + `config-tuner` | |
 | `skills/` — on-demand instruction sets (`uv-python`) | |
 | `themes/`, `modes/`, `tools/`, `plugins/` *(if added later)* | |
 
