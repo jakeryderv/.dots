@@ -7,8 +7,11 @@ secrets and tool-managed machinery are left in place and ignored.
 
 | Tracked | Tool-managed (NOT tracked) |
 |---------|----------------------------|
-| `opencode.json` | `node_modules/`, `package*.json`, `bun.lock` — plugin machinery (opencode regenerates these) |
-| `agents/`, `commands/`, `themes/`, `modes/`, `AGENTS.md` *(if added later)* | `~/.local/share/opencode/` — `auth.json`, `account.json`, `opencode.db`, state (separate data dir) |
+| `opencode.json` — model, permissions, providers | `node_modules/`, `package*.json`, `bun.lock` — plugin machinery (opencode regenerates these) |
+| `AGENTS.md` — global rules | `~/.local/share/opencode/` — `auth.json`, `account.json`, `opencode.db`, state (separate data dir) |
+| `commands/` — custom `/commands` (`test`, `lint`) | |
+| `agents/` — read-only subagents (`explore`, `review`) | |
+| `themes/`, `modes/` *(if added later)* | |
 
 Secrets live in `~/.local/share/opencode/`, not in the config dir, so nothing
 tracked here contains credentials. `opencode.json` itself uses `{env:VAR}` /
