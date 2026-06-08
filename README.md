@@ -55,6 +55,7 @@ To remove a package's symlinks: `stow -D <package>`.
 | `install-fzf.sh`                | fzf (cloned to `~/.fzf`)       |
 | `install-glow.sh`               | glow (markdown renderer for `llm.sh`) |
 | `install-lazygit.sh`            | lazygit                        |
+| `install-qutebrowser.sh`        | qutebrowser (from source, via `uv` + `mkvenv.py`; `--keep` for fast update) |
 | `install-tmux-sessionizer.sh`   | tmux-sessionizer               |
 | `update-nvim.sh`                | latest Neovim (AppImage)       |
 
