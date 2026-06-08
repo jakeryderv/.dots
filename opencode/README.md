@@ -11,7 +11,8 @@ secrets and tool-managed machinery are left in place and ignored.
 | `AGENTS.md` — global rules | `~/.local/share/opencode/` — `auth.json`, `account.json`, `opencode.db`, state (separate data dir) |
 | `commands/` — custom `/commands` (`test`, `lint`, `cov`) | |
 | `agents/` — subagents (`explore`, `review`, `plan`, `tdd`) | |
-| `themes/`, `modes/` *(if added later)* | |
+| `skills/` — on-demand instruction sets (`uv-python`) | |
+| `themes/`, `modes/`, `tools/`, `plugins/` *(if added later)* | |
 
 Secrets live in `~/.local/share/opencode/`, not in the config dir, so nothing
 tracked here contains credentials. `opencode.json` itself uses `{env:VAR}` /
