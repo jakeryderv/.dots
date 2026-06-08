@@ -12,7 +12,7 @@ secrets and tool-managed machinery are left in place and ignored.
 | `commands/` — custom `/commands` (`test`, `lint`, `cov`, `council`, `tune-config`) | |
 | `agents/` — subagents (`explore`, `review`, `plan`, `tdd`, `council-a/b/c`) + `config-tuner` | |
 | `skills/` — on-demand instruction sets (`uv-python`) | |
-| `themes/` — custom TUI theme (`carbonfox`); `tui.json` selects it | |
+| `themes/` — custom TUI theme (`carbonfox-jake`); `tui.json` selects it | |
 | `modes/`, `tools/`, `plugins/` *(if added later)* | |
 
 Secrets live in `~/.local/share/opencode/`, not in the config dir, so nothing
