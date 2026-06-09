@@ -72,11 +72,9 @@ To remove a package's symlinks: `stow -D <package>`.
 - **glow** — markdown rendering for `llm.sh` output
 - **chafa** — terminal image rendering (multi-protocol)
 
-## Next on roadmap to implement
+## Implement next/later
 
-- `pi-coding-agent`:
-  - [github](https://github.com/earendil-works/pi/tree/main/packages/coding-agent)
-  - [website](https://pi.dev/)
-- `hermes-agent`:
-  - [github](https://github.com/NousResearch/hermes-agent)
-  - [website](https://hermes-agent.nousresearch.com/)
+- vscode
+- pi-coding-agent
+- hermes
+- antigravity
