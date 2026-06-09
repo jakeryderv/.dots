@@ -7,7 +7,6 @@
 
 ## Coding
 - Modular design — small focused modules, clear boundaries, minimal coupling.
-- Prefer TDD: write pytest tests first, then implement to pass them.
 - Format and lint with ruff.
 - Type hints when they add clarity, not ceremonially.
 
