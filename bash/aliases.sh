@@ -39,7 +39,7 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
 # more ls aliases
-alias ll='ls -alF --group-directories-first'
+alias ll='ls -AlF --group-directories-first'
 alias la='ls -AF --group-directories-first'
 alias l='ls -CF --group-directories-first'
 
