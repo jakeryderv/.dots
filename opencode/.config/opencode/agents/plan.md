@@ -2,6 +2,7 @@
 description: Read-only planning / architecture
 model: openrouter/~anthropic/claude-sonnet-latest
 mode: subagent
+mcp: ["sequential-thinking"]
 permission:
   edit: deny
   bash: deny
