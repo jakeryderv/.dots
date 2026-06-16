@@ -1,6 +1,6 @@
 ---
 description: Council specialist — images, video, screenshots, diagrams, OCR
-model: openrouter/google/gemini-3.1-pro-preview
+model: openrouter/google/gemini-3.5-flash
 mode: subagent
 hidden: true
 temperature: 0.3

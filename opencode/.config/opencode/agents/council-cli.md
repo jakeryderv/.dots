@@ -1,6 +1,6 @@
 ---
 description: Council specialist — terminal, shell, scripting, Linux
-model: openrouter/openai/gpt-5.5
+model: openrouter/anthropic/claude-opus-4.8
 mode: subagent
 hidden: true
 temperature: 0.2
