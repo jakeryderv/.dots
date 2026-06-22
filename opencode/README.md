@@ -9,9 +9,9 @@ secrets and tool-managed machinery are left in place and ignored.
 |---------|----------------------------|
 | `opencode.json` — OpenRouter (default) + Ollama providers, per-role model routing, permissions, MCP servers | `node_modules/`, `package*.json`, `bun.lock` — plugin machinery (opencode regenerates these) |
 | `AGENTS.md` — global rules | `~/.local/share/opencode/` — `auth.json`, `account.json`, `opencode.db`, state (separate data dir) |
-| `commands/` — custom `/commands` (`test`, `lint`, `cov`, `interview`, `council`, `model-health`, `tune-config`, `tmux-context`, `tmux-logs`) | |
+| `commands/` — custom `/commands` (generic `test`, `lint`, `cov`; plus `interview`, `council`, `model-health`, `tune-config`, `tmux-context`, `tmux-logs`) | |
 | `agents/` — subagents (`explore`, `review`, `plan`, `tdd`, `council-{code,cli,vision,reason,general}`) + `config-tuner` | |
-| `skills/` — on-demand instruction sets (`uv-python`) | |
+| `skills/` — on-demand instruction sets for project-specific workflows (`uv-python`) | |
 | `themes/` — custom TUI theme (`carbonfox-jake`); `tui.json` selects it | |
 | `plugins/` — TS plugins (`tmux-panes` — auto-spawns a tmux pane per subagent; needs `opencode --port 4096` inside tmux) | |
 | `modes/`, `tools/` *(if added later)* | |

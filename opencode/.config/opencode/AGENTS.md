@@ -1,14 +1,24 @@
 # Global rules
 
 ## Environment
-- Pop!_OS, bash. Python is the primary language.
-- Always use `uv`, never pip.
+- Pop!_OS, bash.
 - Editors: VS Code + Neovim — prefer CLI-driven workflows.
+- Detect project tooling from repository files before running commands.
 
 ## Coding
 - Modular design — small focused modules, clear boundaries, minimal coupling.
-- Format and lint with ruff.
+- Use the project's existing formatter, linter, package manager, and test runner.
+- If tooling is unclear, inspect config files first; ask before introducing new tooling.
 - Type hints when they add clarity, not ceremonially.
+
+## Tool selection
+- Use Glob/Grep/Read for local codebase discovery.
+- Use Context7 for current library/framework documentation when the package is known.
+- Use webfetch for known URLs and exact pages.
+- Use websearch, when available, for discovery or current information without a known source.
+- Use Playwright for browser behavior, UI state, screenshots, and frontend verification.
+- Use sequential thinking only for complex planning, debugging, or tradeoff-heavy reasoning.
+- Use language/project skills only when the project matches their scope.
 
 ## Communication
 - Match depth to complexity — concise for simple things, detailed when it matters.
