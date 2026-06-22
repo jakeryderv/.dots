@@ -17,9 +17,12 @@ import { type Plugin } from "@opencode-ai/plugin"
 const DEBUG = false
 const PORT = Number(process.env.OPENCODE_PORT ?? 4096)
 const SERVER_URL = `http://127.0.0.1:${PORT}`
-const LAYOUT = "main-vertical"        // main-horizontal | tiled | ...
-const MAIN_PANE_SIZE = 60             // percent, 20-80
-const AUTO_CLOSE = true
+const LAYOUT = process.env.OPENCODE_TMUX_LAYOUT ?? "main-vertical"        // main-horizontal | tiled | ...
+const requestedMainPaneSize = Number(process.env.OPENCODE_TMUX_MAIN_PANE_SIZE ?? 60)
+const MAIN_PANE_SIZE = Number.isFinite(requestedMainPaneSize)
+  ? Math.min(80, Math.max(20, requestedMainPaneSize))
+  : 60
+const AUTO_CLOSE = process.env.OPENCODE_TMUX_AUTO_CLOSE !== "0"
 
 export const TmuxPanesPlugin: Plugin = async ({ $, client, directory }) => {
   const inTmux = !!process.env.TMUX

@@ -3,6 +3,10 @@ description: Read-only code review
 model: openrouter/~anthropic/claude-sonnet-latest
 mode: subagent
 permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
   edit: deny
   bash: deny
 ---

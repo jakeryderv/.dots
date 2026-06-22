@@ -23,9 +23,6 @@ tms() {
 alias tmks='tmux list-sessions | fzf | cut -d: -f1 | xargs tmux kill-session -t'
 alias tmka='tmux kill-server'
 
-# opencode
-alias oc='opencode --port 4096'
-
 # Bat
 alias bat='batcat'
 

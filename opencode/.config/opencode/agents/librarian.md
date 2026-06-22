@@ -2,8 +2,11 @@
 description: Documentation and Web Search Specialist
 model: openrouter/~google/gemini-flash-latest
 mode: subagent
-mcp: ["playwright"]
 permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
   edit: deny
   bash: deny
 ---

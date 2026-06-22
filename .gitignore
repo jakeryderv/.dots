@@ -7,7 +7,7 @@ pi/.pi/agent/settings.json.bak
 # Bash — machine-specific config (use local.sh.example as template)
 bash/local.sh
 
-# opencode — track only opencode.json; ignore plugin machinery
+# opencode — track user-authored config; ignore plugin machinery
 opencode/.config/opencode/node_modules/
 opencode/.config/opencode/package*.json
 opencode/.config/opencode/bun.lock
