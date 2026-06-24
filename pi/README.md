@@ -13,6 +13,7 @@ and tool-managed state stay in the live `~/.pi/` dir and are gitignored.
 | `extensions/` — custom TS extensions (`dump-system-prompt.ts`) | `~/.pi/web-search.json` (Exa API key), `exa-usage.json`, `playwright-profile/`, `rules/` — left in place |
 | `themes/` — custom TUI theme (`carbonfox.json`; selected in `settings.json`) | |
 | `skills/` — custom agent skills (`model-profile/`) | |
+| `prompts/` — prompt templates (`profile.md` → `/profile`) | |
 
 > **Note:** `settings.json` is written by pi at runtime (`lastChangelogVersion`
 > on updates, plus model/thinking/`enabledModels` changes from `/settings` and
@@ -60,13 +61,14 @@ from the table above as you need them (`lean-ctx` binary, language servers,
 Chrome, Exa key).
 
 This symlinks `AGENTS.md`, `settings.json`, `mcp.json`, `extensions/`,
-`themes/`, and `skills/` into `~/.pi/agent/`, leaving `auth.json`, `npm/`,
-`sessions/`, and the caches as real files alongside them.
+`themes/`, `skills/`, and `prompts/` into `~/.pi/agent/`, leaving `auth.json`,
+`npm/`, `sessions/`, and the caches as real files alongside them.
 
 The three top-level files (`AGENTS.md`, `settings.json`, `mcp.json`) are linked
-as individual **file** symlinks, while `extensions/`, `themes/`, and `skills/`
-are linked as whole **directory** symlinks. That means new files dropped into
-`extensions/`, `themes/`, or `skills/` land inside this repo automatically
+as individual **file** symlinks, while `extensions/`, `themes/`, `skills/`, and
+`prompts/` are linked as whole **directory** symlinks. That means new files
+dropped into `extensions/`, `themes/`, `skills/`, or `prompts/` land inside this
+repo automatically
 (desired — they hold only
 user-authored content), whereas any other file pi writes into `~/.pi/agent/`
 stays a real local file and never enters the repo.
