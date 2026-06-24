@@ -3,6 +3,7 @@
 # so state never enters the repo. These guard against an accidental fold (fresh
 # machine) or state copied in by hand.
 pi/.pi/agent/auth.json
+pi/.pi/agent/trust.json
 pi/.pi/agent/npm/
 pi/.pi/agent/sessions/
 pi/.pi/agent/bin/
