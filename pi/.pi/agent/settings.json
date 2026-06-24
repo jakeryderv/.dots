@@ -1,0 +1,47 @@
+{
+  "lastChangelogVersion": "0.80.2",
+  "theme": "carbonfox",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "medium",
+  "quietStartup": true,
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "packages": [
+    "npm:pi-web-access",
+    "npm:pi-mcp-adapter",
+    "npm:pi-lens",
+    "npm:pi-lean-ctx",
+    "npm:pi-subagents",
+    "npm:pi-intercom"
+  ],
+  "defaultProjectTrust": "ask",
+  "enableInstallTelemetry": false,
+  "enabledModels": [
+    "openai-codex/gpt-5.3-codex-spark",
+    "openai-codex/gpt-5.4",
+    "openai-codex/gpt-5.4-mini",
+    "openai-codex/gpt-5.5",
+    "openrouter/openai/gpt-5.3-chat",
+    "openrouter/openai/gpt-5.3-codex",
+    "openrouter/openai/gpt-5.4",
+    "openrouter/openai/gpt-5.4-mini",
+    "openrouter/openai/gpt-5.4-nano",
+    "openrouter/openai/gpt-5.4-pro",
+    "openrouter/openai/gpt-5.5",
+    "openrouter/openai/gpt-5.5-pro",
+    "openrouter/openai/gpt-audio",
+    "openrouter/openai/gpt-audio-mini",
+    "openrouter/openai/gpt-chat-latest",
+    "openrouter/anthropic/claude-haiku-4.5",
+    "openrouter/anthropic/claude-opus-4.8",
+    "openrouter/anthropic/claude-opus-4.8-fast",
+    "openrouter/anthropic/claude-sonnet-4.6",
+    "openrouter/google/gemini-3.5-flash",
+    "openrouter/google/gemini-3.1-pro-preview-customtools",
+    "openrouter/google/gemini-3.1-pro-preview",
+    "openrouter/google/gemini-3.1-flash-lite-preview",
+    "openrouter/google/gemini-3.1-flash-lite"
+  ]
+}

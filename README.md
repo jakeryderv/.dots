@@ -75,6 +75,5 @@ To remove a package's symlinks: `stow -D <package>`.
 ## Implement next/later
 
 - vscode
-- pi-coding-agent
 - hermes
 - antigravity

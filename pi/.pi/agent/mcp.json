@@ -1,0 +1,24 @@
+{
+  "settings": {
+    "toolPrefix": "server",
+    "idleTimeout": 10
+  },
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@3.2.2"],
+      "lifecycle": "lazy"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.76",
+        "--browser", "chrome",
+        "--viewport-size", "1440x900",
+        "--user-data-dir", "/home/jake/.pi/playwright-profile"
+      ],
+      "lifecycle": "lazy"
+    }
+  }
+}

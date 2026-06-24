@@ -1,8 +1,21 @@
-# Pi — never commit secrets or tool-managed state
+# Pi — track user-authored agent config; ignore secrets + tool-managed state.
+# Safety nets: with ~/.pi/agent pre-existing, stow only links the config files,
+# so state never enters the repo. These guard against an accidental fold (fresh
+# machine) or state copied in by hand.
 pi/.pi/agent/auth.json
+pi/.pi/agent/npm/
 pi/.pi/agent/sessions/
 pi/.pi/agent/bin/
+pi/.pi/agent/intercom/
+pi/.pi/agent/mcp-cache.json
+pi/.pi/agent/mcp-npx-cache.json
+pi/.pi/agent/run-history.jsonl
 pi/.pi/agent/settings.json.bak
+# Parent-level secrets/state (only relevant if ~/.pi gets folded on a fresh machine)
+pi/.pi/web-search.json
+pi/.pi/exa-usage.json
+pi/.pi/playwright-profile/
+pi/.pi/rules/
 
 # Bash — machine-specific config (use local.sh.example as template)
 bash/local.sh
