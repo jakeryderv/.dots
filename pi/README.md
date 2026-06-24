@@ -23,6 +23,25 @@ pi installs into `npm/node_modules`, so `npm/` is reproducible and not tracked.
 No tracked file contains credentials — secrets live in `auth.json` and
 `~/.pi/web-search.json`, both ignored.
 
+## Dependencies
+
+Copying this config is **not** enough on its own. Two packages are thin bridges
+to external tools, and some features need system binaries or secrets:
+
+| Dependency | Needed for | How it's resolved |
+|------------|-----------|-------------------|
+| **Node.js + npm/npx** | pi itself; installing `packages`; running MCP servers | system install |
+| **GNU `stow`, `git`** | activating this config (symlinks) | system install |
+| **`lean-ctx` native binary** | `pi-lean-ctx` (the npm package is only a bridge — it shells out to the binary) | install separately ([yvgude/lean-ctx](https://github.com/yvgude/lean-ctx)); found on `PATH`, or set `LEAN_CTX_BIN` / `~/.lean-ctx/config.toml` |
+| **Language servers** (pyright, typescript-language-server, rust-analyzer, gopls, …) | `pi-lens` LSP nav/diagnostics | install per-language as needed; pi-lens uses whatever is on `PATH`. ast-grep is bundled (no install) |
+| **Chrome / Chromium** | `playwright` MCP browser automation | system install |
+| **Provider credentials** | model access (Anthropic / OpenAI / Google) | `~/.pi/agent/auth.json` (run pi and log in; not tracked) |
+| **Exa API key** | `pi-web-access` web search | `~/.pi/web-search.json` (not tracked) |
+| **Network** | first-run `npx` MCP fetch, package installs, web search | — |
+
+Self-contained (no extra setup): `pi-subagents`, `pi-intercom`, `pi-web-access`
+fetch, and pi-lens's bundled ast-grep.
+
 ## Activate
 
 `~/.pi/agent/` already exists once pi has run, so create it first to stop stow
@@ -33,6 +52,11 @@ into the repo). Then stow links the config files back into place:
 mkdir -p ~/.pi/agent
 cd ~/.dots && stow pi
 ```
+
+Fresh-machine order: install Node + git + stow → run pi once (installs
+`packages`, prompts for provider login) → `stow pi` → then add the external deps
+from the table above as you need them (`lean-ctx` binary, language servers,
+Chrome, Exa key).
 
 This symlinks `AGENTS.md`, `settings.json`, `mcp.json`, `extensions/`, and
 `themes/` into `~/.pi/agent/`, leaving `auth.json`, `npm/`, `sessions/`, and the
