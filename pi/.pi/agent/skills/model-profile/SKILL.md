@@ -31,8 +31,12 @@ is good, rank it, or recommend it.
 
 1. **Identify the model** precisely (exact name + version, e.g. "Claude Sonnet
    4.5", "GPT-5"). If ambiguous, state the assumption in the report.
-2. **Search approved sources.** Use `web_search` with `domainFilter` set to the
-   approved domains in [sources.md](sources.md). Run a few varied queries
+2. **Search approved sources.** Use `web_search` with **`provider: "exa"`** and
+   `domainFilter` set to the approved domains in [sources.md](sources.md). Pin
+   Exa here regardless of the global default provider: Exa enforces
+   `domainFilter` at the API level (so results stay within approved sources)
+   and returns direct, fetchable source URLs for citation, whereas other
+   providers treat the domain filter as a soft hint. Run a few varied queries
    (e.g. `"<model> context window pricing"`, `"<model> benchmarks"`,
    `"<model> model card"`).
 3. **Read the pages.** Use `fetch_content` to load provider docs, Hugging Face
