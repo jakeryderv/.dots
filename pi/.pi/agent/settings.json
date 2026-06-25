@@ -1,10 +1,10 @@
 {
   "lastChangelogVersion": "0.80.2",
   "theme": "carbonfox",
-  "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-4-8",
+  "defaultProvider": "openai",
+  "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "medium",
-  "quietStartup": true,
+  "quietStartup": false,
   "terminal": {
     "showTerminalProgress": true
   },
@@ -14,9 +14,13 @@
     "npm:pi-lens",
     "npm:pi-lean-ctx",
     "npm:pi-subagents",
-    "npm:pi-intercom"
+    "npm:pi-intercom",
+    "npm:@ff-labs/pi-fff",
+    "npm:pi-hermes-memory",
+    "npm:@quintinshaw/pi-dynamic-workflows"
   ],
   "defaultProjectTrust": "ask",
   "enableInstallTelemetry": false,
-  "enabledModels": []
+  "enabledModels": [],
+  "hideThinkingBlock": true
 }
