@@ -1,8 +1,8 @@
 {
   "lastChangelogVersion": "0.80.2",
   "theme": "carbonfox",
-  "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-4-8",
+  "defaultProvider": "openrouter",
+  "defaultModel": "anthropic/claude-opus-4.8",
   "defaultThinkingLevel": "medium",
   "quietStartup": false,
   "terminal": {
@@ -19,8 +19,10 @@
     "npm:pi-hermes-memory",
     "npm:@quintinshaw/pi-dynamic-workflows"
   ],
+  "extensions": ["extensions/compact-bash.ts"],
   "defaultProjectTrust": "ask",
   "enableInstallTelemetry": false,
   "enabledModels": [],
-  "hideThinkingBlock": true
+  "hideThinkingBlock": true,
+  "showHardwareCursor": false
 }
