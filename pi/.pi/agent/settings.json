@@ -1,8 +1,8 @@
 {
   "lastChangelogVersion": "0.80.2",
   "theme": "carbonfox",
-  "defaultProvider": "openrouter",
-  "defaultModel": "anthropic/claude-opus-4.8",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "medium",
   "quietStartup": false,
   "terminal": {
@@ -12,14 +12,13 @@
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
     "npm:pi-lens",
-    "npm:pi-lean-ctx",
     "npm:pi-subagents",
     "npm:pi-intercom",
     "npm:@ff-labs/pi-fff",
     "npm:pi-hermes-memory",
     "npm:@quintinshaw/pi-dynamic-workflows"
   ],
-  "extensions": ["extensions/compact-bash.ts"],
+  "extensions": [],
   "defaultProjectTrust": "ask",
   "enableInstallTelemetry": false,
   "enabledModels": [],

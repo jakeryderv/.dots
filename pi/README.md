@@ -12,8 +12,8 @@ and tool-managed state stay in the live `~/.pi/` dir and are gitignored.
 | `mcp.json` — MCP servers (`context7`, `playwright`; versions pinned) | `sessions/`, `mcp-cache.json`, `mcp-npx-cache.json`, `run-history.jsonl`, `intercom/`, `trust.json` — runtime state |
 | `extensions/` — custom TS extensions (`dump-system-prompt.ts`) | `~/.pi/web-search.json` (Exa API key), `exa-usage.json`, `playwright-profile/`, `rules/` — left in place |
 | `themes/` — custom TUI theme (`carbonfox.json`; selected in `settings.json`) | |
-| `skills/` — custom agent skills (`model-profile/`) | |
-| `prompts/` — prompt templates (`profile.md` → `/profile`) | |
+| `skills/` — custom agent skills | |
+| `prompts/` — prompt templates | |
 
 > **Note:** `settings.json` is written by pi at runtime (`lastChangelogVersion`
 > on updates, plus model/thinking/`enabledModels` changes from `/settings` and
@@ -27,14 +27,13 @@ No tracked file contains credentials — secrets live in `auth.json` and
 
 ## Dependencies
 
-Copying this config is **not** enough on its own. Two packages are thin bridges
-to external tools, and some features need system binaries or secrets:
+Copying this config is **not** enough on its own. Some features need system
+binaries or secrets:
 
 | Dependency | Needed for | How it's resolved |
 |------------|-----------|-------------------|
 | **Node.js + npm/npx** | pi itself; installing `packages`; running MCP servers | system install |
 | **GNU `stow`, `git`** | activating this config (symlinks) | system install |
-| **`lean-ctx` native binary** | `pi-lean-ctx` (the npm package is only a bridge — it shells out to the binary) | install separately ([yvgude/lean-ctx](https://github.com/yvgude/lean-ctx)); found on `PATH`, or set `LEAN_CTX_BIN` / `~/.lean-ctx/config.toml` |
 | **Language servers** (pyright, typescript-language-server, rust-analyzer, gopls, …) | `pi-lens` LSP nav/diagnostics | install per-language as needed; pi-lens uses whatever is on `PATH`. ast-grep is bundled (no install) |
 | **Chrome / Chromium** | `playwright` MCP browser automation | system install |
 | **Provider credentials** | model access (Anthropic / OpenAI / Google) | `~/.pi/agent/auth.json` (run pi and log in; not tracked) |
@@ -57,8 +56,7 @@ cd ~/.dots && stow pi
 
 Fresh-machine order: install Node + git + stow → run pi once (installs
 `packages`, prompts for provider login) → `stow pi` → then add the external deps
-from the table above as you need them (`lean-ctx` binary, language servers,
-Chrome, Exa key).
+from the table above as you need them (language servers, Chrome, Exa key).
 
 This symlinks `AGENTS.md`, `settings.json`, `mcp.json`, `extensions/`,
 `themes/`, `skills/`, and `prompts/` into `~/.pi/agent/`, leaving `auth.json`,
