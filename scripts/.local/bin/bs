@@ -12,8 +12,10 @@ C_GIT_D=$'\033[1;31m'  # deleted
 C_GIT_R=$'\033[1;35m'  # renamed
 C_DIM=$'\033[2m'       # dim for targets
 
-# Cleanup temp files on exit
-cleanup() { rm -f /tmp/bs_total_$$ /tmp/bs_summary_$$; }
+# Temp files (mktemp, not predictable PID paths). TMPDIR-aware.
+BS_TOTAL=$(mktemp "${TMPDIR:-/tmp}/bs_total.XXXXXX")
+BS_SUMMARY=$(mktemp "${TMPDIR:-/tmp}/bs_summary.XXXXXX")
+cleanup() { rm -f "$BS_TOTAL" "$BS_SUMMARY"; }
 trap cleanup EXIT INT TERM
 
 # ============ CONFIG ============
@@ -89,14 +91,16 @@ gather_r() {
 
 # Filters: which rows to keep
 no_hidden()  { _awk '$5 !~ /(^|\/)\./' ; }
-matching()   { _awk "\$5 ~ /$1/"; }
-not_matching() { _awk "\$5 !~ /$1/"; }
+# Pass user regexes via -v (not string-interpolated into the program) so a
+# stray slash or brace can't break/inject the awk script.
+matching()   { awk -F"$D" -v OFS="$D" -v pat="$1" '$5 ~ pat'; }
+not_matching() { awk -F"$D" -v OFS="$D" -v pat="$1" '$5 !~ pat'; }
 
 # Extension filter: match file extensions (comma-separated)
 by_ext() {
     local exts="$1"
-    local pat="${exts//,/|}"
-    _awk "\$5 ~ /\\.($pat)\$/"
+    local pat="\\.(${exts//,/|})\$"
+    awk -F"$D" -v OFS="$D" -v pat="$pat" '$5 ~ pat'
 }
 
 # Size filters
@@ -158,7 +162,7 @@ count_summary() {
             f) ((files++)) || true ;;
         esac
     done
-    echo "${files}:${dirs}:${links}" > /tmp/bs_summary_$$
+    echo "${files}:${dirs}:${links}" > "$BS_SUMMARY"
 }
 
 # Nerd font icons (using printf for proper Unicode)
@@ -369,7 +373,7 @@ calc_total() {
         printf '%s\n' "${time}${D}${perms}${D}${size}${D}${ftype}${D}${name}${D}${owner}${D}${group}${D}${target}"
         (( total += size )) || true
     done
-    echo "$total" > /tmp/bs_total_$$
+    echo "$total" > "$BS_TOTAL"
 }
 
 format_total() {
@@ -552,7 +556,9 @@ while [[ $# -gt 0 ]]; do
         --preview)      FZF=1; PREVIEW=1 ;;
         --edit)         FZF=1; PREVIEW=1; EDIT=1 ;;
         -R|--recursive) RECURSIVE=1 ;;
-        --depth)        DEPTH="$2"; shift ;;
+        --depth)        DEPTH="$2"
+                        [[ "$DEPTH" =~ ^[1-9][0-9]*$ ]] || { echo "bs: --depth must be a positive integer (got '$DEPTH')" >&2; exit 2; }
+                        shift ;;
         --git)          GIT=1 ;;
         --watch)        WATCH=1; [[ "${2:-}" =~ ^[0-9]+$ ]] && { WATCH_INTERVAL="$2"; shift; } ;;
         --preset)       shift ;;  # already handled
@@ -734,17 +740,17 @@ run_bs() {
     }
 
     # Show summary if requested
-    if (( SUMMARY )) && [[ -f /tmp/bs_summary_$$ ]]; then
-        IFS=: read -r files dirs links < /tmp/bs_summary_$$
-        rm -f /tmp/bs_summary_$$
+    if (( SUMMARY )) && [[ -f "$BS_SUMMARY" ]]; then
+        IFS=: read -r files dirs links < "$BS_SUMMARY"
+        rm -f "$BS_SUMMARY"
         echo "---"
         echo "$files files, $dirs dirs, $links links"
     fi
 
     # Show total if requested
-    if (( TOTAL )) && [[ -f /tmp/bs_total_$$ ]]; then
-        total_size=$(cat /tmp/bs_total_$$)
-        rm -f /tmp/bs_total_$$
+    if (( TOTAL )) && [[ -f "$BS_TOTAL" ]]; then
+        total_size=$(cat "$BS_TOTAL")
+        rm -f "$BS_TOTAL"
         (( SUMMARY )) || echo "---"
         echo "Total: $(format_total "$total_size")"
     fi

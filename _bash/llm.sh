@@ -6,7 +6,8 @@
 # Options: glow | batcat | cat
 # glow recommended, looks the best
 # if piping into other stuff - use cat
-export MANAI_RENDERER=glow
+# Use := so a value already exported (e.g. from local.sh) is preserved.
+export MANAI_RENDERER="${MANAI_RENDERER:-glow}"
 
 _llm_render() {
     case "$MANAI_RENDERER" in
@@ -195,7 +196,7 @@ summarize() {
 ######################################################################
 
 # Context lines around each match (default: 20)
-export GREPASK_CONTEXT=20
+export GREPASK_CONTEXT="${GREPASK_CONTEXT:-20}"
 
 grepask() {
     if [ $# -lt 3 ]; then
@@ -248,7 +249,7 @@ ask() {
 ######################################################################
 
 # Default chunk size (bytes)
-export CHUNKASK_SIZE=40000
+export CHUNKASK_SIZE="${CHUNKASK_SIZE:-40000}"
 
 chunkask() {
     if [ $# -lt 2 ]; then

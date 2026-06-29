@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Bash completion configuration
 
+# readline `bind` only works in interactive shells; bail out otherwise to
+# avoid "bind: warning: line editing not enabled" when sourced non-interactively.
+[[ $- == *i* ]] || return 0
+
 # Load bash-completion (modern path, legacy fallback)
 if ! shopt -oq posix; then
     if [ -f /usr/share/bash-completion/bash_completion ]; then

@@ -23,8 +23,8 @@ tms() {
 alias tmks='tmux list-sessions | fzf | cut -d: -f1 | xargs tmux kill-session -t'
 alias tmka='tmux kill-server'
 
-# Bat
-alias bat='batcat'
+# Bat (Debian ships the binary as batcat; alias only if the plain name is absent)
+command -v bat >/dev/null 2>&1 || alias bat='batcat'
 
 # kitty stuff
 alias icat="kitten icat"
@@ -35,8 +35,9 @@ alias activate="source .venv/bin/activate"
 # color aliases
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+# fgrep/egrep are deprecated; use grep -F/-E
+alias fgrep='grep -F --color=auto'
+alias egrep='grep -E --color=auto'
 
 # more ls aliases
 alias ll='ls -AlF --group-directories-first'
