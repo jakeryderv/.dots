@@ -20,7 +20,9 @@ return {
         return nil
       else
         return {
-          timeout_ms = 500,
+          -- 500ms was too tight for prettier/prettierd cold starts; bump so
+          -- format-on-save doesn't silently fall back to LSP/no-op.
+          timeout_ms = 2000,
           lsp_format = 'fallback',
         }
       end
