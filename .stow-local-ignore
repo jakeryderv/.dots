@@ -1,0 +1,23 @@
+# Stow ignore list (ERE, matched against package-relative paths).
+# NOTE: .gitignore does NOT affect stow — this file is what keeps generated
+# state and non-package dirs from being symlinked into $HOME.
+
+# Repo meta / non-package top-level dirs
+\.git
+\.gitignore
+\.stow-local-ignore
+README\.md
+^/_helpers
+^/_wallpapers
+^/_bash
+
+# Machine-specific / local-only
+local\.sh
+
+# Generated caches & build cruft
+__pycache__
+\.ruff_cache
+\.pytest_cache
+\.mypy_cache
+\.cache
+node_modules

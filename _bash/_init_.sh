@@ -3,8 +3,8 @@
 #
 # Add the following to ~/.bashrc:
 #
-# if [ -f "$HOME/.dots/bash/_init_.sh" ]; then
-#     source "$HOME/.dots/bash/_init_.sh"
+# if [ -f "$HOME/.dots/_bash/_init_.sh" ]; then
+#     source "$HOME/.dots/_bash/_init_.sh"
 # fi
 #
 

@@ -19,7 +19,7 @@ pi/.pi/playwright-profile/
 pi/.pi/rules/
 
 # Bash — machine-specific config (use local.sh.example as template)
-bash/local.sh
+_bash/local.sh
 
 # opencode — track user-authored config; ignore plugin machinery
 opencode/.config/opencode/node_modules/

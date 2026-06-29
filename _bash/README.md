@@ -8,8 +8,8 @@ order; `~/.bashrc` just sources `_init_.sh`.
 In `~/.bashrc`:
 
 ```bash
-if [ -f "$HOME/.dots/bash/_init_.sh" ]; then
-    source "$HOME/.dots/bash/_init_.sh"
+if [ -f "$HOME/.dots/_bash/_init_.sh" ]; then
+    source "$HOME/.dots/_bash/_init_.sh"
 fi
 ```
 
@@ -41,13 +41,13 @@ Missing modules are skipped silently, so `local.sh` is optional.
 
 ```bash
 git clone <dots> ~/.dots
-cp ~/.dots/bash/local.sh.example ~/.dots/bash/local.sh   # uncomment what applies
+cp ~/.dots/_bash/local.sh.example ~/.dots/_bash/local.sh   # uncomment what applies
 # then add the _init_.sh source block to ~/.bashrc
 ```
 
 ## Adding a module
 
-1. Create `bash/<name>.sh`.
+1. Create `_bash/<name>.sh`.
 2. Add `<name>` to the `bash_modules` array in `_init_.sh` (in the right spot).
 
 ## local.sh
