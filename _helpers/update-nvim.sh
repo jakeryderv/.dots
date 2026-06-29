@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # update-nvim.sh - Download and install the latest Neovim (official .tar.gz build, no FUSE needed)
+# Assumes: Linux x86_64 (sudo for /opt + /usr/local/bin), curl + tar, network.
+# Installs the latest 'stable' release (not pinned).
 
 set -euo pipefail  # Exit on error, unset vars, and pipe failures
 

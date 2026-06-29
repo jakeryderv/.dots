@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # install-lazygit.sh - Download and install the latest lazygit (GitHub release binary).
 # Re-run anytime to update lazygit to the latest version.
+# Assumes: Linux x86_64 (apt/sudo), curl + tar, network. Installs latest release.
 
 set -euo pipefail  # Exit on error, unset vars, and pipe failures
 

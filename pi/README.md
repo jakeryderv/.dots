@@ -75,9 +75,17 @@ To remove the symlinks: `cd ~/.dots && stow -D pi`.
 
 ## Maintenance
 
-MCP server versions in `mcp.json` are pinned (`context7`, `@playwright/mcp`) for
-reproducibility, so they won't auto-update — bump them deliberately now and then
-(e.g. `npx @playwright/mcp@latest --version` to check current).
+**Package versions intentionally track latest.** The `packages` array in
+`settings.json` lists bare specs (`npm:pi-lens`, no `@version`), so pi installs
+the newest published version into `npm/node_modules` on each resolve. This is a
+deliberate choice — these are first-party pi packages and we want the latest.
+If you ever need a reproducible pin, add `@x.y.z` to a spec (e.g.
+`npm:pi-lens@1.2.3`).
+
+MCP server versions in `mcp.json`, by contrast, **are** pinned (`context7`,
+`@playwright/mcp`) for reproducibility, so they won't auto-update — bump them
+deliberately now and then (e.g. `npx @playwright/mcp@latest --version` to check
+current).
 
 The playwright server uses its own default browser-profile location (no
 `--user-data-dir`), keeping the config portable across machines.

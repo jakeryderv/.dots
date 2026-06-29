@@ -15,19 +15,19 @@ BASH_CONFIG_DIR="$(dirname "${BASH_SOURCE[0]}")"
 # reference them (aliases, keybinds). `local` is last so a machine-specific
 # file can override anything above it. Missing files are skipped silently.
 bash_modules=(
-    exports      # PATH, EDITOR, LS_COLORS
-    options      # history + shopt
-    completions  # bash-completion + readline bindings
-    functions    # shell functions
-    aliases      # aliases
-    keybinds     # readline keybindings (may reference functions)
-    llm          # llm helper functions
-    local        # machine-specific, git-ignored (optional)
+	exports     # PATH, EDITOR, LS_COLORS
+	options     # history + shopt
+	completions # bash-completion + readline bindings
+	functions   # shell functions
+	aliases     # aliases
+	keybinds    # readline keybindings (may reference functions)
+	llm         # llm helper functions
+	local       # machine-specific, git-ignored (optional)
 )
 
 for module in "${bash_modules[@]}"; do
-    config_file="$BASH_CONFIG_DIR/$module.sh"
-    [ -r "$config_file" ] && source "$config_file"
+	config_file="$BASH_CONFIG_DIR/$module.sh"
+	[ -r "$config_file" ] && source "$config_file"
 done
 
 # Clean up so these don't clutter the environment

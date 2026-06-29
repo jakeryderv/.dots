@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # install-fzf-full.sh - Install FZF with shell integrations
+# Assumes: Linux/macOS, git + network. Installs latest from git (not pinned).
+# NOTE: `~/.fzf/install --all` edits your shell rc files (~/.bashrc etc.) to
+# add fzf key bindings/completion -- mutation outside this repo.
 
-set -e
+set -euo pipefail
 
 echo "Installing FZF with shell integrations..."
 

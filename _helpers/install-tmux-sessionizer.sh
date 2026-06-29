@@ -1,7 +1,8 @@
-#!/bin/bash
-# install-tmux-sessionizer.sh
+#!/usr/bin/env bash
+# install-tmux-sessionizer.sh - Install ThePrimeagen's tmux-sessionizer.
+# Assumes: curl + network. Fetches latest from master (not pinned).
 
-set -e
+set -euo pipefail
 
 INSTALL_DIR="$HOME/.local/bin"
 mkdir -p "$INSTALL_DIR"

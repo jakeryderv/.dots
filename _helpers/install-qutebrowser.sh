@@ -7,6 +7,8 @@
 # (downloads Qt, ~150 MB). Pass --keep to reuse the existing venv and just pull
 # the latest code -- much faster, and the safer everyday update.
 #
+# Assumes: Linux (apt for desktop/icon integration), uv + git + python3, network.
+#
 # NOTE: we create the venv with `uv`, NOT mkvenv.py's own `python -m venv`. On
 # this system `python3` is a uv-managed standalone CPython whose ensurepip can't
 # bootstrap a venv, so `python -m venv` fails. uv sidesteps ensurepip entirely.
