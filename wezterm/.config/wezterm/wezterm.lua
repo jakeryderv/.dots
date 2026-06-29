@@ -20,7 +20,7 @@ config.line_height = 1.0
 
 config.color_scheme = "carbonfox"
 config.window_decorations = "RESIZE"
-config.window_background_image = "/home/jake/.dots/_wallpapers/dark-space-blur-s5.jpg"
+config.window_background_image = wezterm.home_dir .. "/.dots/_wallpapers/dark-space-blur-s5.jpg"
 config.window_background_image_hsb = {
 	brightness = 0.15,
 	saturation = 1.0,
@@ -151,8 +151,6 @@ config.keys = {
 -- ============================================
 -- Tab bar status (native, right side)
 -- ============================================
-local battery_icon = wezterm.nerdfonts.fa_battery_full or "BAT"
-local clock_icon = wezterm.nerdfonts.fa_clock_o or "TIME"
 local ram_icon = wezterm.nerdfonts.md_memory or wezterm.nerdfonts.fa_database or "M"
 local cpu_icon = wezterm.nerdfonts.fa_microchip or "C"
 local gpu_icon = wezterm.nerdfonts.md_gpu or wezterm.nerdfonts.fa_television or "G"
@@ -238,21 +236,6 @@ local function gpu_usage()
 		gpu_cache.time = now
 	end
 	return gpu_cache.value
-end
-
--- Battery % from /sys
-local function battery_pct()
-	for _, name in ipairs({ "BAT0", "BAT1" }) do
-		local f = io.open("/sys/class/power_supply/" .. name .. "/capacity", "r")
-		if f then
-			local pct = f:read("*l")
-			f:close()
-			if pct then
-				return pct .. "%"
-			end
-		end
-	end
-	return "?"
 end
 
 -- Mode -> color (carbonfox palette)

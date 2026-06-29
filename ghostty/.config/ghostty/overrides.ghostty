@@ -1,6 +1,6 @@
-# Local overrides for Ghostty.
+# Tracked theme overrides for Ghostty (committed, not machine-local).
 #
-# Loaded via `config-file = local.ghostty` AFTER carbonfox.ghostty, so values
+# Loaded via `config-file = overrides.ghostty` AFTER carbonfox.ghostty, so values
 # here win over the vendored theme. (Ghostty processes config-file includes at
 # the end of the parent file, in order, and an included file overrides the
 # parent — so theme overrides must live here, after the theme include.)

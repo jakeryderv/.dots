@@ -20,7 +20,7 @@ config-file = carbonfox.ghostty
 # (Ghostty processes config-file includes at the end of the parent file, in the
 #  order listed, and an included file overrides the parent. So to override a
 #  theme value it must live in an include that comes after the theme include.)
-config-file = local.ghostty
+config-file = overrides.ghostty
 
 # --- Background image ---
 # Dark-space wallpaper (tracked in ~/.dots/_wallpapers, not stowed)
@@ -78,7 +78,7 @@ cursor-style-blink = false
 
 # Glyph under the cursor uses the cell's background color — the other half of
 # the invert. The cursor's own color (cursor-color = cell-foreground) lives in
-# local.ghostty so it can override the theme's cursor-color; see note up top.
+# overrides.ghostty so it can override the theme's cursor-color; see note up top.
 cursor-text = cell-background
 
 # Fully opaque cursor
