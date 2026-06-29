@@ -3,7 +3,7 @@
 # Re-run anytime to update lazygit to the latest version.
 # Assumes: Linux x86_64 (apt/sudo), curl + tar, network. Installs latest release.
 
-set -euo pipefail  # Exit on error, unset vars, and pipe failures
+set -euo pipefail # Exit on error, unset vars, and pipe failures
 
 INSTALL_DIR="/usr/local/bin"
 WORK_DIR="/tmp/lazygit-install"
@@ -13,11 +13,11 @@ TARBALL="$WORK_DIR/lazygit.tar.gz"
 trap 'rm -rf "$WORK_DIR"' EXIT
 
 echo "Resolving latest lazygit version..."
-VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" \
-  | grep -Po '"tag_name": *"v\K[^"]*')
+VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" |
+	grep -Po '"tag_name": *"v\K[^"]*')
 if [ -z "$VERSION" ]; then
-    echo "Error: could not determine the latest lazygit version"
-    exit 1
+	echo "Error: could not determine the latest lazygit version"
+	exit 1
 fi
 echo "Latest version: $VERSION"
 
@@ -27,26 +27,26 @@ mkdir -p "$WORK_DIR"
 
 echo "Downloading lazygit $VERSION..."
 if ! curl -fL -o "$TARBALL" "$URL"; then
-    echo "Error: failed to download lazygit"
-    exit 1
+	echo "Error: failed to download lazygit"
+	exit 1
 fi
 
 echo "Extracting..."
 if ! tar -xf "$TARBALL" -C "$WORK_DIR" lazygit; then
-    echo "Error: failed to extract lazygit"
-    exit 1
+	echo "Error: failed to extract lazygit"
+	exit 1
 fi
 
 echo "Testing binary..."
-if ! "$WORK_DIR/lazygit" --version &> /dev/null; then
-    echo "Error: extracted lazygit is not working properly"
-    exit 1
+if ! "$WORK_DIR/lazygit" --version &>/dev/null; then
+	echo "Error: extracted lazygit is not working properly"
+	exit 1
 fi
 
 echo "Installing to $INSTALL_DIR (requires sudo)..."
 if ! sudo install "$WORK_DIR/lazygit" -D -t "$INSTALL_DIR"; then
-    echo "Error: failed to install lazygit to $INSTALL_DIR"
-    exit 1
+	echo "Error: failed to install lazygit to $INSTALL_DIR"
+	exit 1
 fi
 
 echo "✓ Successfully installed lazygit!"

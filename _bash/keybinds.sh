@@ -6,5 +6,5 @@
 
 # Tmux-sessionizer (only bind if it's installed)
 if command -v tmux-sessionizer >/dev/null 2>&1; then
-    bind -x '"\C-f": tmux-sessionizer'
+	bind -x '"\C-f": tmux-sessionizer'
 fi

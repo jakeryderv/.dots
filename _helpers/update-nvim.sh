@@ -3,7 +3,7 @@
 # Assumes: Linux x86_64 (sudo for /opt + /usr/local/bin), curl + tar, network.
 # Installs the latest 'stable' release (not pinned).
 
-set -euo pipefail  # Exit on error, unset vars, and pipe failures
+set -euo pipefail # Exit on error, unset vars, and pipe failures
 
 URL="https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz"
 TARBALL="/tmp/nvim-linux-x86_64.tar.gz"
@@ -16,25 +16,25 @@ trap 'rm -rf "$TARBALL" "$EXTRACT_DIR"' EXIT
 
 echo "Downloading latest Neovim tarball..."
 if ! curl -fL -o "$TARBALL" "$URL"; then
-    echo "Error: Failed to download Neovim tarball"
-    exit 1
+	echo "Error: Failed to download Neovim tarball"
+	exit 1
 fi
 
 echo "Extracting..."
 rm -rf "$EXTRACT_DIR"
 mkdir -p "$EXTRACT_DIR"
 if ! tar -C "$EXTRACT_DIR" -xzf "$TARBALL"; then
-    echo "Error: Failed to extract tarball"
-    exit 1
+	echo "Error: Failed to extract tarball"
+	exit 1
 fi
 
 # The tarball contains a single top-level dir named nvim-linux-x86_64/
 STAGED="$EXTRACT_DIR/nvim-linux-x86_64"
 
 echo "Testing extracted binary..."
-if ! "$STAGED/bin/nvim" --version &> /dev/null; then
-    echo "Error: Extracted Neovim is not working properly"
-    exit 1
+if ! "$STAGED/bin/nvim" --version &>/dev/null; then
+	echo "Error: Extracted Neovim is not working properly"
+	exit 1
 fi
 
 # Old install (and the previous AppImage file at $SYMLINK) is left untouched until
@@ -42,14 +42,14 @@ fi
 echo "Installing to $NVIM_DIR (requires sudo)..."
 sudo rm -rf "$NVIM_DIR"
 if ! sudo mv "$STAGED" "$NVIM_DIR"; then
-    echo "Error: Failed to install to $NVIM_DIR"
-    exit 1
+	echo "Error: Failed to install to $NVIM_DIR"
+	exit 1
 fi
 
 echo "Linking $SYMLINK -> $NVIM_DIR/bin/nvim (requires sudo)..."
 if ! sudo ln -sf "$NVIM_DIR/bin/nvim" "$SYMLINK"; then
-    echo "Error: Failed to create symlink at $SYMLINK"
-    exit 1
+	echo "Error: Failed to create symlink at $SYMLINK"
+	exit 1
 fi
 
 echo "✓ Successfully installed Neovim!"

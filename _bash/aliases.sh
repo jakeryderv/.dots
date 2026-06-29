@@ -18,7 +18,7 @@ alias fcd='cd $(fdfind --type d | fzf)'
 alias tmls='tmux ls'
 alias tma='tmux attach -t $(tmux ls -F "#{session_name}" | fzf)'
 tms() {
-    tmux new-session -A -s "$1"
+	tmux new-session -A -s "$1"
 }
 alias tmks='tmux list-sessions | fzf | cut -d: -f1 | xargs tmux kill-session -t'
 alias tmka='tmux kill-server'
