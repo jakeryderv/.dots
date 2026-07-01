@@ -1,15 +1,19 @@
--- Absolute line numbers in insert mode, relative in normal mode
+-- Absolute line numbers + no whitespace listchars in insert mode; relative
+-- numbers + listchars back in normal mode. Hiding listchars while typing keeps
+-- the trailing-space '·' from flickering under the cursor mid-edit.
 local numbers = vim.api.nvim_create_augroup('numbers', { clear = true })
 vim.api.nvim_create_autocmd('InsertEnter', {
   group = numbers,
   callback = function()
     vim.opt.relativenumber = false
+    vim.opt.list = false
   end,
 })
 vim.api.nvim_create_autocmd('InsertLeave', {
   group = numbers,
   callback = function()
     vim.opt.relativenumber = true
+    vim.opt.list = true
   end,
 })
 
@@ -28,12 +32,20 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
--- Transparent background (re-applied on every colorscheme change)
+-- Transparent background + dim whitespace (re-applied on every colorscheme
+-- change). carbonfox sets Whitespace fg == CursorLine bg (#353535), so on the
+-- current line the trailing '·' collides with the cursorline background and
+-- vanishes/looks solid under the block cursor. Retint listchars to bg4
+-- (#535353): visible against both the normal (#161616) and cursorline
+-- (#353535) backgrounds, so they stay uniformly dim everywhere.
 vim.api.nvim_create_autocmd('ColorScheme', {
   group = vim.api.nvim_create_augroup('transparent-bg', { clear = true }),
   callback = function()
+    local c = require('colors')
     vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
     vim.api.nvim_set_hl(0, 'NormalNC', { bg = 'none' })
+    vim.api.nvim_set_hl(0, 'Whitespace', { fg = c.bg4 })
+    vim.api.nvim_set_hl(0, 'NonText', { fg = c.bg4 })
   end,
 })
 
