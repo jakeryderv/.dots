@@ -11,3 +11,11 @@
 # cursor-color = #f2f4f8). Pairs with cursor-text = cell-background in
 # config.ghostty for a clean color-inverting block cursor.
 cursor-color = cell-foreground
+
+# --- Startup directory ---
+# New windows always open in $HOME, ignoring the previously focused surface's
+# CWD (default working-directory = inherit, window-inherit = true would follow
+# whatever dir you were in). Tabs and splits still inherit the current dir
+# because their *-inherit-working-directory options stay at their default (true).
+working-directory = home
+window-inherit-working-directory = false
