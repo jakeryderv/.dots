@@ -1,8 +1,8 @@
 {
   "lastChangelogVersion": "0.80.3",
   "theme": "carbonfox",
-  "defaultProvider": "openrouter",
-  "defaultModel": "z-ai/glm-5.2",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "high",
   "quietStartup": false,
   "terminal": {

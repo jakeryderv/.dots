@@ -78,8 +78,9 @@ To remove the symlinks: `cd ~/.dots && stow -D pi`.
 **Package versions intentionally track latest.** The `packages` array in
 `settings.json` lists bare specs (`npm:pi-lens`, no `@version`), so pi installs
 the newest published version into `npm/node_modules` on each resolve. This is a
-deliberate choice — these are first-party pi packages and we want the latest.
-If you ever need a reproducible pin, add `@x.y.z` to a spec (e.g.
+deliberate convenience choice for packages I actively use and trust enough to
+track latest. For tighter supply-chain or reproducibility needs — especially for
+third-party/community packages — add `@x.y.z` to a spec (e.g.
 `npm:pi-lens@1.2.3`).
 
 MCP server versions in `mcp.json`, by contrast, **are** pinned (`context7`,
