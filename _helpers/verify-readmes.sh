@@ -5,6 +5,10 @@
 # Checks every top-level directory except .git and prints a PASS/FAIL summary.
 # Exits non-zero if any are missing, so it can gate CI or a pre-commit hook.
 #
+# Note: hidden top-level dirs (dotdirs) are intentionally skipped — the glob
+# `*/` does not match them, which matches the repo's stow convention: no stow
+# package is ever rooted at a hidden directory at the repo root.
+#
 # Assumes: run from anywhere; resolves the repo root as this script's parent dir.
 
 set -euo pipefail

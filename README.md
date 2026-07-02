@@ -102,6 +102,4 @@ what was adopted before keeping it).
 
 ## Implement next/later
 
-- vscode
-- hermes
-- antigravity
+See [`TODO.md`](TODO.md).

@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Environment variables and exports
 
-# Path
-export PATH="$HOME/.local/bin:$PATH"
+# Path (guard against duplication when sourced from non-login subshells)
+case ":$PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
 
 # ls colors (LS_COLORS)
 if [ -x /usr/bin/dircolors ]; then

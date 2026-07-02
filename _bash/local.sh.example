@@ -23,7 +23,11 @@
 # export ANTHROPIC_API_KEY="..."
 
 # --- PATH additions --------------------------------------------------
-# export PATH="$HOME/.local/some-tool/bin:$PATH"
+# Use the guarded form to avoid duplicating entries when sourced repeatedly:
+# case ":$PATH:" in
+#     *":$HOME/.local/some-tool/bin:"*) ;;
+#     *) export PATH="$HOME/.local/some-tool/bin:$PATH" ;;
+# esac
 
 # --- fzf -------------------------------------------------------------
 # [ -f ~/.fzf.bash ] && source ~/.fzf.bash
