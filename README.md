@@ -75,8 +75,20 @@ their own README — follow the links in the tables above.
 
 ## Managing packages
 
-All commands assume `--dir "$HOME/.dots" --target "$HOME"` (omitted below for
-brevity; add them, or run from `~/.dots` where `$HOME` is the default target).
+After the `scripts` package is stowed, use the `dots` CLI for the common workflow:
+
+```bash
+dots status          # show missing/conflicted/non-symlinked package files
+dots doctor          # run repo health checks
+dots stow            # dry-run all packages
+dots stow --apply    # stow all packages
+dots restow nvim     # dry-run a restow; add --apply to mutate
+dots diff starship   # compare live target files with repo sources
+```
+
+Raw Stow still works. All commands assume `--dir "$HOME/.dots" --target "$HOME"`
+(omitted below for brevity; add them, or run from `~/.dots` where `$HOME` is the
+default target).
 
 ```bash
 stow -n -v <pkg>     # dry-run: preview links without touching the filesystem
