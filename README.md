@@ -15,7 +15,7 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 - **READMEs live at the package root** (`ghostty/README.md`, not
   `ghostty/.config/ghostty/README.md`) and are never symlinked into `$HOME`
   (the `README\.md` entry in `.stow-local-ignore` catches them at any depth).
-- `_helpers/verify-readmes.sh` checks that every package/asset dir has a README.
+- `_helpers/verify-readmes.sh` checks that every package/asset/tooling dir has a README.
 
 ## Packages
 
@@ -40,6 +40,7 @@ repo (the root `.stow-local-ignore` keeps them from ever being symlinked):
 | Dir | Purpose |
 | --- | --- |
 | [`_bash`](_bash/README.md) | Modular bash config, *sourced* not stowed |
+| [`_dots`](_dots/README.md) | Repo-local dotfiles orchestration tooling |
 | [`_helpers`](_helpers/README.md) | Install/update scripts for tools |
 | [`_wallpapers`](_wallpapers/README.md) | Wallpaper / terminal background images |
 
@@ -59,10 +60,13 @@ sudo apt install stow            # if not already installed
 git clone <repo> ~/.dots
 cd ~/.dots
 
-# Symlink the packages you want. --dir/--target are explicit so this works
-# regardless of where the repo lives or your current directory.
-stow --dir "$HOME/.dots" --target "$HOME" \
-  alacritty ghostty kitty wezterm nvim tmux starship qutebrowser fonts scripts pi
+# Install the repo-local orchestration CLI entrypoint:
+./setup.sh
+
+# Preview, then symlink the packages you want. dots wraps GNU Stow with
+# --dir/--target fixed to this repo and $HOME.
+dots stow
+dots stow --apply
 
 # _bash is sourced, not stowed — add this to ~/.bashrc:
 #   [ -f "$HOME/.dots/_bash/_init_.sh" ] && source "$HOME/.dots/_bash/_init_.sh"
@@ -75,7 +79,7 @@ their own README — follow the links in the tables above.
 
 ## Managing packages
 
-After the `scripts` package is stowed, use the `dots` CLI for the common workflow:
+After `./setup.sh` links the repo-local `dots` CLI into `~/.local/bin`, use it for the common workflow:
 
 ```bash
 dots status          # show missing/conflicted/non-symlinked package files

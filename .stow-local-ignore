@@ -10,6 +10,7 @@ README\.md
 ^/_helpers
 ^/_wallpapers
 ^/_bash
+^/_dots
 
 # Machine-specific / local-only
 local\.sh

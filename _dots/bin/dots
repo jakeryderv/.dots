@@ -46,7 +46,7 @@ Defaults:
 Notes:
   - Mutating stow commands are dry-run by default; pass --apply to modify files.
   - Package names default to all non-hidden, non-underscore top-level dirs.
-  - _bash, _helpers, and _wallpapers are intentionally not stow packages.
+  - _bash, _dots, _helpers, and _wallpapers are intentionally not stow packages.
 EOF
 }
 
@@ -217,7 +217,7 @@ readmes_cmd() {
 }
 
 deps_cmd() {
-    local required=(bash git stow find sed awk grep cmp readlink)
+    local required=(bash git stow find sed awk grep cmp readlink file)
     local optional=(fc-cache starship nvim tmux fzf bat batcat rg fd fdfind lazygit qutebrowser pi opencode)
     local cmd missing=0
     printf '%sRequired:%s\n' "$BOLD" "$RESET"
@@ -240,9 +240,13 @@ doctor_cmd() {
     if git -C "$REPO_ROOT" diff --quiet && git -C "$REPO_ROOT" diff --cached --quiet; then ok "git working tree clean"; else warn "git working tree has changes"; fi
 
     if [[ -f "$REPO_ROOT/.stow-local-ignore" ]]; then ok ".stow-local-ignore present"; else warn ".stow-local-ignore missing"; fail=1; fi
-    for pat in '^/_bash' '^/_helpers' '^/_wallpapers' 'README\.md' 'local\.sh'; do
+    for pat in '^/_bash' '^/_dots' '^/_helpers' '^/_wallpapers' 'README\.md' 'local\.sh'; do
         if grep -Fq -- "$pat" "$REPO_ROOT/.stow-local-ignore"; then ok "ignore pattern present: $pat"; else warn "ignore pattern missing: $pat"; fail=1; fi
     done
+
+    local expected_dots="$REPO_ROOT/_dots/bin/dots"
+    local actual_dots="$(readlink -f "$HOME/.local/bin/dots" 2>/dev/null || true)"
+    if [[ "$actual_dots" == "$(readlink -f "$expected_dots")" ]]; then ok "~/.local/bin/dots points at _dots/bin/dots"; else warn "~/.local/bin/dots is not linked to _dots/bin/dots; run ./setup.sh"; fail=1; fi
 
     if grep -q '\.dots/_bash/_init_\.sh' "$HOME/.bashrc" 2>/dev/null; then ok "~/.bashrc sources _bash/_init_.sh"; else warn "~/.bashrc does not appear to source _bash/_init_.sh"; fail=1; fi
     if [[ -f "$REPO_ROOT/_bash/local.sh" ]]; then ok "_bash/local.sh exists"; else warn "_bash/local.sh missing; copy _bash/local.sh.example"; fi
@@ -328,9 +332,10 @@ ${BOLD}Bootstrap outline${RESET}
    git clone <repo> ~/.dots
    cd ~/.dots
 
-3. Preview then apply stow packages:
-   ./scripts/.local/bin/dots stow
-   ./scripts/.local/bin/dots stow --apply
+3. Install the dots CLI entrypoint, then preview/apply stow packages:
+   ./setup.sh
+   dots stow
+   dots stow --apply
 
 4. Enable bash loader and local overrides:
    printf '%s\n' '[ -f "$HOME/.dots/_bash/_init_.sh" ] && source "$HOME/.dots/_bash/_init_.sh"' >> ~/.bashrc
