@@ -2,8 +2,8 @@
   "lastChangelogVersion": "0.80.3",
   "theme": "carbonfox",
   "defaultProvider": "openrouter",
-  "defaultModel": "anthropic/claude-opus-4.8",
-  "defaultThinkingLevel": "medium",
+  "defaultModel": "z-ai/glm-5.2",
+  "defaultThinkingLevel": "high",
   "quietStartup": false,
   "terminal": {
     "showTerminalProgress": true
