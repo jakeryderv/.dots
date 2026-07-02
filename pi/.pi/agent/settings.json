@@ -16,7 +16,8 @@
     "npm:pi-intercom",
     "npm:@ff-labs/pi-fff",
     "npm:pi-hermes-memory",
-    "npm:@quintinshaw/pi-dynamic-workflows"
+    "npm:@quintinshaw/pi-dynamic-workflows",
+    "npm:pi-prompt-template-model"
   ],
   "extensions": [],
   "defaultProjectTrust": "ask",
