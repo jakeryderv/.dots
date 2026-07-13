@@ -2,9 +2,9 @@
 
 Wallpaper / terminal background images.
 
-**Not a stow package.** The `_` prefix and the root `.stow-local-ignore` keep
-this directory from ever being symlinked into `$HOME` — the files just live in
-the repo and are referenced by absolute path.
+**Not a stow package.** The `_` prefix keeps this directory out of `dots`
+package discovery. The files just live in the repo and are referenced by
+absolute path.
 
 ## Who uses these
 

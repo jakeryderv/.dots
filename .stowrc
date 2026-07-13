@@ -1,0 +1,11 @@
+# GNU Stow resource file, loaded when stow runs from the repository root.
+# _dots/bin/dots also reads these patterns for status and diff reporting.
+
+--ignore=README[.]md
+--ignore=local[.]sh
+--ignore=__pycache__
+--ignore=[.]ruff_cache
+--ignore=[.]pytest_cache
+--ignore=[.]mypy_cache
+--ignore=[.]cache
+--ignore=node_modules

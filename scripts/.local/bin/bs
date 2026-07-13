@@ -62,7 +62,9 @@ load_preset() {
 
         # Add args if in the right preset
         if (( in_preset )); then
-            args+=($line)  # word splitting intentional
+            local line_args=()
+            read -r -a line_args <<<"$line"
+            args+=("${line_args[@]}")
         fi
     done < "$CONFIG_FILE"
 
@@ -129,7 +131,8 @@ reversed()   { tac; }
 # Transforms: modify fields
 prettify() {
     local use_relative="$1"
-    local now=$(date +%s)
+    local now
+    now=$(date +%s)
     awk -F"$D" -v OFS="$D" -v rel="$use_relative" -v now="$now" '{
         if (rel == "1") {
             diff = now - int($1)
@@ -235,9 +238,9 @@ colorize() {
         if [[ "$show_git" == "1" ]]; then
             local base="${name##*/}"
             case "${git_status_map[$base]:-}" in
-                M*|" M"|MM) gs="${C_GIT_M}[M]${C_RESET} " ;;
+                M*|" M")    gs="${C_GIT_M}[M]${C_RESET} " ;;
                 "??")       gs="${C_GIT_U}[?]${C_RESET} " ;;
-                A*|"A ")    gs="${C_GIT_A}[A]${C_RESET} " ;;
+                A*)         gs="${C_GIT_A}[A]${C_RESET} " ;;
                 D*|" D")    gs="${C_GIT_D}[D]${C_RESET} " ;;
                 R*)         gs="${C_GIT_R}[R]${C_RESET} " ;;
             esac
@@ -340,6 +343,14 @@ names_only() {
                 *) [[ -x "$dir/$name" ]] && printf '%s*\n' "${icon}${name}" || printf '%s\n' "${icon}${name}" ;;
             esac
         fi
+    done
+}
+
+# Raw NUL-delimited names for interactive consumers. Keep presentation out of
+# this stream so whitespace is not mistaken for a column boundary.
+raw_names() {
+    while IFS="$D" read -r _time _perms _size _ftype name _owner _group _target; do
+        printf '%s\0' "$name"
     done
 }
 
@@ -488,7 +499,9 @@ expand_flags() {
 i=1
 for arg in "$@"; do
     if [[ "$arg" == "--preset" ]]; then
-        PRESET="${@:$((i+1)):1}"
+        next_index=$((i + 1))
+        PRESET="${!next_index:-}"
+        [[ -n "$PRESET" ]] || { echo 'bs: --preset requires a name' >&2; exit 2; }
         set -- "${@:1:$((i-1))}" "${@:$((i+2))}"
         break
     fi
@@ -665,7 +678,9 @@ run_bs() {
         fi
     } | {
         # Output format
-        if (( COUNT )); then
+        if (( FZF )); then
+            raw_names
+        elif (( COUNT )); then
             wc -l | tr -d ' '
         elif (( JSON )); then
             json_output
@@ -689,12 +704,10 @@ run_bs() {
                 exit 1
             fi
 
-            fzf_opts=(--ansi --reverse)
+            fzf_opts=(--read0 --print0 --reverse)
             (( MULTI )) && fzf_opts+=(--multi)
 
             if (( PREVIEW )); then
-                clean_cmd="echo {-1} | sed 's/\x1b\[[0-9;]*m//g' | sed 's/[*@\/]$//'"
-
                 if command -v bat &>/dev/null; then
                     bat_cmd="bat"
                 elif command -v batcat &>/dev/null; then
@@ -703,37 +716,29 @@ run_bs() {
                     bat_cmd=""
                 fi
 
+                export BS_FZF_DIR="$DIR"
                 if [[ -n "$bat_cmd" ]]; then
-                    fzf_opts+=(--preview "f=\$($clean_cmd); $bat_cmd --color=always --style=numbers --line-range=:500 \"$DIR/\$f\" 2>/dev/null || ls -la \"$DIR/\$f\"")
+                    fzf_opts+=(--preview "f={}; $bat_cmd --color=always --style=numbers --line-range=:500 \"\$BS_FZF_DIR/\$f\" 2>/dev/null || ls -la \"\$BS_FZF_DIR/\$f\"")
                 else
-                    fzf_opts+=(--preview "f=\$($clean_cmd); cat \"$DIR/\$f\" 2>/dev/null || ls -la \"$DIR/\$f\"")
+                    fzf_opts+=(--preview 'f={}; cat "$BS_FZF_DIR/$f" 2>/dev/null || ls -la "$BS_FZF_DIR/$f"')
                 fi
                 fzf_opts+=(--preview-window "right:60%:wrap")
             fi
 
-            selection=$(fzf "${fzf_opts[@]}")
-
-            if [[ -n "$selection" ]]; then
-                # Handle multi-select (one file per line)
-                while IFS= read -r line; do
-                    file=$(echo "$line" | awk '{print $NF}' | sed 's/\x1b\[[0-9;]*m//g' | sed 's/[*@\/]$//')
-
-                    if (( EDIT )); then
-                        editor="${EDITOR:-${VISUAL:-vim}}"
-                        if [[ -f "$DIR/$file" ]]; then
-                            exec "$editor" "$DIR/$file"
-                        elif [[ -f "$file" ]]; then
-                            exec "$editor" "$file"
-                        fi
-                    else
-                        if [[ -e "$DIR/$file" ]]; then
-                            echo "$DIR/$file"
-                        else
-                            echo "$file"
-                        fi
+            while IFS= read -r -d '' file; do
+                if (( EDIT )); then
+                    editor="${EDITOR:-${VISUAL:-vim}}"
+                    if [[ -f "$DIR/$file" ]]; then
+                        exec "$editor" "$DIR/$file"
+                    elif [[ -f "$file" ]]; then
+                        exec "$editor" "$file"
                     fi
-                done <<< "$selection"
-            fi
+                elif [[ -e "$DIR/$file" || -L "$DIR/$file" ]]; then
+                    printf '%s\n' "$DIR/$file"
+                else
+                    printf '%s\n' "$file"
+                fi
+            done < <(fzf "${fzf_opts[@]}")
         else
             cat
         fi

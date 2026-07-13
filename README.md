@@ -14,7 +14,7 @@ Each top-level directory is a **stow package** whose internal layout mirrors
   READMEs linked below.
 - **READMEs live at the package root** (`ghostty/README.md`, not
   `ghostty/.config/ghostty/README.md`) and are never symlinked into `$HOME`
-  (the `README\.md` entry in `.stow-local-ignore` catches them at any depth).
+  (the `README[.]md` entry in `.stowrc` catches them at any depth).
 - `_helpers/verify-readmes.sh` checks that every package/asset/tooling dir has a README.
 
 ## Packages
@@ -35,7 +35,8 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 | [`scripts`](scripts/README.md) | `~/.local/bin/` | Personal scripts |
 
 Directories prefixed with `_` are **not** stow packages — just stored in the
-repo (the root `.stow-local-ignore` keeps them from ever being symlinked):
+repo. The `dots` CLI excludes hidden and underscore-prefixed directories from
+package discovery:
 
 | Dir | Purpose |
 | --- | --- |
@@ -44,8 +45,9 @@ repo (the root `.stow-local-ignore` keeps them from ever being symlinked):
 | [`_helpers`](_helpers/README.md) | Install/update scripts for tools |
 | [`_wallpapers`](_wallpapers/README.md) | Wallpaper / terminal background images |
 
-> **Note:** `.gitignore` does **not** affect Stow. To stop Stow from symlinking
-> generated state or local-only files, add them to `.stow-local-ignore`.
+> **Note:** `.gitignore` does **not** affect Stow. Repository-wide ignore
+> patterns live in `.stowrc`, which GNU Stow reads when invoked from this repo.
+> Run raw Stow from `~/.dots`; the `dots` wrapper does this automatically.
 
 ## Setup on a new machine
 
@@ -84,6 +86,7 @@ After `./setup.sh` links the repo-local `dots` CLI into `~/.local/bin`, use it f
 ```bash
 dots status          # show missing/conflicted/non-symlinked package files
 dots doctor          # run repo health checks
+dots check           # run portable CI-safe validation
 dots stow            # dry-run all packages
 dots stow --apply    # stow all packages
 dots restow nvim     # dry-run a restow; add --apply to mutate

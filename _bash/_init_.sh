@@ -27,6 +27,7 @@ bash_modules=(
 
 for module in "${bash_modules[@]}"; do
 	config_file="$BASH_CONFIG_DIR/$module.sh"
+	# shellcheck disable=SC1090 # module paths are assembled from the fixed list above
 	[ -r "$config_file" ] && source "$config_file"
 done
 

@@ -12,9 +12,9 @@ REPO_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || print
 TARGET_ROOT="${DOTS_TARGET:-$HOME}"
 
 if [[ -t 1 && "${NO_COLOR:-}" == "" ]]; then
-    BOLD=$'\033[1m'; DIM=$'\033[2m'; RED=$'\033[31m'; GREEN=$'\033[32m'; YELLOW=$'\033[33m'; BLUE=$'\033[34m'; RESET=$'\033[0m'
+    BOLD=$'\033[1m'; RED=$'\033[31m'; GREEN=$'\033[32m'; YELLOW=$'\033[33m'; RESET=$'\033[0m'
 else
-    BOLD=""; DIM=""; RED=""; GREEN=""; YELLOW=""; BLUE=""; RESET=""
+    BOLD=""; RED=""; GREEN=""; YELLOW=""; RESET=""
 fi
 
 err() { printf '%serror:%s %s\n' "$RED" "$RESET" "$*" >&2; }
@@ -36,6 +36,7 @@ Usage:
   dots unstow [--apply] [PKG...]
   dots diff PKG...
   dots adopt [--apply] PKG...
+  dots check
   dots readmes
   dots deps
 
@@ -81,10 +82,22 @@ resolve_packages() {
     done | awk '!seen[$0]++'
 }
 
+resolve_packages_into() {
+    local output_name="$1"
+    shift
+    local resolved
+    resolved="$(resolve_packages "$@")" || return $?
+    [[ -n "$resolved" ]] || { err "no packages resolved"; return 2; }
+
+    local -n output="$output_name"
+    # shellcheck disable=SC2034 # output is a nameref to the caller's array
+    mapfile -t output <<<"$resolved"
+}
+
 load_ignore_patterns() {
-    local file="$REPO_ROOT/.stow-local-ignore"
+    local file="$REPO_ROOT/.stowrc"
     [[ -f "$file" ]] || return 0
-    sed -E 's/[[:space:]]+#.*$//; /^[[:space:]]*#/d; /^[[:space:]]*$/d' "$file"
+    sed -nE 's/^--ignore=(.*)$/\1/p' "$file"
 }
 
 is_ignored() {
@@ -114,7 +127,8 @@ stow_cmd() {
         shift || true
     done
 
-    mapfile -t pkgs < <(resolve_packages "${args[@]}")
+    local pkgs=()
+    resolve_packages_into pkgs "${args[@]}" || return $?
     local stow_args=(--dir "$REPO_ROOT" --target "$TARGET_ROOT" --verbose)
     if ((apply == 0)); then
         stow_args=(--no --verbose --dir "$REPO_ROOT" --target "$TARGET_ROOT")
@@ -137,7 +151,8 @@ stow_cmd() {
 status_cmd() {
     need_repo
     local args=("$@")
-    mapfile -t pkgs < <(resolve_packages "${args[@]}")
+    local pkgs=()
+    resolve_packages_into pkgs "${args[@]}" || return $?
     mapfile -t IGNORE_PATTERNS < <(load_ignore_patterns)
 
     local ok_count=0 missing_count=0 real_same_count=0 real_diff_count=0 other_count=0 total=0
@@ -199,8 +214,8 @@ status_cmd() {
 }
 
 stow_check_cmd() {
-    local args=("$@")
-    mapfile -t pkgs < <(resolve_packages "${args[@]}")
+    local pkgs=()
+    resolve_packages_into pkgs || return $?
     local out
     out="$(stow -n -v --dir "$REPO_ROOT" --target "$TARGET_ROOT" "${pkgs[@]}" 2>&1 || true)"
     out="$(printf '%s\n' "$out" | grep -v '^WARNING: in simulation mode' || true)"
@@ -216,9 +231,14 @@ readmes_cmd() {
     bash "$REPO_ROOT/_helpers/verify-readmes.sh"
 }
 
+repo_check_cmd() {
+    need_repo
+    bash "$REPO_ROOT/_helpers/check-repo.sh"
+}
+
 deps_cmd() {
-    local required=(bash git stow find sed awk grep cmp readlink file)
-    local optional=(fc-cache starship nvim tmux fzf bat batcat rg fd fdfind lazygit qutebrowser pi opencode)
+    local required=(bash git stow python3 find sed awk grep cmp readlink file)
+    local optional=(shellcheck luac fc-cache starship nvim tmux fzf bat batcat rg fd fdfind lazygit qutebrowser pi opencode)
     local cmd missing=0
     printf '%sRequired:%s\n' "$BOLD" "$RESET"
     for cmd in "${required[@]}"; do
@@ -237,54 +257,30 @@ doctor_cmd() {
 
     printf '%sDotfiles doctor%s\n\n' "$BOLD" "$RESET"
 
-    if git -C "$REPO_ROOT" diff --quiet && git -C "$REPO_ROOT" diff --cached --quiet; then ok "git working tree clean"; else warn "git working tree has changes"; fi
+    if [[ -z "$(git -C "$REPO_ROOT" status --porcelain)" ]]; then ok "git working tree clean"; else warn "git working tree has changes"; fi
 
-    if [[ -f "$REPO_ROOT/.stow-local-ignore" ]]; then ok ".stow-local-ignore present"; else warn ".stow-local-ignore missing"; fail=1; fi
-    for pat in '^/_bash' '^/_dots' '^/_helpers' '^/_wallpapers' 'README\.md' 'local\.sh'; do
-        if grep -Fq -- "$pat" "$REPO_ROOT/.stow-local-ignore"; then ok "ignore pattern present: $pat"; else warn "ignore pattern missing: $pat"; fail=1; fi
+    if [[ -f "$REPO_ROOT/.stowrc" ]]; then ok ".stowrc present"; else warn ".stowrc missing"; fail=1; fi
+    for pat in 'README[.]md' 'local[.]sh' '__pycache__' 'node_modules'; do
+        if grep -Fq -- "--ignore=$pat" "$REPO_ROOT/.stowrc"; then ok "ignore pattern present: $pat"; else warn "ignore pattern missing: $pat"; fail=1; fi
     done
 
     local expected_dots="$REPO_ROOT/_dots/bin/dots"
-    local actual_dots="$(readlink -f "$HOME/.local/bin/dots" 2>/dev/null || true)"
-    if [[ "$actual_dots" == "$(readlink -f "$expected_dots")" ]]; then ok "~/.local/bin/dots points at _dots/bin/dots"; else warn "~/.local/bin/dots is not linked to _dots/bin/dots; run ./setup.sh"; fail=1; fi
+    local actual_dots
+    actual_dots="$(readlink -f "$HOME/.local/bin/dots" 2>/dev/null || true)"
+    if [[ "$actual_dots" == "$(readlink -f "$expected_dots")" ]]; then ok "\$HOME/.local/bin/dots points at _dots/bin/dots"; else warn "\$HOME/.local/bin/dots is not linked to _dots/bin/dots; run ./setup.sh"; fail=1; fi
 
-    if grep -q '\.dots/_bash/_init_\.sh' "$HOME/.bashrc" 2>/dev/null; then ok "~/.bashrc sources _bash/_init_.sh"; else warn "~/.bashrc does not appear to source _bash/_init_.sh"; fail=1; fi
+    if grep -q '\.dots/_bash/_init_\.sh' "$HOME/.bashrc" 2>/dev/null; then ok "\$HOME/.bashrc sources _bash/_init_.sh"; else warn "\$HOME/.bashrc does not appear to source _bash/_init_.sh"; fail=1; fi
     if [[ -f "$REPO_ROOT/_bash/local.sh" ]]; then ok "_bash/local.sh exists"; else warn "_bash/local.sh missing; copy _bash/local.sh.example"; fi
 
-    if readmes_cmd >/tmp/dots-readmes.$$ 2>&1; then ok "all top-level dirs have README.md"; else warn "README check failed"; cat /tmp/dots-readmes.$$; fail=1; fi
-    rm -f /tmp/dots-readmes.$$
+    local check_log stow_log status_log
+    check_log="$(mktemp)"
+    stow_log="$(mktemp)"
+    status_log="$(mktemp)"
 
-    local shell_files=()
-    while IFS= read -r -d '' f; do shell_files+=("$f"); done < <(find "$REPO_ROOT/_bash" "$REPO_ROOT/_helpers" "$REPO_ROOT/scripts/.local/bin" -type f -print0)
-    local f
-    for f in "${shell_files[@]}"; do
-        if head -n 1 "$f" | grep -Eq '^#!.*\bbash\b'; then
-            if bash -n "$f"; then :; else warn "bash syntax failed: ${f#$REPO_ROOT/}"; fail=1; fi
-        fi
-    done
-    ok "bash syntax checked"
-
-    if python3 - <<'PY'
-import json, pathlib, sys
-bad=[]
-for p in pathlib.Path('.').rglob('*.json'):
-    if any(part in {'node_modules', '.git'} for part in p.parts):
-        continue
-    try:
-        json.load(open(p))
-    except Exception as e:
-        bad.append(f"{p}: {e}")
-if bad:
-    print('\n'.join(bad))
-    sys.exit(1)
-PY
-    then ok "JSON files parse"; else warn "JSON parse check failed"; fail=1; fi
-
-    if stow_check_cmd >/tmp/dots-stow.$$ 2>&1; then ok "stow dry-run clean"; else warn "stow dry-run reports work/conflicts"; cat /tmp/dots-stow.$$; fail=1; fi
-    rm -f /tmp/dots-stow.$$
-
-    if status_cmd >/tmp/dots-status.$$ 2>&1; then ok "status clean"; else warn "status reports non-symlinked/missing targets"; cat /tmp/dots-status.$$; fail=1; fi
-    rm -f /tmp/dots-status.$$
+    if repo_check_cmd >"$check_log" 2>&1; then ok "portable repository checks pass"; else warn "portable repository checks failed"; cat "$check_log"; fail=1; fi
+    if stow_check_cmd >"$stow_log" 2>&1; then ok "stow dry-run clean"; else warn "stow dry-run reports work/conflicts"; cat "$stow_log"; fail=1; fi
+    if status_cmd >"$status_log" 2>&1; then ok "status clean"; else warn "status reports non-symlinked/missing targets"; cat "$status_log"; fail=1; fi
+    rm -f "$check_log" "$stow_log" "$status_log"
 
     printf '\n'
     if ((fail)); then
@@ -297,7 +293,8 @@ PY
 diff_cmd() {
     need_repo
     (($#)) || { err "diff requires at least one package"; exit 2; }
-    mapfile -t pkgs < <(resolve_packages "$@")
+    local pkgs=()
+    resolve_packages_into pkgs "$@" || return $?
     mapfile -t IGNORE_PATTERNS < <(load_ignore_patterns)
     local pkg src rel target shown=0
     for pkg in "${pkgs[@]}"; do
@@ -362,6 +359,7 @@ main() {
         unstow) need_repo; stow_cmd unstow "$@" ;;
         adopt) need_repo; stow_cmd adopt "$@" ;;
         diff) diff_cmd "$@" ;;
+        check) repo_check_cmd ;;
         readmes) readmes_cmd ;;
         deps) deps_cmd ;;
         bootstrap) bootstrap_cmd ;;

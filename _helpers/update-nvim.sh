@@ -1,24 +1,53 @@
 #!/usr/bin/env bash
 # update-nvim.sh - Download and install the latest Neovim (official .tar.gz build, no FUSE needed)
-# Assumes: Linux x86_64 (sudo for /opt + /usr/local/bin), curl + tar, network.
-# Installs the latest 'stable' release (not pinned).
+# Assumes: Linux x86_64 (sudo for /opt + /usr/local/bin), curl + jq +
+# sha256sum + tar, network. Installs stable after verifying the release digest.
 
 set -euo pipefail # Exit on error, unset vars, and pipe failures
 
-URL="https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz"
-TARBALL="/tmp/nvim-linux-x86_64.tar.gz"
-EXTRACT_DIR="/tmp/nvim-extract"   # staged here, tested, then swapped into place
+API="https://api.github.com/repos/neovim/neovim/releases/tags/stable"
+ASSET_NAME="nvim-linux-x86_64.tar.gz"
+WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/nvim-install.XXXXXX")"
+TARBALL="$WORK_DIR/$ASSET_NAME"
+EXTRACT_DIR="$WORK_DIR/extract"   # staged here, tested, then swapped into place
 NVIM_DIR="/opt/nvim-linux-x86_64" # final install location
 SYMLINK="/usr/local/bin/nvim"     # what ends up on your PATH
 
 # Clean up temp download + staging dir on any exit (success, error, or interrupt)
-trap 'rm -rf "$TARBALL" "$EXTRACT_DIR"' EXIT
+trap 'rm -rf "$WORK_DIR"' EXIT
+
+if [[ "$(uname -s)" != Linux || "$(uname -m)" != x86_64 ]]; then
+	echo "Error: this helper supports Linux x86_64 only" >&2
+	exit 1
+fi
+
+for command in curl jq sha256sum tar; do
+	command -v "$command" >/dev/null 2>&1 || { echo "Error: required command '$command' was not found" >&2; exit 1; }
+done
+
+echo "Resolving the stable Neovim release..."
+RELEASE_JSON=$(curl -fsSL --retry 3 "$API")
+ASSET=$(printf '%s' "$RELEASE_JSON" | jq -cer --arg name "$ASSET_NAME" '
+	[.assets[] | select(.name == $name)]
+	| if length == 1 then .[0] else error("expected exactly one matching asset") end
+')
+URL=$(printf '%s' "$ASSET" | jq -er '.browser_download_url')
+DIGEST=$(printf '%s' "$ASSET" | jq -er '.digest')
+[[ "$DIGEST" =~ ^sha256:([0-9a-fA-F]{64})$ ]] || { echo "Error: invalid SHA-256 digest for $ASSET_NAME" >&2; exit 1; }
+EXPECTED_SHA256="${BASH_REMATCH[1],,}"
 
 echo "Downloading latest Neovim tarball..."
 if ! curl -fL -o "$TARBALL" "$URL"; then
 	echo "Error: Failed to download Neovim tarball"
 	exit 1
 fi
+
+ACTUAL_SHA256=$(sha256sum "$TARBALL" | awk '{print $1}')
+if [[ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]]; then
+	echo "Error: SHA-256 verification failed for $ASSET_NAME" >&2
+	exit 1
+fi
+echo "Verified SHA-256: $ACTUAL_SHA256"
 
 echo "Extracting..."
 rm -rf "$EXTRACT_DIR"

@@ -215,18 +215,19 @@ grepask() {
 	fi
 
 	local ctx="${GREPASK_CONTEXT:-20}"
-	local total_lines=$(wc -l <"$file")
-	local match_count=$(grep -c "$pattern" "$file" || echo 0)
+	local total_lines match_count
+	total_lines=$(wc -l <"$file")
+	match_count=$(grep -c -- "$pattern" "$file") || match_count=0
 
 	{
 		echo "File: $file ($total_lines lines total)"
 		echo "Pattern: $pattern ($match_count matches)"
 		echo ""
 		echo "=== Match locations ==="
-		grep -n "$pattern" "$file"
+		grep -n -- "$pattern" "$file"
 		echo ""
 		echo "=== Expanded context ($ctx lines around each match) ==="
-		grep -n -B "$ctx" -A "$ctx" "$pattern" "$file"
+		grep -n -B "$ctx" -A "$ctx" -- "$pattern" "$file"
 	} | llm "$*" | _llm_render
 }
 
@@ -274,7 +275,7 @@ chunkask() {
 
 	# Ask the question of each chunk
 	local answers="$tmpdir/answers.txt"
-	>"$answers"
+	: >"$answers"
 
 	for chunk in "$tmpdir"/chunk_*; do
 		llm "Given this excerpt, answer the question: $question" <"$chunk" >>"$answers"

@@ -2,8 +2,8 @@
 
 Repo-local tooling for managing this dotfiles repository.
 
-**Not a stow package.** This directory is intentionally underscore-prefixed and
-listed in `.stow-local-ignore`; it should not be symlinked into `$HOME` by Stow.
+**Not a stow package.** This directory is intentionally underscore-prefixed, so
+the `dots` CLI excludes it from package discovery.
 
 ## Entrypoint
 
@@ -31,6 +31,7 @@ dots doctor          # repo health: git, ignores, READMEs, syntax, JSON, stow
 dots stow            # dry-run all stow packages
 dots stow --apply    # stow all packages
 dots diff <pkg>      # compare live target files against repo sources
+dots check           # portable syntax/parser/lint/behavior checks (CI-safe)
 dots deps            # required/optional external command check
 ```
 
