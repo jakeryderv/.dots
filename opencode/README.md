@@ -7,13 +7,12 @@ secrets and tool-managed machinery are left in place and ignored.
 
 | Tracked | Tool-managed (NOT tracked) |
 |---------|----------------------------|
-| `opencode.json` — OpenRouter (default) + Ollama providers, per-role model routing, permissions, MCP servers | `node_modules/`, `package*.json`, `bun.lock` — plugin machinery (opencode regenerates these) |
+| `opencode.json` — OpenAI defaults, OpenRouter agents, Ollama local models, permissions, MCP servers | `node_modules/`, `package*.json`, `bun.lock` — plugin machinery (opencode regenerates these) |
 | `AGENTS.md` — global rules | `~/.local/share/opencode/` — `auth.json`, `account.json`, `opencode.db`, state (separate data dir) |
-| `commands/` — custom `/commands` (generic `test`, `lint`, `cov`; plus `interview`, `council`, `model-health`, `tune-config`, `tmux-context`, `tmux-logs`) | |
+| `commands/` — custom `/commands` (generic `test`, `lint`, `cov`; plus `interview`, `council`, `model-health`, `tune-config`, `tmux-logs`) | |
 | `agents/` — subagents (`explore`, `review`, `plan`, `tdd`, `council-{code,cli,vision,reason,general}`) + `config-tuner` | |
 | `skills/` — on-demand instruction sets for project-specific workflows (`uv-python`) | |
 | `themes/` — custom TUI theme (`carbonfox-jake`); `tui.json` selects it | |
-| `plugins/` — TS plugins (`tmux-panes` — auto-spawns a tmux pane per subagent; needs `opencode --port 4096` inside tmux) | |
 | `modes/`, `tools/` *(if added later)* | |
 
 Secrets live in `~/.local/share/opencode/`, not in the config dir, so nothing
@@ -23,7 +22,7 @@ a local Ollama provider).
 
 ## Activate
 
-`~/.config/opencode/` already exists (opencode writes plugin files there), so
+`~/.config/opencode/` may already contain tool-managed files, so
 the live `opencode.json` will conflict on first stow. Move it into the repo,
 then stow links it back:
 
@@ -34,3 +33,8 @@ cd ~/.dots && stow opencode
 ```
 
 To remove the symlink: `cd ~/.dots && stow -D opencode`.
+
+## Validate
+
+Run `dots doctor` to validate the resolved config when opencode is installed,
+along with the repository and Stow health checks.

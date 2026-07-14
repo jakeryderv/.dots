@@ -4,6 +4,9 @@ model: openrouter/~anthropic/claude-sonnet-latest
 mode: subagent
 permission:
   edit: allow
+  task: deny
+  webfetch: deny
+  websearch: deny
   bash:
     "*": ask
     "git push *": deny

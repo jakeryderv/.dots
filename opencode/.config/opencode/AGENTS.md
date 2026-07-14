@@ -35,9 +35,12 @@
   a workaround. Suggest, don't self-install.
 
 ## Complex Task Workflow (Ultrawork)
-When tasked with a large feature or refactor, do not jump straight into coding. Follow this pipeline:
+For architectural, high-risk, or broad cross-cutting work, use this pipeline:
 1. Delegate to `@explore` to find relevant files.
 2. (Optional) Delegate to `@librarian` if external API references are needed.
 3. Delegate to `@plan` to write a step-by-step technical spec. Wait for my approval.
 4. Delegate to `@fixer` to implement the approved spec.
 5. Delegate to `@review` to audit the code changes for correctness.
+
+For focused or moderate changes, inspect the relevant files, implement directly,
+and run targeted verification without forcing the full delegation pipeline.

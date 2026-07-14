@@ -272,6 +272,12 @@ doctor_cmd() {
     if grep -q '\.dots/_bash/_init_\.sh' "$HOME/.bashrc" 2>/dev/null; then ok "\$HOME/.bashrc sources _bash/_init_.sh"; else warn "\$HOME/.bashrc does not appear to source _bash/_init_.sh"; fail=1; fi
     if [[ -f "$REPO_ROOT/_bash/local.sh" ]]; then ok "_bash/local.sh exists"; else warn "_bash/local.sh missing; copy _bash/local.sh.example"; fi
 
+    if command -v opencode >/dev/null 2>&1; then
+        if opencode debug config >/dev/null 2>&1; then ok "opencode resolved config is valid"; else warn "opencode config failed to load"; fail=1; fi
+    else
+        warn "opencode unavailable; skipping resolved config validation"
+    fi
+
     local check_log stow_log status_log
     check_log="$(mktemp)"
     stow_log="$(mktemp)"

@@ -17,9 +17,11 @@ Steps:
    use `@council-general`.
 2. Use the Task tool to ask the selected members IN PARALLEL, giving each the
    full question plus any media.
-3. Wait for all selected members to finish. Then write ONE synthesized answer
-   that combines their strongest points, resolves any disagreements, and briefly
-   notes which member contributed what.
+3. Wait for all selected members to finish. If a member returns an empty result,
+   errors, or times out, retry that member once. If the retry also fails, continue
+   with the usable reports and disclose the missing contribution; never invent it.
+4. Write ONE synthesized answer that combines the strongest points, resolves any
+   disagreements, and briefly notes which member contributed what.
 
 Question:
 $ARGUMENTS
