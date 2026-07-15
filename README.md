@@ -29,6 +29,8 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 | [`tmux`](tmux/README.md) | `~/.tmux.conf` | tmux config |
 | [`starship`](starship/README.md) | `~/.config/starship.toml` | Starship prompt |
 | [`qutebrowser`](qutebrowser/README.md) | `~/.config/qutebrowser/` | qutebrowser config |
+| [`dolphin`](dolphin/README.md) | `~/.config/dolphinrc`, `~/.local/share/dolphin/` | Dolphin file manager preferences |
+| [`thunar`](thunar/README.md) | `~/.config/Thunar/`, `~/.config/xfce4/`, `~/.local/` | Thunar preferences and scoped Carbonfox theme |
 | [`opencode`](opencode/README.md) | `~/.config/opencode/` | opencode agent config |
 | [`pi`](pi/README.md) | `~/.pi/agent/` | Pi coding-agent config |
 | [`fonts`](fonts/README.md) | `~/.local/share/fonts/` | Nerd Fonts |

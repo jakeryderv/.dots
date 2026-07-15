@@ -1,0 +1,11 @@
+[Dolphin]
+GroupedSorting=false
+PreviewsShown=true
+SortFoldersFirst=true
+SortHiddenLast=true
+SortOrder=0
+SortRole=text
+Timestamp=2026,7,15,16,28,55.506
+Version=4
+ViewMode=2
+VisibleRoles=CustomizedDetails,Details_text,Details_size,Details_modificationtime,Details_permissions

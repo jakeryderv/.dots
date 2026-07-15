@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Thunar File Manager
+GenericName=File Manager
+Comment=Browse files with a Carbonfox-themed Thunar
+Keywords=file manager;files;folders;directories;explorer;browser;home;trash;
+Exec=thunar-carbonfox %U
+Icon=org.xfce.thunar
+Terminal=false
+StartupNotify=true
+Type=Application
+MimeType=inode/directory;
+Categories=System;Core;GTK;FileTools;FileManager;

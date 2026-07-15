@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Carbonfox Thunar
+Comment=Carbonfox-inspired GTK 3 theme scoped to Thunar
+
+[X-GNOME-Metatheme]
+GtkTheme=Carbonfox-Thunar
+MetacityTheme=Carbonfox-Thunar
+IconTheme=Cosmic
+CursorTheme=Cosmic
+ButtonLayout=close,minimize,maximize:
