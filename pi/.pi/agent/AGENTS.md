@@ -22,6 +22,7 @@
 - Look for unnecessary entanglement between concerns such as state, time, policy, data representation, and implementation details.
 - Preserve flexibility and explore multiple viable approaches when design choices are meaningful.
 - Follow existing project conventions unless there is a clear reason to diverge.
+- When in a project, if conventions or local pi config can be improved, provide recommendations and suggestions.
 
 ## Output Style
 
