@@ -42,6 +42,11 @@
       "type": "local",
       "command": ["npx", "-y", "@playwright/mcp@0.0.78"],
       "enabled": true
+    },
+    "railway": {
+      "type": "local",
+      "command": ["railway", "mcp"],
+      "enabled": true
     }
   },
   "tool_output": {

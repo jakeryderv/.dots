@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-export GTK_THEME=Carbonfox-Thunar
-exec /usr/bin/thunar "$@"
