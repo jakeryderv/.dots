@@ -18,7 +18,7 @@ alias fcd='cd $(fdfind --type d | fzf)'
 alias tmls='tmux ls'
 alias tma='tmux attach -t $(tmux ls -F "#{session_name}" | fzf)'
 tms() {
-	tmux new-session -A -s "$1"
+    tmux new-session -A -s "$1"
 }
 alias tmks='tmux list-sessions | fzf | cut -d: -f1 | xargs tmux kill-session -t'
 alias tmka='tmux kill-server'
@@ -48,3 +48,22 @@ alias lsl="shopt -s dotglob; ls -ldF --color=auto --group-directories-first [^.]
 
 # alert for long running commands, e.g.  sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# ── Git shortcuts ──
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gaa='git add .'
+alias gc='git commit -m'
+alias gp='git push'
+alias gl='git pull'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gb='git branch'
+alias gd='git diff'
+
+# Add all, commit, and push in one shot: gacp "your message"
+gacp() { git add . && git commit -m "$1" && git push; }
+
+# New branch + push it with upstream set: gnew feature-name
+gnew() { git checkout -b "$1" && git push -u origin "$1"; }

@@ -1,9 +1,9 @@
 {
-  "lastChangelogVersion": "0.80.7",
+  "lastChangelogVersion": "0.81.0",
   "theme": "carbonfox",
-  "defaultProvider": "openai-codex",
+  "defaultProvider": "openai",
   "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "medium",
   "quietStartup": false,
   "terminal": {
     "showTerminalProgress": true
