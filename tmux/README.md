@@ -29,7 +29,7 @@ Not managed by stow — install separately:
   ```
 
   Then reload and press `prefix + I` (capital i) to install the plugins listed
-  at the bottom of `.tmux.conf` (resurrect, continuum, yank, tmux-fzf).
+  at the bottom of `.tmux.conf` (resurrect, continuum, tmux-fzf).
 - **fzf** and **tmux-sessionizer** — the session picker (`prefix + S`) and
   sessionizer (`prefix + f`) need these on `PATH`. Install via
   [`_helpers`](../_helpers/README.md) (`install-fzf.sh`,
