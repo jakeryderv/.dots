@@ -31,9 +31,9 @@ Usage:
   dots packages
   dots status [PKG...]
   dots doctor
-  dots stow [--apply] [PKG...]
-  dots restow [--apply] [PKG...]
-  dots unstow [--apply] [PKG...]
+  dots stow [--apply] [--no-folding] [PKG...]
+  dots restow [--apply] [--no-folding] [PKG...]
+  dots unstow [--apply] [--no-folding] [PKG...]
   dots diff PKG...
   dots adopt [--apply] PKG...
   dots check
@@ -46,6 +46,7 @@ Defaults:
 
 Notes:
   - Mutating stow commands are dry-run by default; pass --apply to modify files.
+  - --no-folding keeps target directories real and links package files within them.
   - Package names default to all non-hidden, non-underscore top-level dirs.
   - _bash, _dots, _helpers, and _wallpapers are intentionally not stow packages.
 EOF
@@ -114,11 +115,13 @@ is_ignored() {
 stow_cmd() {
     local mode="$1"; shift
     local apply=0
+    local no_folding=0
     local args=()
     while (($#)); do
         case "$1" in
             --apply|-y) apply=1 ;;
             --dry-run|-n) apply=0 ;;
+            --no-folding) no_folding=1 ;;
             --help|-h) usage; exit 0 ;;
             --) shift; args+=("$@"); break ;;
             -*) err "unknown option for $mode: $1"; exit 2 ;;
@@ -139,6 +142,9 @@ stow_cmd() {
         unstow) stow_args+=(-D) ;;
         adopt) stow_args+=(--adopt) ;;
     esac
+    if ((no_folding)); then
+        stow_args+=(--no-folding)
+    fi
 
     if [[ "$mode" == "adopt" && $apply -eq 1 ]]; then
         warn "stow --adopt can rewrite repo files. Review 'git diff' immediately after."
@@ -238,7 +244,7 @@ repo_check_cmd() {
 
 deps_cmd() {
     local required=(bash git stow python3 find sed awk grep cmp readlink file)
-    local optional=(shellcheck luac fc-cache starship nvim tmux fzf bat batcat rg fd fdfind lazygit qutebrowser pi opencode)
+    local optional=(shellcheck luac fc-cache starship vim nvim tmux fzf bat batcat rg fd fdfind lazygit qutebrowser pi opencode)
     local cmd missing=0
     printf '%sRequired:%s\n' "$BOLD" "$RESET"
     for cmd in "${required[@]}"; do

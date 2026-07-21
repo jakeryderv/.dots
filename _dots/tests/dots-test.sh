@@ -9,12 +9,13 @@ trap 'rm -rf "$TEST_ROOT"' EXIT
 
 fixture="$TEST_ROOT/repo"
 target="$TEST_ROOT/home"
-mkdir -p "$fixture/_dots/bin" "$fixture/alpha/.config/app" "$fixture/beta/.config/other" "$target/.config/app"
+mkdir -p "$fixture/_dots/bin" "$fixture/alpha/.config/app" "$fixture/beta/.config/other" "$fixture/gamma/.vim" "$target/.config/app"
 cp "$DOTS_SOURCE" "$fixture/_dots/bin/dots"
 printf '%s\n' '--ignore=ignored[.]cache' >"$fixture/.stowrc"
 printf '%s\n' ignored >"$fixture/alpha/.config/app/ignored.cache"
 printf '%s\n' tracked >"$fixture/alpha/.config/app/tracked.conf"
 printf '%s\n' beta >"$fixture/beta/.config/other/beta.conf"
+printf '%s\n' gamma >"$fixture/gamma/.vim/vimrc"
 
 run_dots() {
     env DOTS_REPO="$fixture" DOTS_TARGET="$target" bash "$fixture/_dots/bin/dots" "$@"
@@ -50,7 +51,15 @@ run_dots stow --apply alpha >/dev/null 2>&1
 [[ -L "$target/.config/app/tracked.conf" ]] || { echo 'FAIL: --apply did not create tracked link' >&2; exit 1; }
 [[ ! -e "$target/.config/app/ignored.cache" ]] || { echo 'FAIL: --apply linked ignored file' >&2; exit 1; }
 
+run_dots stow --no-folding --apply gamma >/dev/null 2>&1
+[[ -d "$target/.vim" && ! -L "$target/.vim" ]] || { echo 'FAIL: --no-folding did not keep target directory real' >&2; exit 1; }
+[[ -L "$target/.vim/vimrc" ]] || { echo 'FAIL: --no-folding did not create an individual file link' >&2; exit 1; }
+
+run_dots restow --no-folding --apply gamma >/dev/null 2>&1
+[[ -d "$target/.vim" && ! -L "$target/.vim" ]] || { echo 'FAIL: --no-folding restow refolded target directory' >&2; exit 1; }
+[[ -L "$target/.vim/vimrc" ]] || { echo 'FAIL: --no-folding restow lost individual file link' >&2; exit 1; }
+
 output="$(run_dots stow all alpha 2>&1)"
-[[ "$output" == *'alpha beta'* ]] || { echo 'FAIL: all expansion was not sorted/deduplicated' >&2; exit 1; }
+[[ "$output" == *'alpha beta gamma'* ]] || { echo 'FAIL: all expansion was not sorted/deduplicated' >&2; exit 1; }
 
 echo 'dots tests passed'

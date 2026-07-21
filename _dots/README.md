@@ -30,6 +30,7 @@ dots status          # verify every package file resolves back to this repo
 dots doctor          # repo health: git, ignores, READMEs, syntax, JSON, stow
 dots stow            # dry-run all stow packages
 dots stow --apply    # stow all packages
+dots stow --no-folding --apply vim  # keep ~/.vim real; link tracked files inside
 dots diff <pkg>      # compare live target files against repo sources
 dots check           # portable syntax/parser/lint/behavior checks (CI-safe)
 dots deps            # required/optional external command check

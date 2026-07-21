@@ -1,0 +1,67 @@
+" Personal Vim configuration. Neovim has a separate Lua-based config.
+
+set nocompatible
+scriptencoding utf-8
+
+let mapleader = " "
+let maplocalleader = " "
+
+filetype plugin indent on
+syntax enable
+
+" Editing and navigation
+set number
+set relativenumber
+set mouse=a
+set hidden
+set breakindent
+set cursorline
+set scrolloff=10
+set splitright
+set splitbelow
+set confirm
+
+" Search and completion
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+set wildmenu
+set wildmode=longest:full,full
+
+" Indentation and visible whitespace
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set list
+set listchars=tab:»\ ,trail:·,nbsp:␣
+
+" Responsiveness and terminal colors
+set updatetime=250
+set timeoutlen=300
+set termguicolors
+set background=dark
+
+" Keep persistent undo data local and out of the dotfiles repository.
+let s:undo_dir = expand('~/.vim/undo')
+if !isdirectory(s:undo_dir)
+  call mkdir(s:undo_dir, 'p', 0700)
+endif
+execute 'set undodir=' . fnameescape(s:undo_dir . '//')
+set undofile
+
+" Seamless Ctrl-h/j/k/l navigation across Vim splits and tmux panes.
+function! s:Navigate(direction, tmux_direction) abort
+  let l:previous_window = winnr()
+  execute 'wincmd ' . a:direction
+  if winnr() == l:previous_window && !empty($TMUX)
+    call system('tmux select-pane ' . a:tmux_direction)
+  endif
+endfunction
+
+nnoremap <silent> <C-h> :call <SID>Navigate('h', '-L')<CR>
+nnoremap <silent> <C-j> :call <SID>Navigate('j', '-D')<CR>
+nnoremap <silent> <C-k> :call <SID>Navigate('k', '-U')<CR>
+nnoremap <silent> <C-l> :call <SID>Navigate('l', '-R')<CR>
+nnoremap <silent> <C-\> :call <SID>Navigate('p', '-l')<CR>
+

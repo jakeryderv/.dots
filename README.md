@@ -27,6 +27,7 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 | [`kitty`](kitty/README.md) | `~/.config/kitty/` | Kitty terminal config |
 | [`wezterm`](wezterm/README.md) | `~/.config/wezterm/` | WezTerm terminal config |
 | [`nvim`](nvim/README.md) | `~/.config/nvim/` | Neovim config |
+| [`vim`](vim/README.md) | `~/.vim/vimrc` | Lightweight classic Vim config |
 | [`tmux`](tmux/README.md) | `~/.tmux.conf` | tmux config |
 | [`starship`](starship/README.md) | `~/.config/starship.toml` | Starship prompt |
 | [`qutebrowser`](qutebrowser/README.md) | `~/.config/qutebrowser/` | qutebrowser config |
