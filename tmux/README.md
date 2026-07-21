@@ -44,6 +44,8 @@ Not managed by stow — install separately:
 - **Resize mode** — `prefix + r` enters a sticky mode where `hjkl`/`HJKL` resize
   panes until Escape/Enter/q.
 - **Carbonfox-matched** status bar and pane borders.
+- **Persistent mode badge** — the status bar shows `NORMAL`, `PREFIX`, `COPY`,
+  or `RESIZE`, with a separate `SYNC` badge when pane synchronization is active.
 - **True color + image passthrough** — `allow-passthrough` + terminal-features
   enable kitty/iTerm2 image protocols (used by [`nvim`](../nvim/README.md)'s
   `image.nvim`). Sixel is intentionally dropped (see the note in `.tmux.conf`).
