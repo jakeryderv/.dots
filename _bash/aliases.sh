@@ -5,7 +5,7 @@
 alias pad="nvim ~/.scratchpad.md"
 
 # source ~/.bashrc easily
-alias brc='source ~/.bashrc'
+alias brc='echo "sourcing ~/.bashrc" && source ~/.bashrc'
 
 # get shell level
 alias shlvl='echo $SHLVL'
