@@ -1,0 +1,5 @@
+[user]
+	name = Your Name
+	email = you@example.com
+
+# Put machine-specific credential helpers and other local overrides here.

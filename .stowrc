@@ -3,6 +3,7 @@
 
 --ignore=README[.]md
 --ignore=local[.]sh
+--ignore=[.]gitconfig[.]local[.]example
 --ignore=__pycache__
 --ignore=[.]ruff_cache
 --ignore=[.]pytest_cache

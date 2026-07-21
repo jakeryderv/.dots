@@ -21,6 +21,9 @@ pi/.pi/rules/
 # Bash — machine-specific config (use local.sh.example as template)
 _bash/local.sh
 
+# Git — machine-specific identity, credentials, and overrides
+git/.gitconfig.local
+
 # opencode — track user-authored config; ignore plugin machinery
 opencode/.config/opencode/node_modules/
 opencode/.config/opencode/package*.json

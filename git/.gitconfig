@@ -1,0 +1,35 @@
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+[fetch]
+	prune = true
+[push]
+	autoSetupRemote = true
+	default = simple
+[init]
+	defaultBranch = main
+[core]
+	editor = nvim
+[diff]
+	algorithm = histogram
+[pull]
+	rebase = true
+[rebase]
+	autoStash = true
+[color]
+	ui = auto
+[rerere]
+	enabled = true
+[merge]
+	conflictStyle = zdiff3
+[alias]
+	lg = log --oneline --graph --decorate --all
+	last = log -1 HEAD --stat
+	unstage = reset HEAD --
+	undo = reset --soft HEAD~1
+	branches = branch -a
+	cleanup = !git branch --merged main | grep -v \"^\\*\\|main\" | xargs -r git branch -d
+[include]
+	path = ~/.gitconfig.local

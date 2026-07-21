@@ -21,6 +21,7 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 
 | Package | Deploys to | What it is |
 | --- | --- | --- |
+| [`git`](git/README.md) | `~/.gitconfig` | Global Git behavior, aliases, and defaults |
 | [`alacritty`](alacritty/README.md) | `~/.config/alacritty/` | Alacritty terminal config |
 | [`ghostty`](ghostty/README.md) | `~/.config/ghostty/` | Ghostty terminal config |
 | [`kitty`](kitty/README.md) | `~/.config/kitty/` | Kitty terminal config |
