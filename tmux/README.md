@@ -39,6 +39,8 @@ Not managed by stow — install separately:
 
 - **Prefix `Alt+a`** — chosen so root `Ctrl+hjkl` stays free for
   vim-tmux-navigator, and to avoid the terminals' `ctrl+alt` tab/split keybinds.
+- **Unified picker popups** — session switching (`prefix + S`), project sessions
+  (`prefix + f`), and tmux-fzf (`prefix + F`) use 70% × 60% popups.
 - **vim-tmux-navigator** — seamless `Ctrl+hjkl` pane/split navigation across
   tmux and Neovim (no plugin needed on the tmux side; the config detects vim).
 - **Resize mode** — `prefix + r` enters a sticky mode where `hjkl`/`HJKL` resize
