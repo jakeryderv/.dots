@@ -10,16 +10,6 @@
         "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
       },
       "lifecycle": "lazy"
-    },
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@0.0.76",
-        "--browser", "chrome",
-        "--viewport-size", "1440x900"
-      ],
-      "lifecycle": "lazy"
     }
   }
 }

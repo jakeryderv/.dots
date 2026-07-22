@@ -10,6 +10,9 @@ cd "$REPO_ROOT"
 echo 'Checking package documentation...'
 bash _helpers/verify-readmes.sh >/dev/null
 
+echo 'Checking shared agent skills...'
+bash _helpers/verify-agent-skills.sh
+
 echo 'Checking Bash syntax...'
 while IFS= read -r -d '' file; do
     if head -n 1 "$file" | grep -Eq '^#!.*\bbash\b'; then

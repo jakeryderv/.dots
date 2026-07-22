@@ -32,6 +32,15 @@ alias icat="kitten icat"
 # python venv shortcut
 alias activate="source .venv/bin/activate"
 
+# Keep shared Playwright CLI browser sessions separate when coding agents run
+# concurrently. An explicitly supplied session name still wins.
+alias codex='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-codex}" codex'
+alias claude='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-claude}" claude'
+alias pi='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-pi}" pi'
+# OpenCode discovers both ~/.agents/skills and ~/.claude/skills by default.
+# Ignore the Claude compatibility mirror so each shared skill is loaded once.
+alias opencode='OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1 PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-opencode}" opencode'
+
 # color aliases
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
