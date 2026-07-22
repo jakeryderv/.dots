@@ -10,6 +10,9 @@ See the root [README](../README.md) for shared stow mechanics.
 |------|------|
 | `.tmux.conf` | Single-file config: prefix, display/colors, status bar, keybinds, plugins. |
 
+The generated cheatsheet command is provided by
+[`scripts`](../scripts/README.md) as `~/.local/bin/tmux-cheatsheet`.
+
 ## Activate
 
 ```bash
@@ -40,6 +43,9 @@ Not managed by stow — install separately:
 
 - **Prefix `Alt+a`** — chosen so root `Ctrl+hjkl` stays free for
   vim-tmux-navigator, and to avoid the terminals' `ctrl+alt` tab/split keybinds.
+- **Generated keybinding cheatsheet** — `prefix + ?` opens a searchable popup
+  built from tmux's live effective bindings, including defaults, overrides,
+  custom modes, and plugin bindings. Use `/` to search and `q` to close.
 - **Unified picker popups** — session switching (`prefix + S`), project sessions
   (`prefix + f`), and tmux-fzf (`prefix + F`) use 70% × 60% popups.
 - **Terminal text extraction** — Extrakto (`prefix + Tab`) fuzzy-finds text,

@@ -1,0 +1,224 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly blue=$'\033[38;2;120;169;255m'
+readonly yellow=$'\033[38;2;249;168;38m'
+readonly muted=$'\033[38;2;162;169;176m'
+readonly bold=$'\033[1m'
+readonly reset=$'\033[0m'
+
+binding_rows() {
+	local table=$1
+
+	if ! tmux list-keys -T "$table" >/dev/null 2>&1; then
+		return
+	fi
+
+	{
+		tmux list-keys -T "$table" | awk '
+			{
+				for (i = 1; i <= NF; i++) {
+					if ($i == "-T") {
+						key = $(i + 2)
+						gsub(/\\\\/, "\\", key)
+						sub(/^\\/, "", key)
+						print key
+						break
+					}
+				}
+			}'
+		printf '%s\n' '__TMUX_CHEATSHEET_BINDINGS__'
+		tmux list-keys -a -N -P '' -T "$table"
+	} | awk '
+		$0 == "__TMUX_CHEATSHEET_BINDINGS__" {
+			bindings = 1
+			next
+		}
+
+		!bindings {
+			keys[++key_count] = $0
+			next
+		}
+
+		{
+			best = ""
+			for (i = 1; i <= key_count; i++) {
+				key = keys[i]
+				if (substr($0, 1, length(key)) == key && length(key) > length(best)) {
+					best = key
+				}
+			}
+
+			if (best == "") {
+				next
+			}
+
+			description = substr($0, length(best) + 1)
+			sub(/^[[:space:]]+/, "", description)
+			print best "\t" description
+		}'
+}
+
+describe_binding() {
+	local key=$1
+	local description=$2
+	local action
+
+	case "$description" in
+		*tmux-fzf/main.sh*) printf '%s' 'Open tmux-fzf manager' ;;
+		*extrakto/scripts/open.sh*) printf '%s' 'Open Extrakto text picker' ;;
+		*tmux-floax/scripts/floax.sh*) printf '%s' 'Toggle FloaX scratch terminal' ;;
+		*tmux-floax/scripts/menu.sh*) printf '%s' 'Open FloaX controls' ;;
+		*tmux-floax/scripts/embed.sh*) printf '%s' 'FloaX: embed popup as a normal pane' ;;
+		*'zoom-options.sh out'*) printf '%s' 'FloaX: shrink popup' ;;
+		*'zoom-options.sh in'*) printf '%s' 'FloaX: enlarge popup' ;;
+		*'zoom-options.sh full'*) printf '%s' 'FloaX: toggle fullscreen' ;;
+		*'zoom-options.sh reset'*) printf '%s' 'FloaX: reset popup size' ;;
+		*'zoom-options.sh lock'*) printf '%s' 'FloaX: lock popup size' ;;
+		*'zoom-options.sh unlock'*) printf '%s' 'FloaX: unlock popup size' ;;
+		*tpm/bindings/install_plugins*) printf '%s' 'TPM: install plugins' ;;
+		*tpm/bindings/update_plugins*) printf '%s' 'TPM: update plugins' ;;
+		*tpm/bindings/clean_plugins*) printf '%s' 'TPM: remove unused plugins' ;;
+		*tmux-resurrect/scripts/save.sh*) printf '%s' 'Resurrect: save tmux environment' ;;
+		*tmux-resurrect/scripts/restore.sh*) printf '%s' 'Resurrect: restore tmux environment' ;;
+		*)
+			if [[ $description =~ send-keys[[:space:]]+-F?X[[:space:]]+([a-z-]+) ]]; then
+				action=${BASH_REMATCH[1]}
+				case "$action" in
+					begin-selection) printf '%s' 'Begin selection' ;;
+					clear-selection) printf '%s' 'Clear selection' ;;
+					copy-pipe-and-cancel|copy-selection-and-cancel) printf '%s' 'Copy selection and exit copy mode' ;;
+					copy-pipe-end-of-line-and-cancel) printf '%s' 'Copy to end of line and exit' ;;
+					append-selection-and-cancel) printf '%s' 'Append selection to buffer and exit' ;;
+					cursor-left|cursor-right|cursor-up|cursor-down) printf 'Move %s' "${action#cursor-}" ;;
+					start-of-line) printf '%s' 'Move to start of line' ;;
+					end-of-line) printf '%s' 'Move to end of line' ;;
+					back-to-indentation) printf '%s' 'Move to first non-space character' ;;
+					history-top) printf '%s' 'Go to top of history' ;;
+					history-bottom) printf '%s' 'Go to bottom of history' ;;
+					top-line|middle-line|bottom-line) printf '%s' "Move to ${action%-line} of screen" ;;
+					page-up|page-down|halfpage-up|halfpage-down|scroll-up|scroll-down|scroll-middle)
+						action=${action//-/ }
+						printf '%s' "${action^}"
+						;;
+					previous-word|previous-space|next-word|next-word-end|next-space|next-space-end)
+						action=${action//-/ }
+						printf '%s' "${action^}"
+						;;
+					search-forward) printf '%s' 'Search forward' ;;
+					search-backward) printf '%s' 'Search backward' ;;
+					search-again) printf '%s' 'Repeat search' ;;
+					search-reverse) printf '%s' 'Repeat search in reverse' ;;
+					jump-forward|jump-backward|jump-to-forward|jump-to-backward|jump-again|jump-reverse)
+						action=${action//-/ }
+						printf '%s' "${action^}"
+						;;
+					next-matching-bracket) printf '%s' 'Jump to matching bracket' ;;
+					previous-paragraph|next-paragraph)
+						action=${action//-/ }
+						printf '%s' "${action^}"
+						;;
+					select-line) printf '%s' 'Select current line' ;;
+					rectangle-toggle) printf '%s' 'Toggle rectangular selection' ;;
+					other-end) printf '%s' 'Move to other end of selection' ;;
+					set-mark) printf '%s' 'Set navigation mark' ;;
+					jump-to-mark) printf '%s' 'Jump to navigation mark' ;;
+					toggle-position) printf '%s' 'Toggle between cursor positions' ;;
+					refresh-from-pane) printf '%s' 'Refresh captured pane contents' ;;
+					cancel) printf '%s' 'Exit copy mode' ;;
+					goto-line) printf '%s' 'Go to line' ;;
+					*)
+						action=${action//-/ }
+						printf '%s' "${action^}"
+						;;
+				esac
+			elif [[ $description == command-prompt*'(repeat)'* ]]; then
+				printf '%s' 'Set repeat count'
+			elif [[ $description == *'select-pane -L'* ]]; then
+				printf '%s' 'Select pane to the left'
+			elif [[ $description == *'select-pane -D'* ]]; then
+				printf '%s' 'Select pane below'
+			elif [[ $description == *'select-pane -U'* ]]; then
+				printf '%s' 'Select pane above'
+			elif [[ $description == *'select-pane -R'* ]]; then
+				printf '%s' 'Select pane to the right'
+			elif [[ $description == *'select-pane -l'* ]]; then
+				printf '%s' 'Select previously active pane'
+			elif ((${#description} > 96)); then
+				printf '%s…' "${description:0:95}"
+			else
+				printf '%s' "$description"
+			fi
+			;;
+	esac
+}
+
+print_group() {
+	local title=$1
+	shift
+	local entry key description
+
+	(($# > 0)) || return 0
+	printf '\n  %s%s%s%s\n' "$bold" "$muted" "$title" "$reset"
+	for entry in "$@"; do
+		IFS=$'\t' read -r key description <<<"$entry"
+		printf '    %s%-12s%s %s\n' "$yellow" "$key" "$reset" "$description"
+	done
+}
+
+print_prefix_commands() {
+	local key description friendly searchable entry
+	local -a sessions=() windows=() panes=() plugins=() copy_and_commands=() other=()
+
+	printf '\n%s%sPREFIX COMMANDS%s\n' "$bold" "$blue" "$reset"
+	while IFS=$'\t' read -r key description; do
+		[[ -n $key ]] || continue
+		friendly=$(describe_binding "$key" "$description")
+		searchable="${description,,} ${friendly,,}"
+		entry=$key$'\t'$friendly
+
+		case "$searchable" in
+			*session*|*client*|*detach*|*resurrect*) sessions+=("$entry") ;;
+			*window*|*layout*|*alert*) windows+=("$entry") ;;
+			*tmux-fzf*|*extrakto*|*floax*|*tpm/*|*'tpm:'*|*/plugins/*) plugins+=("$entry") ;;
+			*pane*|*split*|*synchron*|*marked*) panes+=("$entry") ;;
+			*copy*|*paste*|*buffer*|*command*|*message*|*binding*|*customize*) copy_and_commands+=("$entry") ;;
+			*) other+=("$entry") ;;
+		esac
+	done < <(binding_rows prefix)
+
+	print_group 'SESSIONS & CLIENTS' "${sessions[@]}"
+	print_group 'WINDOWS & LAYOUTS' "${windows[@]}"
+	print_group 'PANES' "${panes[@]}"
+	print_group 'PLUGINS & TOOLS' "${plugins[@]}"
+	print_group 'COPY, BUFFERS & COMMANDS' "${copy_and_commands[@]}"
+	print_group 'OTHER BUILT-INS' "${other[@]}"
+}
+
+print_section() {
+	local title=$1
+	local table=$2
+	local key description friendly
+
+	printf '\n%s%s%s%s\n' "$bold" "$blue" "$title" "$reset"
+	while IFS=$'\t' read -r key description; do
+		[[ -n $key ]] || continue
+		friendly=$(describe_binding "$key" "$description")
+		printf '  %s%-12s%s %s\n' "$yellow" "$key" "$reset" "$friendly"
+	done < <(binding_rows "$table")
+}
+
+prefix=$(tmux show-option -gv prefix 2>/dev/null || printf 'prefix')
+
+printf '%s%sTMUX KEYBINDING CHEATSHEET%s\n' "$bold" "$blue" "$reset"
+printf '%sEffective bindings from the running server · Prefix: %s%s\n' "$muted" "$prefix" "$reset"
+printf '%sUse / to search, n/N for matches, and q to close.%s\n' "$muted" "$reset"
+printf '%sKey notation: C = Ctrl, M = Alt/Meta, S = Shift.%s\n' "$muted" "$reset"
+
+print_prefix_commands
+print_section 'GLOBAL KEYS (NO PREFIX)' root
+print_section 'COPY MODE (VI)' copy-mode-vi
+print_section 'RESIZE MODE' resize-mode
+
+printf '\n%sTip:%s %s + / describes one binding interactively.\n' "$blue" "$reset" "$prefix"

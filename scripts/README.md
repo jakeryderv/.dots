@@ -12,6 +12,12 @@ cd ~/.dots && stow scripts
 
 ## Scripts
 
+### `tmux-cheatsheet`
+
+Generates a colored, searchable reference from a running tmux server's
+effective prefix, root, vi copy-mode, and custom resize-mode key tables. The
+tmux config opens it in a `less` popup with `prefix + ?`.
+
 ### `bs`
 
 A composable `ls` replacement — a self-contained bash pipeline (gather → filter
