@@ -14,9 +14,20 @@ cd ~/.dots && stow scripts
 
 ### `tmux-cheatsheet`
 
-Generates a colored, searchable reference from a running tmux server's
-effective prefix, root, vi copy-mode, and custom resize-mode key tables. The
-tmux config opens it in an order-preserving fzf popup with `prefix + ?`.
+Generates a reference from a running tmux server's effective prefix, root, vi
+copy-mode, and custom resize-mode key tables. It includes defaults, overrides,
+and loaded plugin bindings. The tmux config opens its order-preserving fzf mode
+with `prefix + ?`.
+
+```bash
+tmux-cheatsheet             # colored terminal output
+tmux-cheatsheet --pick      # interactive fzf picker
+tmux-cheatsheet --plain     # plain output for logs and pipes
+NO_COLOR=1 tmux-cheatsheet  # standard no-color convention
+```
+
+`tmux` and a running server are required for every mode; `--pick` also requires
+`fzf`.
 
 ### `bs`
 

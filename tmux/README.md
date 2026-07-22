@@ -34,8 +34,9 @@ Not managed by stow — install separately:
   Then reload and press `prefix + I` (capital i) to install the plugins listed
   at the bottom of `.tmux.conf` (resurrect, continuum, tmux-fzf, and
   extrakto).
-- **fzf** and **tmux-sessionizer** — the session picker (`prefix + S`) and
-  sessionizer (`prefix + f`) need these on `PATH`. Install via
+- **fzf** and **tmux-sessionizer** — the generated cheatsheet (`prefix + ?`),
+  session picker (`prefix + S`), and sessionizer (`prefix + f`) need these on
+  `PATH`. Install via
   [`_helpers`](../_helpers/README.md) (`install-fzf.sh`,
   `install-tmux-sessionizer.sh`).
 
@@ -46,7 +47,8 @@ Not managed by stow — install separately:
 - **Generated keybinding cheatsheet** — `prefix + ?` opens a searchable popup
   built from tmux's live effective bindings, including defaults, overrides,
   custom modes, and plugin bindings. Type to filter, `Ctrl+U` to clear the
-  query, and `Escape` or `Ctrl+C` to close.
+  query, and `Escape` or `Ctrl+C` to close. The backing command also supports
+  `--plain`/`--no-color` output for logs, pipes, and tests.
 - **Unified picker popups** — session switching (`prefix + S`), project sessions
   (`prefix + f`), and tmux-fzf (`prefix + F`) use 70% × 60% popups.
 - **Terminal text extraction** — Extrakto (`prefix + Tab`) fuzzy-finds text,
