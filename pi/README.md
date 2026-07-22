@@ -9,7 +9,7 @@ and tool-managed state stay in the live `~/.pi/` dir and are gitignored.
 |---------|-------------------------------------|
 | `AGENTS.md` — global agent instructions | `auth.json` — credentials |
 | `settings.json` — provider/model defaults, enabled models, installed `packages` | `npm/` — pi installs the `packages` here (328 MB; regenerated from `settings.json`) |
-| `mcp.json` — MCP servers (`context7`, `playwright`; versions pinned) | `sessions/`, `mcp-cache.json`, `mcp-npx-cache.json`, `run-history.jsonl`, `intercom/`, `trust.json` — runtime state |
+| `mcp.json` — MCP servers (`context7` hosted remote, pinned local `playwright`) | `sessions/`, `mcp-cache.json`, `mcp-npx-cache.json`, `run-history.jsonl`, `intercom/`, `trust.json` — runtime state |
 | `extensions/` — custom TS extensions (`dump-system-prompt.ts`) | `~/.pi/web-search.json` (Exa API key), `exa-usage.json`, `playwright-profile/`, `rules/` — left in place |
 | `themes/` — custom TUI theme (`carbonfox.json`; selected in `settings.json`) | |
 | `skills/` — custom agent skills | |
@@ -32,13 +32,13 @@ binaries or secrets:
 
 | Dependency | Needed for | How it's resolved |
 |------------|-----------|-------------------|
-| **Node.js + npm/npx** | pi itself; installing `packages`; running MCP servers | system install |
+| **Node.js + npm/npx** | pi itself; installing `packages`; running local MCP servers | system install |
 | **GNU `stow`, `git`** | activating this config (symlinks) | system install |
 | **Language servers** (pyright, typescript-language-server, rust-analyzer, gopls, …) | `pi-lens` LSP nav/diagnostics | install per-language as needed; pi-lens uses whatever is on `PATH`. ast-grep is bundled (no install) |
 | **Chrome / Chromium** | `playwright` MCP browser automation | system install |
 | **Provider credentials** | model access (Anthropic / OpenAI / Google) | `~/.pi/agent/auth.json` (run pi and log in; not tracked) |
 | **Exa API key** | `pi-web-access` web search | `~/.pi/web-search.json` (not tracked) |
-| **Network** | first-run `npx` MCP fetch, package installs, web search | — |
+| **Network** | hosted Context7, first-run local MCP fetches, package installs, web search | — |
 
 Self-contained (no extra setup): `pi-subagents`, `pi-intercom`, `pi-web-access`
 fetch, and pi-lens's bundled ast-grep.
@@ -83,10 +83,10 @@ track latest. For tighter supply-chain or reproducibility needs — especially f
 third-party/community packages — add `@x.y.z` to a spec (e.g.
 `npm:pi-lens@1.2.3`).
 
-MCP server versions in `mcp.json`, by contrast, **are** pinned (`context7`,
-`@playwright/mcp`) for reproducibility, so they won't auto-update — bump them
-deliberately now and then (e.g. `npx @playwright/mcp@latest --version` to check
-current).
+Local MCP server versions in `mcp.json` are pinned (`@playwright/mcp`) for
+reproducibility, so they won't auto-update — bump them deliberately now and then
+(e.g. `npx @playwright/mcp@latest --version` to check current). Context7 uses
+its hosted MCP endpoint, so there is no local Context7 package version to bump.
 
 The playwright server uses its own default browser-profile location (no
 `--user-data-dir`), keeping the config portable across machines.

@@ -15,10 +15,10 @@ secrets and tool-managed machinery are left in place and ignored.
 | `themes/` — custom TUI theme (`carbonfox-jake`); `tui.json` selects it | |
 | `modes/`, `tools/` *(if added later)* | |
 
-Secrets live in `~/.local/share/opencode/`, not in the config dir, so nothing
-tracked here contains credentials. `opencode.json` itself uses `{env:VAR}` /
-`{file:...}` references for any secret values (none currently — it just defines
-a local Ollama provider).
+Provider secrets live in `~/.local/share/opencode/`, while the Context7 API key
+lives in the user-only `~/.config/context7/env` file. Nothing tracked here
+contains credentials: `opencode.json` uses `{env:CONTEXT7_API_KEY}` to resolve
+the key at runtime.
 
 ## Activate
 
