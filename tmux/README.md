@@ -29,7 +29,8 @@ Not managed by stow — install separately:
   ```
 
   Then reload and press `prefix + I` (capital i) to install the plugins listed
-  at the bottom of `.tmux.conf` (resurrect, continuum, tmux-fzf, tmux-floax).
+  at the bottom of `.tmux.conf` (resurrect, continuum, tmux-fzf, tmux-floax,
+  extrakto).
 - **fzf** and **tmux-sessionizer** — the session picker (`prefix + S`) and
   sessionizer (`prefix + f`) need these on `PATH`. Install via
   [`_helpers`](../_helpers/README.md) (`install-fzf.sh`,
@@ -41,6 +42,8 @@ Not managed by stow — install separately:
   vim-tmux-navigator, and to avoid the terminals' `ctrl+alt` tab/split keybinds.
 - **Unified picker popups** — session switching (`prefix + S`), project sessions
   (`prefix + f`), and tmux-fzf (`prefix + F`) use 70% × 60% popups.
+- **Terminal text extraction** — Extrakto (`prefix + Tab`) fuzzy-finds text,
+  paths, URLs, and lines from pane history; `Tab` inserts and `Enter` copies.
 - **Toggle terminal** — `prefix + t` toggles an 80% × 80% FloaX popup backed by
   a persistent `scratch` tmux session. It follows the active pane's current
   directory, and running programs remain alive while the popup is hidden.
