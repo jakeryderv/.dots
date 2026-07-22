@@ -213,7 +213,7 @@ prefix=$(tmux show-option -gv prefix 2>/dev/null || printf 'prefix')
 
 printf '%s%sTMUX KEYBINDING CHEATSHEET%s\n' "$bold" "$blue" "$reset"
 printf '%sEffective bindings from the running server · Prefix: %s%s\n' "$muted" "$prefix" "$reset"
-printf '%sUse / to search, n/N for matches, and q to close.%s\n' "$muted" "$reset"
+printf '%sType to filter · Ctrl+U clears · Esc or Ctrl+C closes.%s\n' "$muted" "$reset"
 printf '%sKey notation: C = Ctrl, M = Alt/Meta, S = Shift.%s\n' "$muted" "$reset"
 
 print_prefix_commands

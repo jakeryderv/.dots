@@ -45,7 +45,8 @@ Not managed by stow — install separately:
   vim-tmux-navigator, and to avoid the terminals' `ctrl+alt` tab/split keybinds.
 - **Generated keybinding cheatsheet** — `prefix + ?` opens a searchable popup
   built from tmux's live effective bindings, including defaults, overrides,
-  custom modes, and plugin bindings. Use `/` to search and `q` to close.
+  custom modes, and plugin bindings. Type to filter, `Ctrl+U` to clear the
+  query, and `Escape` or `Ctrl+C` to close.
 - **Unified picker popups** — session switching (`prefix + S`), project sessions
   (`prefix + f`), and tmux-fzf (`prefix + F`) use 70% × 60% popups.
 - **Terminal text extraction** — Extrakto (`prefix + Tab`) fuzzy-finds text,

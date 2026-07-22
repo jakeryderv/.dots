@@ -16,7 +16,7 @@ cd ~/.dots && stow scripts
 
 Generates a colored, searchable reference from a running tmux server's
 effective prefix, root, vi copy-mode, and custom resize-mode key tables. The
-tmux config opens it in a `less` popup with `prefix + ?`.
+tmux config opens it in an order-preserving fzf popup with `prefix + ?`.
 
 ### `bs`
 
