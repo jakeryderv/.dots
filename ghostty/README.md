@@ -39,6 +39,8 @@ Reload a running instance with the config-reload keybind (default
   [`_wallpapers`](../_wallpapers/README.md)).
 - **No window decorations** + zero padding, matching the kitty/alacritty setups.
 - **Keybinds** — `ctrl+alt`-based tab/split scheme chosen to avoid clashing with
-  tmux (prefix `Alt+a`) and vim-tmux-navigator (`Ctrl+hjkl`).
+  tmux (prefix `Alt+a`) and vim-tmux-navigator (`Ctrl+hjkl`). New/close tab use
+  `Ctrl+Alt+C`/`Ctrl+Alt+Shift+X`, replacing Ghostty's default
+  `Ctrl+Shift+T`/`Ctrl+Shift+W` bindings.
 - **Shell integration** — `ssh-env`/`ssh-terminfo` enabled so colors/keys work
   over SSH; `no-cursor` lets the block cursor apply at the prompt.

@@ -126,11 +126,17 @@ bell-features = no-system,no-audio,attention,no-title,border
 # false = always separate.)
 gtk-single-instance = detect
 
-# --- Keybinds: tabs & splits (ctrl+alt scheme, consistent with wezterm) ---
-# These ADD to Ghostty's ctrl+shift defaults (left as-is). All ctrl+alt-based,
-# so no clash with tmux (prefix Alt+a; vim-tmux-navigator's root Ctrl+hjkl).
+# --- Keybinds: tabs & splits (ctrl+alt scheme) ---
+# These add to Ghostty's defaults except for tab creation/closing, whose
+# ctrl+shift defaults are replaced below. The ctrl+alt namespace avoids tmux
+# (prefix Alt+a) and vim-tmux-navigator's root Ctrl+hjkl bindings.
 
-# Tabs: cycle and move
+# Tabs: create/close, cycle, and move. C/X mirror tmux's new/kill-window keys;
+# Shift+X closes the larger tab container while unshifted X closes one split.
+keybind = ctrl+shift+t=unbind
+keybind = ctrl+shift+w=unbind
+keybind = ctrl+alt+c=new_tab
+keybind = ctrl+alt+shift+x=close_tab:this
 keybind = ctrl+alt+n=next_tab
 keybind = ctrl+alt+p=previous_tab
 keybind = ctrl+alt+shift+n=move_tab:1
