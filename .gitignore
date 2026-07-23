@@ -24,6 +24,35 @@ _bash/local.sh
 # Git — machine-specific identity, credentials, and overrides
 git/.gitconfig.local
 
+# Claude Code — track user-authored config; ignore secrets + tool-managed state.
+# Safety nets: with ~/.claude pre-existing, stow only links the tracked files,
+# so state never enters the repo. These guard against an accidental fold (fresh
+# machine) or state copied in by hand.
+claude/.claude/.credentials.json
+claude/.claude/settings.local.json
+claude/.claude/history.jsonl
+claude/.claude/projects/
+claude/.claude/sessions/
+claude/.claude/session-env/
+claude/.claude/plugins/
+claude/.claude/shell-snapshots/
+claude/.claude/file-history/
+claude/.claude/paste-cache/
+claude/.claude/telemetry/
+claude/.claude/tasks/
+claude/.claude/jobs/
+claude/.claude/todos/
+claude/.claude/backups/
+claude/.claude/cache/
+claude/.claude/daemon/
+claude/.claude/daemon*.log
+claude/.claude/stats-cache.json
+claude/.claude/ide/
+claude/.claude/debug/
+claude/.claude/downloads/
+claude/.claude/chrome/
+claude/.claude/statsig/
+
 # opencode — track user-authored config; ignore plugin machinery
 opencode/.config/opencode/node_modules/
 opencode/.config/opencode/package*.json
