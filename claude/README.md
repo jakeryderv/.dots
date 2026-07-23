@@ -19,7 +19,11 @@ All other skills under `~/.claude/skills/` are owned by the separate
 `agent-skills` package (shared across agents via `~/.agents/skills/`); the two
 packages both link items into the real `~/.claude/skills/` directory.
 Claude-specific skills belong here; agent-portable ones belong in
-`agent-skills`.
+`agent-skills`. Prefer `--no-folding` when restowing either package — both
+link into `~/.claude/skills/`, and plain restows can transiently race on
+folding that directory. Third-party skills (cloudflare, playwright, railway)
+are not tracked at all — they're managed by skills.sh / vendor CLIs; see the
+`agent-skills` README.
 
 ## Deliberately not tracked
 

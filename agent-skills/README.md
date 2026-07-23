@@ -1,39 +1,66 @@
 # agent-skills
 
-Portable coding-agent skills, managed as one GNU Stow package. This directory
-is the source of truth for shared skills across Codex, Claude Code, Pi, and
-OpenCode.
+Personal and forked coding-agent skills, managed as one GNU Stow package.
+Only skills authored or modified here are tracked; **third-party skills are
+not vendored** — they're installed and updated by [skills.sh](https://skills.sh)
+or their own vendor CLI (see below), keeping this package purely "my config"
+no matter how many tools ship skills.
 
-The canonical tree deploys to `~/.agents/skills/`. Codex, Pi, and OpenCode read
-that standard location directly. Claude Code uses the compatibility symlinks
-under `~/.claude/skills/`; every one resolves back to the same canonical tree.
+The canonical tree deploys to `~/.agents/skills/` — the cross-agent standard
+location — with Claude Code compatibility links under `~/.claude/skills/`.
+skills.sh and the vendor CLIs use the same layout, so tracked and installed
+skills coexist in the same live directories.
 
-## Skill manifest
+## Tracked skills
 
-| Skill | Upstream / provenance |
+| Skill | Provenance |
 | --- | --- |
-| `agents-sdk` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
-| `cloudflare` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
-| `cloudflare-email-service` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
-| `cloudflare-one` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
-| `cloudflare-one-migrations` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
-| `durable-objects` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
-| `playwright-cli` | [`microsoft/playwright-cli`](https://github.com/microsoft/playwright-cli/tree/main/skills/playwright-cli) |
-| `sandbox-sdk` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
 | `systematic-debugging` | [`obra/superpowers`](https://github.com/obra/superpowers) 6.1.1 (MIT); salvaged on plugin removal, descriptions softened, cross-refs removed |
-| `turnstile-spin` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
-| `use-railway` | Railway CLI agent tooling; embedded caller revision `1.3.6` |
 | `verification-before-completion` | [`obra/superpowers`](https://github.com/obra/superpowers) 6.1.1 (MIT); salvaged on plugin removal, descriptions softened, cross-refs removed |
-| `web-perf` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
-| `workers-best-practices` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
-| `wrangler` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
+
+Claude-only skills (`project-status`, `suggest-optimization`) live in the
+`claude` package instead. OpenCode-only (`uv-python`) lives in `opencode`.
+
+## Third-party skills (not tracked)
+
+Installed globally per machine; re-run on a fresh machine after installing
+the CLIs:
+
+```bash
+# Cloudflare platform skills (11): agents-sdk, cloudflare, durable-objects,
+# sandbox-sdk, wrangler, workers-best-practices, web-perf, turnstile-spin,
+# cloudflare-one, cloudflare-one-migrations, cloudflare-email-service
+npx skills add -g cloudflare/skills --skill '*' -y
+
+# Playwright browser automation (repo also ships an internal 'dev'
+# maintenance skill — excluded)
+npx skills add -g microsoft/playwright-cli --skill playwright-cli -y
+
+# Railway (installs via its own CLI, not skills.sh; also handles MCP setup
+# via `railway setup agent`)
+railway skills install
+```
+
+Maintenance:
+
+```bash
+npx skills ls -g       # audit everything installed, per agent, with source
+npx skills update -g   # refresh third-party skills from upstream
+railway skills update  # railway skill is updated by its own CLI
+```
+
+Both installers write canonical copies into `~/.agents/skills/` and link or
+copy per-agent compatibility paths (`~/.claude/skills/`, `~/.codex/skills/`,
+`~/.config/opencode/skills/`, ...). `skills ls -g` also lists this package's
+tracked skills as `Source: local` — a useful whole-system audit.
 
 ## Agent wiring
 
 | Agent | Shared-skill discovery |
 | --- | --- |
-| Codex | Reads `~/.agents/skills/` directly; `.codex/skills/.system/` remains Codex-owned. |
-| Claude Code | Reads compatibility links under `~/.claude/skills/`. Claude-only and plugin skills remain there separately. |
+| Claude Code | Reads `~/.claude/skills/` (links back to `~/.agents/skills/`). Claude-only and plugin skills remain there separately. |
+| Codex | Reads `~/.agents/skills/` directly; `.codex/skills/.system/` remains Codex-owned; railway adds a copy under `~/.codex/skills/`. |
+| Antigravity (agy) | Reads `~/.agents/skills/` directly (confirmed via `skills ls -g` agent detection). |
 | Pi | Reads `~/.agents/skills/` directly; `~/.pi/agent/skills/` is reserved for Pi-only skills. |
 | OpenCode | Reads `~/.agents/skills/` directly; `~/.config/opencode/skills/` is reserved for OpenCode-only skills. |
 
@@ -41,18 +68,23 @@ OpenCode also scans `~/.claude/skills/` by default. The tracked Bash alias sets
 `OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1` only for OpenCode so it does not load
 the Claude compatibility mirror as a second copy.
 
-The Bash aliases for the four agents also set a distinct
-`PLAYWRIGHT_CLI_SESSION` value. This keeps simultaneous agents from sharing
-the same default browser session while still sharing the CLI and browser
-downloads.
+The Bash aliases for the agents also set a distinct `PLAYWRIGHT_CLI_SESSION`
+value. This keeps simultaneous agents from sharing the same default browser
+session while still sharing the CLI and browser downloads.
 
 ## Install
 
-Stow the shared package:
+Stow the tracked package, then install third-party skills:
 
 ```bash
 dots stow agent-skills --apply
+# then run the third-party install commands above
 ```
+
+Prefer `--no-folding` when restowing: this package and the `claude` package
+both link items into `~/.claude/skills/`, and plain restows can transiently
+try to fold that directory into a single-package symlink (stow detects the
+conflict and reverts, but `--no-folding` avoids the race entirely).
 
 Install the Playwright CLI runtime separately when browser automation is
 wanted:
@@ -61,25 +93,17 @@ wanted:
 bash _helpers/install-playwright-cli.sh
 ```
 
-On an existing machine migrating from per-agent copies, remove those copies
-before stowing so GNU Stow can create the canonical links. The repository
-validator catches any copies that remain.
-
 ## Ownership boundaries
 
-Only portable Agent Skills belong here. Keep these in their native agent
-packages or tool-managed directories:
-
-- Codex system skills, plugins, configuration, and tool-managed instructions.
-- Claude-only skills, plugins, and settings.
-- Pi packages, extensions, settings, prompts, and Pi-only skills.
-- OpenCode agents, commands, plugins, settings, and OpenCode-only skills.
-
-Do not run agent-specific skill installers against all four live directories.
-Stage upstream updates, review the diff once in `.agents/skills/`, then update
-the canonical copy and its manifest entry. Preserve upstream skill contents;
-package maintenance documentation belongs in this README rather than inside an
-individual skill.
+- Tracked here: portable skills that are personally authored, or forked with
+  local modifications (no live upstream manages them).
+- skills.sh / vendor CLIs: everything third-party. If a tracked skill gains a
+  managed upstream, drop it from the package and add its install command
+  above.
+- Agent-specific skills stay in their agent's package (`claude`, `opencode`,
+  `pi`).
+- Codex system skills, plugins, and tool-managed instructions remain
+  tool-owned; never track them.
 
 ## Verify
 
@@ -89,8 +113,7 @@ Validate the tracked structure in CI or before stowing:
 bash _helpers/verify-agent-skills.sh
 ```
 
-After stowing, also validate the live paths and absence of duplicate local
-copies:
+After stowing, also validate the live paths:
 
 ```bash
 bash _helpers/verify-agent-skills.sh --live
