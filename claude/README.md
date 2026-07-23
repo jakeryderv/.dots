@@ -20,7 +20,16 @@ package (shared across agents via `~/.agents/skills/`).
 
 - `~/.claude.json` — a large mutable state file (telemetry, per-project state)
   that also holds user-scope MCP server registrations. Re-register MCP servers
-  on a new machine with `claude mcp add` (currently: railway, context7).
+  on a new machine with:
+
+  ```bash
+  claude mcp add railway -s user -- railway mcp
+  claude mcp add context7 -s user -t http https://mcp.context7.com/mcp \
+    --header "CONTEXT7_API_KEY: \${CONTEXT7_API_KEY}"
+  ```
+
+  (`CONTEXT7_API_KEY` comes from the untracked machine-local bash config;
+  the railway MCP needs the `railway` CLI installed and authed.)
 - `~/.claude/settings.local.json` — machine-local permission grants.
 - Plugin installs — declared in `settings.json` (`enabledPlugins` +
   `extraKnownMarketplaces`); Claude Code materializes the plugin cache itself.
