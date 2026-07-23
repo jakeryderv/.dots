@@ -58,6 +58,14 @@ opencode/.config/opencode/node_modules/
 opencode/.config/opencode/package*.json
 opencode/.config/opencode/bun.lock
 
+# Installer-managed skills (skills.sh, railway CLI) must never enter the repo.
+# If an agent skills dir gets stow-folded into a symlink, installers write
+# through it into the repo — these guard against committing that. Keep agent
+# skill dirs real (restow with --no-folding).
+pi/.pi/agent/skills/*
+!pi/.pi/agent/skills/.gitkeep
+opencode/.config/opencode/skills/use-railway/
+
 # Python build cruft (e.g. qutebrowser config.py)
 **/__pycache__/
 **/.ruff_cache/
