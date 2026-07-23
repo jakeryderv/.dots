@@ -42,7 +42,12 @@ alias pi='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-pi}" pi'
 alias opencode='OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1 PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-opencode}" opencode'
 
 # color aliases
-alias ls='ls --color=auto'
+# LC_COLLATE=C = GitHub-style byte-order sorting: dotfiles first, then
+# underscore-prefixed, then letters — instead of locale collation that
+# interleaves punctuation-prefixed names. Scoped to ls only (sort, globs,
+# and scripts keep the normal locale). All ls variants below inherit both
+# behaviors by alias-expanding through this base alias.
+alias ls='LC_COLLATE=C ls --color=auto --group-directories-first'
 alias grep='grep --color=auto'
 # fgrep/egrep are deprecated; use grep -F/-E
 alias fgrep='grep -F --color=auto'
@@ -52,8 +57,8 @@ alias egrep='grep -E --color=auto'
 alias ll='ls -AlF --group-directories-first'
 alias la='ls -AF --group-directories-first'
 alias l='ls -CF --group-directories-first'
-alias lsd="shopt -s dotglob; ls -CxdF --color=auto --group-directories-first [^.]* .[^.]* 2>/dev/null"
-alias lsl="shopt -s dotglob; ls -ldF --color=auto --group-directories-first [^.]* .[^.]* 2>/dev/null"
+alias lsd="shopt -s dotglob; ls -CxdF [^.]* .[^.]* 2>/dev/null"
+alias lsl="shopt -s dotglob; ls -ldF [^.]* .[^.]* 2>/dev/null"
 
 # alert for long running commands, e.g.  sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
