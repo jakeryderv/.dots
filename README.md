@@ -19,32 +19,49 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 
 ## Packages
 
+### Terminals
+
 | Package | Deploys to | What it is |
 | --- | --- | --- |
-| [`git`](git/README.md) | `~/.gitconfig` | Global Git behavior, aliases, and defaults |
+| [`ghostty`](ghostty/README.md) | `~/.config/ghostty/` | Ghostty terminal config (daily driver) |
 | [`alacritty`](alacritty/README.md) | `~/.config/alacritty/` | Alacritty terminal config |
-| [`ghostty`](ghostty/README.md) | `~/.config/ghostty/` | Ghostty terminal config |
 | [`kitty`](kitty/README.md) | `~/.config/kitty/` | Kitty terminal config |
 | [`wezterm`](wezterm/README.md) | `~/.config/wezterm/` | WezTerm terminal config |
+
+> ghostty is the daily driver; alacritty, kitty, and wezterm are kept as
+> configured alternates. All four pin the same font (0xProto Nerd Font Mono)
+> and Nightfox-family theme — a font or theme change must be mirrored in each
+> config.
+
+### Editors & shell
+
+| Package | Deploys to | What it is |
+| --- | --- | --- |
 | [`nvim`](nvim/README.md) | `~/.config/nvim/` | Neovim config |
 | [`vim`](vim/README.md) | `~/.vim/vimrc` | Lightweight classic Vim config |
 | [`tmux`](tmux/README.md) | `~/.tmux.conf` | tmux config |
 | [`starship`](starship/README.md) | `~/.config/starship.toml` | Starship prompt |
-| [`qutebrowser`](qutebrowser/README.md) | `~/.config/qutebrowser/` | qutebrowser config |
-| [`opencode`](opencode/README.md) | `~/.config/opencode/` | opencode agent config |
-| [`pi`](pi/README.md) | `~/.pi/agent/` | Pi coding-agent config |
+| [`git`](git/README.md) | `~/.gitconfig` | Global Git behavior, aliases, and defaults |
+
+### Coding agents
+
+| Package | Deploys to | What it is |
+| --- | --- | --- |
 | [`claude`](claude/README.md) | `~/.claude/` | Claude Code global config |
 | [`codex`](codex/README.md) | — | Codex CLI config notes (documentation only, nothing stowed) |
 | [`agy`](agy/README.md) | — | Antigravity CLI (agy) config notes (documentation only, nothing stowed) |
+| [`opencode`](opencode/README.md) | `~/.config/opencode/` | opencode agent config |
+| [`pi`](pi/README.md) | `~/.pi/agent/` | Pi coding-agent config |
+| [`agent-skills`](agent-skills/README.md) | `~/.agents/skills/`, `~/.claude/skills/` | Personal/forked shared skills; third-party skills via skills.sh + vendor CLIs |
 | [`openspec`](openspec/README.md) | `~/.config/openspec/` | OpenSpec CLI global config (workflow profile) |
-| [`agent-skills`](agent-skills/README.md) | `~/.agents/skills/`, `~/.claude/skills/` | Shared coding-agent skills, including Playwright CLI |
+
+### Desktop & misc
+
+| Package | Deploys to | What it is |
+| --- | --- | --- |
+| [`qutebrowser`](qutebrowser/README.md) | `~/.config/qutebrowser/` | qutebrowser config |
 | [`fonts`](fonts/README.md) | `~/.local/share/fonts/` | Nerd Fonts |
 | [`scripts`](scripts/README.md) | `~/.local/bin/` | Personal scripts |
-
-> **Terminals:** ghostty is the daily driver; alacritty, kitty, and wezterm are
-> kept as configured alternates. All four pin the same font (0xProto Nerd Font
-> Mono) and Nightfox-family theme — a font or theme change must be mirrored in
-> each config.
 
 Directories prefixed with `_` are **not** stow packages — just stored in the
 repo. The `dots` CLI excludes hidden and underscore-prefixed directories from
@@ -128,7 +145,8 @@ what was adopted before keeping it).
    `<pkg>/.config/<pkg>/...`).
 2. Add a `<pkg>/README.md` (see any existing package for the rough shape —
    what it is, deploy path, activate, deps).
-3. Add a row to the package table above.
+3. Add a row to the matching group table above (or start a new group when a
+   few related packages accumulate).
 4. `bash _helpers/verify-readmes.sh` to confirm nothing's missing.
 
 ## Implement next/later
