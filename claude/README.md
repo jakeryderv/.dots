@@ -57,3 +57,11 @@ Tracking started 2026-07-22, immediately before migrating the planning/spec
 workflow from the superpowers plugin to OpenSpec — so the initial commit
 records the superpowers-era configuration, and the migration is documented by
 the commits that follow.
+
+Migration executed 2026-07-23: superpowers removed (its systematic-debugging
+and verification-before-completion skills salvaged into `agent-skills`);
+OpenSpec 1.6.0 installed globally (custom profile: core workflows + verify,
+onboard, bulk-archive) with per-repo adoption via `openspec init`; a
+SessionStart hook in `settings.json` injects active-change state in
+OpenSpec-enabled repos; CLAUDE.md gained the "Specs and Source of Truth"
+section. Pilot repo: agy-plugin-cc.
