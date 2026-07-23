@@ -35,6 +35,7 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 | [`pi`](pi/README.md) | `~/.pi/agent/` | Pi coding-agent config |
 | [`claude`](claude/README.md) | `~/.claude/` | Claude Code global config |
 | [`codex`](codex/README.md) | — | Codex CLI config notes (documentation only, nothing stowed) |
+| [`openspec`](openspec/README.md) | `~/.config/openspec/` | OpenSpec CLI global config (workflow profile) |
 | [`agent-skills`](agent-skills/README.md) | `~/.agents/skills/`, `~/.claude/skills/` | Shared coding-agent skills, including Playwright CLI |
 | [`fonts`](fonts/README.md) | `~/.local/share/fonts/` | Nerd Fonts |
 | [`scripts`](scripts/README.md) | `~/.local/bin/` | Personal scripts |
