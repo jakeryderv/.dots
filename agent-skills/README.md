@@ -20,8 +20,10 @@ under `~/.claude/skills/`; every one resolves back to the same canonical tree.
 | `durable-objects` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
 | `playwright-cli` | [`microsoft/playwright-cli`](https://github.com/microsoft/playwright-cli/tree/main/skills/playwright-cli) |
 | `sandbox-sdk` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
+| `systematic-debugging` | [`obra/superpowers`](https://github.com/obra/superpowers) 6.1.1 (MIT); salvaged on plugin removal, descriptions softened, cross-refs removed |
 | `turnstile-spin` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
 | `use-railway` | Railway CLI agent tooling; embedded caller revision `1.3.6` |
+| `verification-before-completion` | [`obra/superpowers`](https://github.com/obra/superpowers) 6.1.1 (MIT); salvaged on plugin removal, descriptions softened, cross-refs removed |
 | `web-perf` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
 | `workers-best-practices` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
 | `wrangler` | [`cloudflare/skills`](https://github.com/cloudflare/skills) |
