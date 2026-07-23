@@ -106,13 +106,15 @@
       "source": {
         "source": "github",
         "repo": "openai/codex-plugin-cc"
-      }
+      },
+      "autoUpdate": true
     },
     "agy-plugin-cc": {
       "source": {
         "source": "github",
         "repo": "jakeryderv/agy-plugin-cc"
-      }
+      },
+      "autoUpdate": true
     }
   },
   "effortLevel": "high",
