@@ -12,9 +12,14 @@ untracked, with `.gitignore` guards in the repo root as a safety net.
 | `.claude/CLAUDE.md` | Global agent instructions (all projects) |
 | `.claude/settings.json` | Permissions, enabled plugins, marketplaces, model, statusline, UI prefs |
 | `.claude/statusline-command.sh` | Custom statusline script referenced by settings |
+| `.claude/skills/project-status/` | Claude-specific skill: summarize a project's `.claude/` setup |
+| `.claude/skills/suggest-optimization/` | Claude-specific skill: propose setup/workflow optimizations |
 
-Skills under `~/.claude/skills/` are owned by the separate `agent-skills`
-package (shared across agents via `~/.agents/skills/`).
+All other skills under `~/.claude/skills/` are owned by the separate
+`agent-skills` package (shared across agents via `~/.agents/skills/`); the two
+packages both link items into the real `~/.claude/skills/` directory.
+Claude-specific skills belong here; agent-portable ones belong in
+`agent-skills`.
 
 ## Deliberately not tracked
 
