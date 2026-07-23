@@ -9,13 +9,19 @@ trap 'rm -rf "$TEST_ROOT"' EXIT
 
 fixture="$TEST_ROOT/repo"
 target="$TEST_ROOT/home"
-mkdir -p "$fixture/_dots/bin" "$fixture/alpha/.config/app" "$fixture/beta/.config/other" "$fixture/gamma/.vim" "$target/.config/app"
+mkdir -p "$fixture/_dots/bin" "$fixture/alpha/.config/app" "$fixture/beta/.config/other" "$fixture/gamma/.vim" \
+    "$fixture/delta/.config/app/cachedir" "$fixture/epsilon/.data" "$target/.config/app"
 cp "$DOTS_SOURCE" "$fixture/_dots/bin/dots"
-printf '%s\n' '--ignore=ignored[.]cache' >"$fixture/.stowrc"
+printf '%s\n' '--ignore=ignored[.]cache' '--ignore=local[.]sh' '--ignore=cachedir' >"$fixture/.stowrc"
 printf '%s\n' ignored >"$fixture/alpha/.config/app/ignored.cache"
 printf '%s\n' tracked >"$fixture/alpha/.config/app/tracked.conf"
 printf '%s\n' beta >"$fixture/beta/.config/other/beta.conf"
 printf '%s\n' gamma >"$fixture/gamma/.vim/vimrc"
+printf '%s\n' machine >"$fixture/delta/.config/app/local.sh"
+printf '%s\n' template >"$fixture/delta/.config/app/local.sh.example"
+printf '%s\n' cached >"$fixture/delta/.config/app/cachedir/data.txt"
+printf '%s\n' real >"$fixture/epsilon/.data/real.txt"
+ln -s real.txt "$fixture/epsilon/.data/link.txt"
 
 run_dots() {
     env DOTS_REPO="$fixture" DOTS_TARGET="$target" bash "$fixture/_dots/bin/dots" "$@"
@@ -60,6 +66,21 @@ run_dots restow --no-folding --apply gamma >/dev/null 2>&1
 [[ -L "$target/.vim/vimrc" ]] || { echo 'FAIL: --no-folding restow lost individual file link' >&2; exit 1; }
 
 output="$(run_dots stow all alpha 2>&1)"
-[[ "$output" == *'alpha beta gamma'* ]] || { echo 'FAIL: all expansion was not sorted/deduplicated' >&2; exit 1; }
+[[ "$output" == *'alpha beta delta epsilon gamma'* ]] || { echo 'FAIL: all expansion was not sorted/deduplicated' >&2; exit 1; }
+
+# Ignore patterns are anchored like Stow's: local[.]sh must not also swallow
+# local.sh.example, while segment patterns (cachedir) ignore directory contents.
+output="$(expect_rc 1 'status anchors ignore patterns' run_dots status delta)"
+[[ "$output" == *'local.sh.example | MISSING'* ]] || { echo 'FAIL: status skipped local.sh.example (unanchored ignore match)' >&2; exit 1; }
+[[ "$output" != *'app/local.sh | MISSING'* ]] || { echo 'FAIL: status did not ignore local.sh' >&2; exit 1; }
+[[ "$output" != *'cachedir'* ]] || { echo 'FAIL: status did not ignore cachedir contents' >&2; exit 1; }
+
+# Symlinks inside packages are walked by status/diff, not silently skipped.
+output="$(expect_rc 1 'status sees package symlinks' run_dots status epsilon)"
+[[ "$output" == *'link.txt | MISSING'* ]] || { echo 'FAIL: status skipped package symlink' >&2; exit 1; }
+
+run_dots stow --apply epsilon >/dev/null 2>&1
+run_dots status epsilon >/dev/null 2>&1 || { echo 'FAIL: status not clean after stowing symlink package' >&2; exit 1; }
+run_dots diff epsilon >/dev/null 2>&1 || { echo 'FAIL: diff not clean after stowing symlink package' >&2; exit 1; }
 
 echo 'dots tests passed'

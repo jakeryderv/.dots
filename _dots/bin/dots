@@ -102,11 +102,26 @@ load_ignore_patterns() {
 }
 
 is_ignored() {
+    # Mirror Stow's anchoring: a pattern without "/" matches whole path
+    # segments only (so directory ignores cover their contents, but
+    # local[.]sh does not also swallow local.sh.example); a pattern with
+    # "/" matches a full sub-path at a directory boundary.
     local rel="$1"
-    local pat
+    local pat seg
+    local -a segments
+    IFS=/ read -r -a segments <<<"$rel"
     for pat in "${IGNORE_PATTERNS[@]:-}"; do
-        if [[ "$rel" =~ $pat || "/$rel" =~ $pat ]]; then
-            return 0
+        [[ -n "$pat" ]] || continue
+        if [[ "$pat" == */* ]]; then
+            if [[ "/$rel" =~ (^|/)($pat)(/|$) ]]; then
+                return 0
+            fi
+        else
+            for seg in "${segments[@]}"; do
+                if [[ "$seg" =~ ^($pat)$ ]]; then
+                    return 0
+                fi
+            done
         fi
     done
     return 1
@@ -196,7 +211,7 @@ status_cmd() {
                 other_count=$((other_count + 1))
                 problems+=("$pkg | $rel | OTHER_TARGET")
             fi
-        done < <(find "$REPO_ROOT/$pkg" -type f -print0)
+        done < <(find "$REPO_ROOT/$pkg" \( -type f -o -type l \) -print0)
     done
 
     printf '%sDotfiles stow status%s\n' "$BOLD" "$RESET"
@@ -244,7 +259,7 @@ repo_check_cmd() {
 
 deps_cmd() {
     local required=(bash git stow python3 find sed awk grep cmp readlink file)
-    local optional=(shellcheck luac fc-cache starship vim nvim tmux fzf bat batcat rg fd fdfind lazygit qutebrowser pi opencode)
+    local optional=(shellcheck luac fc-cache starship vim nvim tmux fzf bat batcat rg fd fdfind lazygit glow llm qutebrowser pi opencode)
     local cmd missing=0
     printf '%sRequired:%s\n' "$BOLD" "$RESET"
     for cmd in "${required[@]}"; do
@@ -308,13 +323,23 @@ diff_cmd() {
     local pkgs=()
     resolve_packages_into pkgs "$@" || return $?
     mapfile -t IGNORE_PATTERNS < <(load_ignore_patterns)
-    local pkg src rel target shown=0
+    local pkg src rel target shown=0 src_dest target_dest
     for pkg in "${pkgs[@]}"; do
         while IFS= read -r -d '' src; do
             rel="${src#"$REPO_ROOT/$pkg/"}"
             is_ignored "$rel" && continue
             target="$TARGET_ROOT/$rel"
             [[ -e "$target" || -L "$target" ]] || { warn "$rel missing in target"; shown=1; continue; }
+            if [[ -L "$src" ]]; then
+                src_dest="$(readlink -f "$src" 2>/dev/null || readlink "$src")"
+                target_dest="$(readlink -f "$target" 2>/dev/null || true)"
+                if [[ -n "$src_dest" && "$src_dest" == "$target_dest" ]]; then
+                    continue
+                fi
+                shown=1
+                warn "$rel: symlink mismatch (repo -> ${src_dest:-?}, live -> ${target_dest:-unresolvable})"
+                continue
+            fi
             if cmp -s "$src" "$target"; then
                 continue
             fi
@@ -325,7 +350,7 @@ diff_cmd() {
             else
                 warn "binary files differ: $target vs $src"
             fi
-        done < <(find "$REPO_ROOT/$pkg" -type f -print0)
+        done < <(find "$REPO_ROOT/$pkg" \( -type f -o -type l \) -print0)
     done
     if ((shown == 0)); then ok "no live/repo differences for ${pkgs[*]}"; fi
 }

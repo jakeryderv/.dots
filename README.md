@@ -37,6 +37,11 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 | [`fonts`](fonts/README.md) | `~/.local/share/fonts/` | Nerd Fonts |
 | [`scripts`](scripts/README.md) | `~/.local/bin/` | Personal scripts |
 
+> **Terminals:** ghostty is the daily driver; alacritty, kitty, and wezterm are
+> kept as configured alternates. All four pin the same font (0xProto Nerd Font
+> Mono) and Nightfox-family theme — a font or theme change must be mirrored in
+> each config.
+
 Directories prefixed with `_` are **not** stow packages — just stored in the
 repo. The `dots` CLI excludes hidden and underscore-prefixed directories from
 package discovery:

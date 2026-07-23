@@ -168,7 +168,7 @@ howto() {
 		- prefer POSIX or GNU coreutils
 		- no long prose
 		- no emojis
-		- no safety disclamers
+		- no safety disclaimers
 		- no alternatives unless requested
 		- assume bash
 		- output must be copy-paste runnable
@@ -271,7 +271,8 @@ chunkask() {
 	local tmpdir
 	tmpdir=$(mktemp -d)
 
-	split -b "$size" "$file" "$tmpdir/chunk_"
+	# -C keeps chunks line-aligned (no mid-line/mid-character splits)
+	split -C "$size" "$file" "$tmpdir/chunk_"
 
 	# Ask the question of each chunk
 	local answers="$tmpdir/answers.txt"
