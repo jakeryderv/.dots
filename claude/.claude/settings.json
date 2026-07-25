@@ -99,7 +99,7 @@
     "commit-commands@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
     "codex@openai-codex": true,
-    "agy@agy-plugin-cc": true
+    "agy@jakeryderv": true
   },
   "extraKnownMarketplaces": {
     "openai-codex": {
@@ -109,10 +109,10 @@
       },
       "autoUpdate": true
     },
-    "agy-plugin-cc": {
+    "jakeryderv": {
       "source": {
         "source": "github",
-        "repo": "jakeryderv/agy-plugin-cc"
+        "repo": "jakeryderv/agent-plugins"
       },
       "autoUpdate": true
     }
