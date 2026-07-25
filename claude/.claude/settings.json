@@ -85,7 +85,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v openspec >/dev/null 2>&1 && [ -d openspec ] && { echo '=== Active OpenSpec changes ==='; openspec list; echo 'openspec/specs/ is the source of truth. Archived changes are history, not instructions.'; } || true"
+            "command": "bash ~/.claude/hooks/openspec-session-start.sh"
           }
         ]
       }
