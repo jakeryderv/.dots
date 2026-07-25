@@ -5,20 +5,24 @@ input=$(cat)
 # ---------------------------------------------------------------------------
 # Colors
 # ---------------------------------------------------------------------------
-BOLD='\033[1m'
-NODIM='\033[22m'
-RESET='\033[0m'
-GREEN='\033[32m'
-YELLOW='\033[33m'
-RED='\033[31m'
-CYAN='\033[36m'
-GRAY='\033[90m'
+# ANSI-C quoting ($'...') stores real escape bytes, so output can be printed
+# with %s. Never use %b: it would also expand backslash sequences in branch
+# and session names.
+BOLD=$'\033[1m'
+NODIM=$'\033[22m'
+RESET=$'\033[0m'
+GREEN=$'\033[32m'
+YELLOW=$'\033[33m'
+RED=$'\033[31m'
+CYAN=$'\033[36m'
+MAGENTA=$'\033[35m'
+GRAY=$'\033[90m'
 
 # ---------------------------------------------------------------------------
 # Parse ALL JSON fields in a single jq call
 # ---------------------------------------------------------------------------
 eval "$(echo "$input" | jq -r '
-  def esc: gsub("'\''"; "'\''\\'\'''\''");
+  def esc: gsub("[\n\r]"; " ") | gsub("'\''"; "'\''\\'\'''\''");
   "model_id='\''\(.model.id // "" | esc)'\''",
   "session_name='\''\(.session_name // "" | esc)'\''",
   "output_style='\''\(.output_style.name // "" | esc)'\''",
@@ -61,7 +65,7 @@ make_bar() {
 
 # Print a line — no right-padding; Ink's flex layout handles positioning
 print_line() {
-    printf "%b\n" "$1"
+    printf '%s\n' "$1"
 }
 
 # Ink wraps all output in dimColor, so undecorated text is already dim.
@@ -75,7 +79,13 @@ SEP=" │ "
 # Short model name
 if [ -n "$model_id" ]; then
     short_model="${model_id#claude-}"
-    short_model=$(echo "$short_model" | sed 's/-\([0-9]\+\)$/.\1/')
+    # Drop a bracketed variant (e.g. "[1m]") — the context bar on line 2 already
+    # shows the window size.
+    short_model="${short_model%%\[*}"
+    # Drop a trailing release date, then dot the version: a dash between two
+    # digits becomes a dot ("opus-4-8" -> "opus-4.8"), while the name/version
+    # dash is left alone ("opus-5" stays "opus-5").
+    short_model=$(echo "$short_model" | sed -E 's/-[0-9]{8}$//; :a; s/([0-9])-([0-9])/\1.\2/; ta')
 else
     short_model="unknown"
 fi
@@ -96,15 +106,47 @@ if [ -n "$cwd" ] && cd "$cwd" 2>/dev/null; then
                 continue
             fi
             [[ "$idx" == "A" ]] && ((added++))
-            [[ "$idx" == "M" || "$wt_c" == "M" ]] && ((modified++))
+            # R/C (staged rename/copy) count as modified — one test, so a
+            # combined status like "RM" counts the file once.
+            [[ "$idx" == "M" || "$idx" == "R" || "$idx" == "C" || "$wt_c" == "M" ]] && ((modified++))
             [[ "$idx" == "D" || "$wt_c" == "D" ]] && ((deleted++))
         done < <(GIT_OPTIONAL_LOCKS=0 timeout 0.5 git status --porcelain 2>/dev/null)
 
-        ahead=$(GIT_OPTIONAL_LOCKS=0 timeout 0.5 git rev-list --count @{u}..HEAD 2>/dev/null)
+        # One call for both counts: "behind<TAB>ahead". With no upstream git
+        # errors out, so both stay empty and the guards below skip them.
+        behind="" ahead=""
+        read -r behind ahead < <(GIT_OPTIONAL_LOCKS=0 timeout 0.5 \
+            git rev-list --left-right --count '@{u}...HEAD' 2>/dev/null)
+
         stash=$(GIT_OPTIONAL_LOCKS=0 timeout 0.5 git stash list 2>/dev/null | wc -l)
 
+        # In-progress operation. The state lives in the git dir, which is a
+        # *file* in a linked worktree — so ask git instead of testing
+        # "$cwd/.git". Exact paths only: a leftover rerere MERGE_RR must not
+        # read as an in-progress merge.
+        gitdir=$(GIT_OPTIONAL_LOCKS=0 timeout 0.5 git rev-parse --git-dir 2>/dev/null)
+        op=""
+        if [ -n "$gitdir" ]; then
+            if [ -d "$gitdir/rebase-merge" ]; then
+                op="REBASE"
+            elif [ -d "$gitdir/rebase-apply" ]; then
+                # rebase-apply backs both "rebase --apply" and "git am".
+                if [ -f "$gitdir/rebase-apply/applying" ]; then op="AM"; else op="REBASE"; fi
+            elif [ -f "$gitdir/MERGE_HEAD" ]; then
+                op="MERGE"
+            elif [ -f "$gitdir/CHERRY_PICK_HEAD" ]; then
+                op="CHERRY-PICK"
+            elif [ -f "$gitdir/REVERT_HEAD" ]; then
+                op="REVERT"
+            elif [ -f "$gitdir/BISECT_LOG" ]; then
+                op="BISECT"
+            fi
+        fi
+
         git_info="${CYAN}${branch}${RESET}"
+        [ -n "$op" ] && git_info="${git_info} ${MAGENTA}${op}${RESET}"
         [[ -n "$ahead" && "$ahead" -gt 0 ]] && git_info="${git_info} ${CYAN}↑${ahead}${RESET}"
+        [[ -n "$behind" && "$behind" -gt 0 ]] && git_info="${git_info} ${CYAN}↓${behind}${RESET}"
         ((added > 0)) && git_info="${git_info} ${GREEN}+${added}${RESET}"
         ((modified > 0)) && git_info="${git_info} ${YELLOW}~${modified}${RESET}"
         ((deleted > 0)) && git_info="${git_info} ${RED}-${deleted}${RESET}"
@@ -129,20 +171,6 @@ line1_left="${BOLD}${short_model}${RESET}"
 [ -n "$wt_name" ] && line1_left="${line1_left}${SEP}wt:${wt_name}"
 [ -n "$session_name" ] && line1_left="${line1_left}${SEP}${session_name}"
 [ -n "$output_style" ] && [ "$output_style" != "default" ] && line1_left="${line1_left}${SEP}${output_style}"
-
-# Caveman mode badge
-cvm_flag="$HOME/.claude/.caveman-active"
-if [ -f "$cvm_flag" ]; then
-    cvm_mode=$(cat "$cvm_flag" 2>/dev/null)
-    ORANGE='\033[38;5;172m'
-    if [ "$cvm_mode" = "full" ] || [ -z "$cvm_mode" ]; then
-        cvm_badge="${ORANGE}[CAVEMAN]${RESET}"
-    else
-        cvm_suffix=$(echo "$cvm_mode" | tr '[:lower:]' '[:upper:]')
-        cvm_badge="${ORANGE}[CAVEMAN:${cvm_suffix}]${RESET}"
-    fi
-    line1_left="${line1_left}${SEP}${cvm_badge}"
-fi
 
 # ---------------------------------------------------------------------------
 # LINE 2 — LEFT  (context bar)
