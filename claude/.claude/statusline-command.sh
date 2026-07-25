@@ -155,14 +155,28 @@ if [ -n "$cwd" ] && cd "$cwd" 2>/dev/null; then
     fi
 fi
 
-# Directory display
+# Directory display — project-relative, with the middle elided so that a deep
+# path stays about as short as a bare basename. "6.1.1" or "memory" alone says
+# nothing; ".claude/…/6.1.1" says where you are.
 dir_display=""
 if [ -n "$cwd" ]; then
-    if [ -n "$project_dir" ] && [ "$cwd" != "$project_dir" ]; then
-        dir_display=$(basename "${cwd#"$project_dir"/}")
+    if [ -z "$project_dir" ] || [ "$cwd" = "$project_dir" ]; then
+        # At the project root, or no project context: just the name.
+        dir_display=${cwd##*/}
+    elif [[ "$cwd" == "$project_dir"/* ]]; then
+        rel=${cwd#"$project_dir"/}
+        if [[ "$rel" == */*/* ]]; then
+            # 3+ components: keep the first and last, elide the middle.
+            dir_display="${rel%%/*}/…/${rel##*/}"
+        else
+            dir_display="$rel"
+        fi
     else
-        dir_display=$(basename "$cwd")
+        # Outside the project root (/add-dir, symlink): basename only.
+        dir_display=${cwd##*/}
     fi
+    # cwd of "/" (or a trailing slash) leaves the expansion empty.
+    [ -z "$dir_display" ] && dir_display="/"
 fi
 
 line1_left="${BOLD}${short_model}${RESET}"
