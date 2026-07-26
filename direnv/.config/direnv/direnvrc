@@ -1,0 +1,36 @@
+# direnvrc - global direnv extensions, sourced before every .envrc.
+#
+# Functions defined here are available in any .envrc with no `source_env`.
+# direnv watches this file, so edits invalidate cached envs automatically.
+#
+# Note: direnv does not apply `set -euo pipefail` to .envrc by default (that is
+# opt-in via `strict_env`), so helpers here must check their own failures.
+
+# use_gh_account <username>
+#
+# Pin the gh CLI to one of several authenticated accounts for this directory
+# tree. GH_TOKEN takes precedence over gh's active-account setting in
+# ~/.config/gh/hosts.yml, so this switches identity without `gh auth switch`.
+# The token is read from the gh keyring at load time - nothing lands on disk.
+#
+# Fails closed. An empty or unset GH_TOKEN makes gh fall back to the default
+# account *silently*, so a failed lookup exports a deliberately invalid token
+# instead: gh then errors out rather than acting as the wrong identity.
+#
+# Requires gh >= 2.40.0 for `gh auth token --user` (multi-account support).
+use_gh_account() {
+	local account="$1" token
+
+	if [[ -z $account ]]; then
+		log_error "use_gh_account: no account given"
+		return 1
+	fi
+
+	if token="$(gh auth token --user "$account" 2>/dev/null)" && [[ -n $token ]]; then
+		export GH_TOKEN="$token"
+		log_status "gh account: $account"
+	else
+		export GH_TOKEN="gh-keyring-lookup-failed-for-$account"
+		log_error "gh: no token for '$account' (keyring locked, or account logged out) - GH_TOKEN poisoned so gh fails loudly instead of falling back to the default account"
+	fi
+}
