@@ -39,6 +39,14 @@ npx skills add -g microsoft/playwright-cli --skill playwright-cli -y
 # Railway (installs via its own CLI, not skills.sh; also handles MCP setup
 # via `railway setup agent`)
 railway skills install
+
+# gh CLI invocation patterns (installs via gh's own CLI; `gh skill` is a
+# preview subsystem, so the command surface may drift). `--agent universal`
+# targets the canonical ~/.agents/skills; gh writes one agent directory only,
+# so the Claude compat link is made by hand — unlike skills.sh, which links
+# every per-agent path itself.
+gh skill install cli/cli gh --agent universal --scope user
+ln -s ../../.agents/skills/gh ~/.claude/skills/gh
 ```
 
 Maintenance:
@@ -47,12 +55,19 @@ Maintenance:
 npx skills ls -g       # audit everything installed, per agent, with source
 npx skills update -g   # refresh third-party skills from upstream
 railway skills update  # railway skill is updated by its own CLI
+gh skill update gh     # gh skill is updated by its own CLI
 ```
 
-Both installers write canonical copies into `~/.agents/skills/` and link or
-copy per-agent compatibility paths (`~/.claude/skills/`, `~/.codex/skills/`,
-`~/.config/opencode/skills/`, ...). `skills ls -g` also lists this package's
-tracked skills as `Source: local` — a useful whole-system audit.
+skills.sh and the railway CLI write canonical copies into `~/.agents/skills/`
+and link or copy per-agent compatibility paths (`~/.claude/skills/`,
+`~/.codex/skills/`, `~/.config/opencode/skills/`, ...). `skills ls -g` also
+lists this package's tracked skills as `Source: local` — a useful whole-system
+audit.
+
+`gh skill list` is **not** a substitute for that audit: it reports only what it
+installed plus real directories, and skips symlinked skill dirs entirely — so
+this package's tracked skills are invisible to it, as are the skills.sh
+compatibility links.
 
 ## Agent wiring
 
