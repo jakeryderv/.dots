@@ -50,6 +50,7 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 | [`claude`](claude/README.md) | `~/.claude/` | Claude Code global config |
 | [`codex`](codex/README.md) | — | Codex CLI config notes (documentation only, nothing stowed) |
 | [`agy`](agy/README.md) | — | Antigravity CLI (agy) config notes (documentation only, nothing stowed) |
+| [`serena`](serena/README.md) | — | Serena MCP server (semantic code tools) notes (documentation only, nothing stowed) |
 | [`opencode`](opencode/README.md) | `~/.config/opencode/` | opencode agent config |
 | [`pi`](pi/README.md) | `~/.pi/agent/` | Pi coding-agent config |
 | [`agent-skills`](agent-skills/README.md) | `~/.agents/skills/`, `~/.claude/skills/` | Personal/forked shared skills; third-party skills via skills.sh + vendor CLIs |
