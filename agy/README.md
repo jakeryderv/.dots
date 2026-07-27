@@ -29,11 +29,14 @@ carry.
 
 ## Related
 
-- The **agy plugin for Claude Code** (`agy@agy-plugin-cc`,
-  [jakeryderv/agy-plugin-cc](https://github.com/jakeryderv/agy-plugin-cc)) is
-  tracked via the `claude` package (`enabledPlugins` +
-  `extraKnownMarketplaces` in `settings.json`). Its job/session state lives in
-  `~/.agy-plugin/` (untracked state).
+- The **agy plugin for Claude Code** (`agy@jakeryderv`) is tracked via the
+  `claude` package (`enabledPlugins` + `extraKnownMarketplaces` in
+  `settings.json`). Since 2026-07-25 it is served by the
+  [jakeryderv/agent-plugins](https://github.com/jakeryderv/agent-plugins)
+  marketplace, which is only an index — the plugin itself still lives in
+  [jakeryderv/agy-plugin-cc](https://github.com/jakeryderv/agy-plugin-cc) and
+  is pulled `git-subdir` from `plugins/agy` at a pinned tag. Its job/session
+  state lives in `~/.agy-plugin/` (untracked state).
 - Skills: agy reads `~/.agents/skills/` directly — managed per the
   `agent-skills` package (skills.sh + vendor CLIs).
 - History note (2026-07-23): deleted `~/.gemini/GEMINI.md` — the twin of
