@@ -12,6 +12,7 @@
 	defaultBranch = main
 [core]
 	editor = nvim
+	pager = delta
 [diff]
 	algorithm = histogram
 [pull]
@@ -33,3 +34,8 @@
     cleanup = "!git branch --merged main --format='%(refname:short)' | grep -vE '^(main|master)$' | xargs -r git branch -d"
 [include]
 	path = ~/.gitconfig.local
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	dark = true
