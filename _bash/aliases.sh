@@ -14,8 +14,11 @@ alias info="info --vi-keys"
 alias shlvl='echo $SHLVL'
 
 # FZF
+# built-int integration (with shell config/eval set)
+#   ctrl-r: search command history
+#   ctrl-t: search files & dirs, paste in cli
+#   alt-c: search dirs & cd into them
 alias ff='nvim $(fzf --preview "cat {}")'
-alias fcd='cd $(fdfind --type d | fzf)'
 
 # Tmux
 alias tmls='tmux ls'
