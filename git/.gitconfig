@@ -15,6 +15,10 @@
 	pager = delta
 [diff]
 	algorithm = histogram
+	colorMoved = zebra
+	colorMovedWS = allow-indentation-change
+	mnemonicPrefix = true
+	interHunkContext = 2
 [pull]
 	rebase = true
 [rebase]
@@ -32,10 +36,11 @@
 	undo = reset --soft HEAD~1
 	branches = branch -a
     cleanup = "!git branch --merged main --format='%(refname:short)' | grep -vE '^(main|master)$' | xargs -r git branch -d"
-[include]
-	path = ~/.gitconfig.local
 [interactive]
 	diffFilter = delta --color-only
 [delta]
 	navigate = true
 	dark = true
+	hyperlinks = true
+[include]
+	path = ~/.gitconfig.local
