@@ -27,14 +27,20 @@ _gconf() {
     fi
 
     # gconf takes [scope] [action]; options may appear anywhere, so count the
-    # non-option words before the cursor to find which slot is being filled.
+    # non-option words before the cursor to find which slot is being filled,
+    # and remember the scope so we know whether an action is even legal.
+    local scope=''
     for ((i = 1; i < cword; i++)); do
-        [[ ${words[i]} == -* ]] || ((pos++))
+        [[ ${words[i]} == -* ]] && continue
+        ((pos == 0)) && scope=${words[i]}
+        ((pos++))
     done
 
     case $pos in
     0) mapfile -t COMPREPLY < <(compgen -W 'local global system all help' -- "$cur") ;;
-    1) mapfile -t COMPREPLY < <(compgen -W 'list edit origin' -- "$cur") ;;
+    # `all` is a standalone report, so it takes no action
+    1) [[ $scope == a || $scope == all ]] ||
+        mapfile -t COMPREPLY < <(compgen -W 'list edit origin' -- "$cur") ;;
     *) COMPREPLY=() ;;
     esac
 }

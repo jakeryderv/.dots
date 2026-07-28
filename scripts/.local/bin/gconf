@@ -4,13 +4,14 @@
 #
 #   gconf [scope] [action]
 #
-# Scopes:  l|local   g|global   s|system   a|all
+# Scopes:  l|local   g|global   s|system
 # Actions: l|list (default)   e|edit   o|origin
+# Report:  a|all — a table per scope, each annotated with origins
 #
 set -uo pipefail
 
 readonly PROG=${0##*/}
-readonly VERSION=1.3.0
+readonly VERSION=1.4.0
 
 # Scratch space for git's NUL-delimited output; see show().
 tmp_dir=''
@@ -58,10 +59,10 @@ ${PROG} — inspect and edit git config by scope
 
 usage: ${PROG} [scope] [action]
 
-scopes    l|local   g|global   s|system   a|all
+scopes    l|local   g|global   s|system
 actions   l|list (default)   e|edit   o|origin
 
-${PROG} a   every scope merged and labeled
+${PROG} a   report: a table per scope, each with origins
 ${PROG} -h  full help
 EOF
 }
@@ -75,18 +76,21 @@ usage: ${PROG} [options] [scope] [action]
 scopes    l, local     this repository (.git/config)
           g, global    your user (~/.gitconfig)
           s, system    machine-wide (/etc/gitconfig)
-          a, all       every scope merged, labeled
 
 actions   l, list      print key=value               [default]
           e, edit      open the file in git's editor
           o, origin    list, annotated with source file
+          (actions apply to local, global, and system)
+
+report    a, all       one table per scope, each with origins; takes no
+                       action, since it spans every file at once
 
 options   --color=WHEN  always | never | auto (default)
           -h, --help    this text
           -V, --version print version
 
 examples  ${PROG}              # this summary
-          ${PROG} a            # everything, merged and labeled
+          ${PROG} a            # a table per scope, with origins
           ${PROG} g            # global list
           ${PROG} g e          # edit ~/.gitconfig
           ${PROG} g o          # global list + which file each value is in
@@ -170,38 +174,72 @@ render() {
 }
 
 # -------------------------------------------------------------- git call ----
-# Run `git config ...`, capture it, and only render on success — otherwise
-# git's own message is the error, not an empty listing. Output lands in a file
-# rather than a variable because `--null` records contain NUL bytes, which a
-# shell variable cannot hold. Keeping stderr separate also stops a warning
-# emitted on an otherwise successful call from being rendered as a config line.
-show() {
+# Output lands in a file rather than a variable because `--null` records
+# contain NUL bytes, which a shell variable cannot hold. Keeping stderr
+# separate also stops a warning emitted on an otherwise successful call from
+# being rendered as a config line.
+run_config() {
+    if [[ -z $tmp_dir ]]; then
+        tmp_dir=$(mktemp -d) || die "could not create a temporary directory"
+    fi
+    git config --null "$@" >"$tmp_dir/out" 2>"$tmp_dir/err"
+}
+
+# git's own message is the error, not an empty listing.
+git_error() {
+    local msg
+    msg=$(<"$tmp_dir/err")
+    msg=${msg#fatal: }
+    msg=${msg#error: }
+    printf '%s' "${msg:-git config failed}"
+}
+
+# mode `strict` exits on a git error; `soft` reports it in place and carries
+# on, so the all-scopes report survives a missing /etc/gitconfig.
+emit() {
+    local mode=$1
+    shift
     local status nmeta=0 a
     for a in "$@"; do
         [[ $a == --show-scope || $a == --show-origin ]] && ((nmeta++))
     done
 
-    tmp_dir=$(mktemp -d) || die "could not create a temporary directory"
-    local out="$tmp_dir/out" err="$tmp_dir/err"
-
-    git config --null "$@" >"$out" 2>"$err"
+    run_config "$@"
     status=$?
 
     if ((status != 0)); then
-        local msg
-        msg=$(<"$err")
-        msg=${msg#fatal: }
-        msg=${msg#error: }
-        die "${msg:-git config failed}" "$status"
+        [[ $mode == strict ]] && die "$(git_error)" "$status"
+        printf '%s%s%s\n' "$C_WARN" "$(git_error)" "$C_RESET"
+        return 0
     fi
 
-    [[ -s $err ]] && cat "$err" >&2
+    [[ -s $tmp_dir/err ]] && cat "$tmp_dir/err" >&2
 
-    if [[ ! -s $out ]]; then
+    if [[ ! -s $tmp_dir/out ]]; then
         printf '%s(no values set)%s\n' "$C_SECTION" "$C_RESET"
         return 0
     fi
-    render "$nmeta" <"$out"
+    render "$nmeta" <"$tmp_dir/out"
+}
+
+show() { emit strict "$@"; }
+
+# `all` is a report rather than a scope you can act on: one table per scope,
+# each annotated with the file every value came from. Within a scope the origin
+# still varies, since include.path and includeIf pull in other files.
+show_all() {
+    local s first=1
+    for s in --local --global --system; do
+        ((first)) || printf '\n'
+        first=0
+        printf '%s%s%s\n' "$C_META" "${s#--}" "$C_RESET"
+
+        if [[ $s == --local ]] && ! git rev-parse --git-dir >/dev/null 2>&1; then
+            printf '%s(not inside a git repository)%s\n' "$C_SECTION" "$C_RESET"
+            continue
+        fi
+        emit soft "$s" --list --show-origin
+    done
 }
 
 # ------------------------------------------------------------------ main ----
@@ -261,6 +299,15 @@ main() {
     *) die "unknown scope '${positional[0]}' (want: local, global, system, all)" ;;
     esac
 
+    # `all` is a report over every scope, not one of them, so the actions that
+    # target a single file do not apply to it.
+    if [[ $scope == all ]]; then
+        ((${#positional[@]} == 1)) ||
+            die "'all' takes no action — it always lists every scope with origins"
+        show_all
+        return
+    fi
+
     case "${positional[1]-list}" in
     l | ls | list) action=list ;;
     e | ed | edit) action=edit ;;
@@ -271,15 +318,6 @@ main() {
     # friendlier than git's raw "fatal: --local can only be used inside a git repository"
     if [[ $scope == --local ]] && ! git rev-parse --git-dir >/dev/null 2>&1; then
         die "not inside a git repository — try '$PROG global' or '$PROG all'"
-    fi
-
-    if [[ $scope == all ]]; then
-        case $action in
-        edit) die "'all' has no single file to edit — pick local, global, or system" ;;
-        list) show --list --show-scope ;;
-        origin) show --list --show-scope --show-origin ;;
-        esac
-        return
     fi
 
     case $action in

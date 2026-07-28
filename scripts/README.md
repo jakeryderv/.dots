@@ -41,23 +41,29 @@ NO_COLOR=1 tmux-cheatsheet  # standard no-color convention
 ### `gconf`
 
 Inspects and edits git config by scope, rendering `section.key = value` with the
-scope (and optionally the source file) in an aligned left column.
+source file in an aligned left column.
 
 ```bash
 gconf               # brief usage summary
-gconf a             # every scope, merged and labeled
 gconf g             # global list
 gconf g e           # edit ~/.gitconfig
 gconf g o           # global list, annotated with the file each value came from
 gconf local edit    # long forms work too
+gconf a             # report: one table per scope, each with origins
 NO_COLOR=1 gconf a  # standard no-color convention
 ```
 
-Scopes are `l|local`, `g|global`, `s|system`, `a|all`; actions are `l|list`
-(default), `e|edit`, `o|origin`. A bare `gconf` prints the summary rather than
-picking a scope for you, so the merged view is `gconf a`. `all` has no single
-file, so it rejects `edit`. `--color=always|never|auto` overrides the tty
-check.
+Scopes are `l|local`, `g|global`, and `s|system`; each takes an action of
+`l|list` (default), `e|edit`, or `o|origin`.
+
+`a|all` is a report rather than a scope, so it takes no action: it prints a
+table per scope, always annotated with origins. Origins still earn their column
+inside a single scope, since `include.path` and `includeIf` pull in other files.
+A scope that does not apply — no repository, no `/etc/gitconfig` — is noted in
+place and the rest of the report continues.
+
+A bare `gconf` prints the summary rather than picking a scope for you.
+`--color=always|never|auto` overrides the tty check.
 
 ### `bs`
 
