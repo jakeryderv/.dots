@@ -40,6 +40,42 @@ Not managed by stow — install separately:
   [`_helpers`](../_helpers/README.md) (`install-fzf.sh`,
   `install-tmux-sessionizer.sh`).
 
+## Links, mouse, and clipboard
+
+These behaviors are split across this config and
+[`ghostty`](../ghostty/README.md); neither half makes sense alone.
+
+**Clickable links.** `terminal-features` declares `hyperlinks`, which is what
+lets tmux store OSC 8 hyperlinks and forward them to the terminal. Three ways to
+follow one:
+
+| Gesture | Handled by |
+|---------|------------|
+| `o` in copy mode, cursor on the link | tmux → `xdg-open` |
+| `Ctrl+click` | tmux → `xdg-open` |
+| `Shift+Ctrl+click` | Ghostty, bypassing tmux entirely |
+
+`mouse on` means tmux consumes mouse events before Ghostty sees them, so the
+plain `Ctrl+click` that opens links outside tmux would otherwise do nothing —
+hence the explicit binding. Shift is the escape hatch: Ghostty's
+`mouse-shift-capture = false` makes Shift bypass mouse reporting, so the click
+reaches the terminal. That is also how you select text with the mouse for
+Ghostty's own clipboard rather than tmux's.
+
+Both tmux bindings escape the URL with `#{q:...}`. A hyperlink is program output
+and OSC 8 lets the visible text differ from the destination, so an unescaped URL
+is a shell injection — see the comment in `.tmux.conf`.
+
+**Clipboard.** `set-clipboard on` copies out over OSC 52, which Ghostty allows
+by default (`clipboard-write = allow`) while prompting on reads
+(`clipboard-read = ask`). Mouse drags stay highlighted on release, and `y` in
+copy mode copies and exits. Both routes reach the system clipboard, so no
+`xclip`/`wl-copy` dependency.
+
+Producers matter too: [`git`](../git/README.md) sets `delta.hyperlinks = true`,
+which is what makes file names and commit hashes in diffs clickable in the first
+place.
+
 ## Notable choices
 
 - **Prefix `Alt+a`** — chosen so root `Ctrl+hjkl` stays free for

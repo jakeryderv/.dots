@@ -28,6 +28,28 @@ cd ~/.dots && stow ghostty
 Reload a running instance with the config-reload keybind (default
 `ctrl+shift+,`) — no restart needed.
 
+## Links, mouse, and clipboard
+
+Mostly Ghostty defaults, documented here because
+[`tmux`](../tmux/README.md) depends on them and nothing in `config.ghostty`
+mentions them.
+
+- **Opening links** — `link-url` (default on) matches URLs on **`Ctrl`+hover**,
+  then click; OSC 8 hyperlinks work the same way. `link-previews` shows the real
+  destination on hover, which matters because OSC 8 lets the visible text differ
+  from where the link goes.
+- **`mouse-shift-capture = false`** (default, deliberately not overridden) — this
+  is the load-bearing one. Holding `Shift` bypasses mouse reporting, so clicks
+  reach Ghostty instead of the running program. Inside tmux (`mouse on`) that is
+  the only way to reach Ghostty's link handler or its selection; tmux also binds
+  `Ctrl+click` itself so the common case does not need `Shift`.
+- **Clipboard** — `clipboard-write = allow` lets tmux copy out over OSC 52
+  without a prompt; `clipboard-read = ask` still prompts before anything reads
+  the clipboard. `copy-on-select` applies to Ghostty's own selections, not to
+  selections made inside tmux.
+- **Unbound but available** — `copy_url_to_clipboard` ships as an action with no
+  default keybind, if yanking a URL beats opening it.
+
 ## Notable choices
 
 - **Theme layering** — carbonfox stays pristine; all deviations live in
