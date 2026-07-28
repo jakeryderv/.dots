@@ -65,6 +65,32 @@ place and the rest of the report continues.
 A bare `gconf` prints the summary rather than picking a scope for you.
 `--color=always|never|auto` overrides the tty check.
 
+### `termtest`
+
+Probes what the terminal and multiplexer actually render, so a rendering problem
+can be pinned on the right layer.
+
+```bash
+termtest                 # usage summary
+termtest all             # every non-interactive test in one pass
+termtest env             # TERM, tmux features, toolchain versions
+termtest underlines      # curly/dotted/dashed + underline color (usstyle)
+termtest link            # OSC 8 hyperlink + the right click modifier
+termtest delta           # the URLs delta actually emits, via git blame
+termtest keys            # raw bytes per keypress (interactive)
+termtest help colors     # detailed help for one subcommand
+```
+
+Grouped as runners (`all`, `env`), hyperlinks (`link`, `delta`), rendering
+(`styles`, `underlines`, `colors`, `unicode`), sequences with side effects
+(`clip`, `title`, `cwd`, `notify`, `graphics`), and interactive
+(`cursor`, `keys`).
+
+The point is the comparison: run the same subcommand inside tmux and outside
+it, and the difference is what tmux is filtering rather than what the terminal
+lacks. See [`tmux`](../tmux/README.md) for the hyperlink and clipboard wiring
+it probes.
+
 ### `bs`
 
 A composable `ls` replacement — a self-contained bash pipeline (gather → filter

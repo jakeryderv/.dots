@@ -2,17 +2,20 @@
 # ============================================================================
 # termtest — probe what your terminal + multiplexer actually render
 #
-#   chmod +x termtest
-#   ln -s "$PWD/termtest" ~/.local/bin/termtest
-#   termtest help
+#   termtest <subcommand> [args]
+#   termtest help            list subcommands
+#
+# The useful move is running the same subcommand inside tmux and outside it:
+# the difference is what tmux is filtering, as opposed to what the terminal
+# genuinely lacks.
 #
 # Exit codes: 0 ok · 1 usage error · 2 missing dependency
 # ============================================================================
 
 set -uo pipefail
 
-VERSION="1.0.0"
-PROG="${0##*/}"
+readonly VERSION="1.1.0"
+readonly PROG="${0##*/}"
 
 # ---------------------------------------------------------------------------
 # output helpers
@@ -66,7 +69,7 @@ cmd_env() {
   printf '  %-14s %s\n' "TERM_PROGRAM"  "${TERM_PROGRAM:-unset}"
   printf '  %-14s %s\n' "COLORTERM"     "${COLORTERM:-unset (truecolor apps may fall back)}"
   printf '  %-14s %s\n' "size"          "$(tput cols 2>/dev/null)x$(tput lines 2>/dev/null)"
-  printf '  %-14s %s\n' "terminfo cols" "$(tput colors 2>/dev/null || echo n/a)"
+  printf '  %-14s %s\n' "terminfo colors" "$(tput colors 2>/dev/null || echo n/a)"
 
   if in_tmux; then
     printf '  %-14s %s\n' "tmux" "$(tmux -V 2>/dev/null) (inside)"
@@ -99,7 +102,11 @@ cmd_link() {
   hdr "OSC 8 hyperlink"
   printf '\033]8;;%s\033\\%s\033]8;;\033\\\n' "$url" "$text"
   if in_tmux; then
-    note "Ctrl+Shift+click   (mouse-reporting / alt-buffer needs the Shift)"
+    # Probe rather than assume: tmux only gets the click if the config binds it.
+    if tmux list-keys -T root 2>/dev/null | grep -q 'C-MouseDown1Pane'; then
+      note "Ctrl+click         (tmux binds C-MouseDown1Pane -> xdg-open)"
+    fi
+    note "Shift+Ctrl+click   (Shift bypasses tmux's mouse capture)"
     note "or keyboard: prefix v -> move cursor onto it -> o"
   else
     note "Ctrl+click         (hold Ctrl alone to underline every link)"
@@ -200,6 +207,7 @@ cmd_unicode() {
 # ---------------------------------------------------------------------------
 
 cmd_clip() {
+  command -v base64 >/dev/null || { err "base64 not installed"; return 2; }
   local msg="${1:-$PROG-osc52-$(date +%s)}" b64
   b64=$(printf '%s' "$msg" | base64 | tr -d '\n')
   hdr "OSC 52 clipboard write"
@@ -218,9 +226,13 @@ cmd_title() {
 }
 
 cmd_cwd() {
+  # hostname is absent on minimal Debian installs; an empty host is still a
+  # valid file:// URL, so degrade rather than emit "file://$PWD" with a gap.
+  local host
+  host=$(hostname 2>/dev/null || echo localhost)
   hdr "working directory reporting (OSC 7)"
-  printf '\033]7;file://%s%s\033\\' "$(hostname)" "$PWD"
-  note "sent: file://$(hostname)$PWD"
+  printf '\033]7;file://%s%s\033\\' "$host" "$PWD"
+  note "sent: file://$host$PWD"
   note "if supported, new splits/tabs open here"
 }
 
@@ -273,10 +285,12 @@ cmd_cursor() {
 
 cmd_keys() {
   need_tty keys || return 1
+  command -v od >/dev/null || { err "od not installed"; return 2; }
   hdr "extended keys (tmux extkeys / CSI u)"
   note "press keys to see raw bytes · q to quit"
   note "try: Enter then Ctrl+Enter · Shift+Enter · Ctrl+/ · F13"
   note "identical bytes = no CSI u · distinct like ESC[13;5u = working"
+  note "read is one byte at a time, so a CSI u key prints across several lines"
   printf '\n'
   local key
   while IFS= read -rsn1 key </dev/tty; do
