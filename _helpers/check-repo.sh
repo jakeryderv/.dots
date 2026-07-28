@@ -14,22 +14,36 @@ bash _helpers/verify-readmes.sh >/dev/null
 echo 'Checking shared agent skills...'
 bash _helpers/verify-agent-skills.sh
 
+BASH_PATHS=(
+    setup.sh
+    _bash
+    _helpers
+    scripts/.local/bin
+    scripts/.local/share/bash-completion/completions
+    _dots/bin
+    _dots/tests
+)
+
+# Completion files are sourced, not executed, so they carry no shebang and
+# declare their shell with a ShellCheck directive instead. Accept either marker.
+is_bash_file() {
+    head -n 1 "$1" | grep -Eq '^#!.*\bbash\b|^# shellcheck shell=bash$'
+}
+
 echo 'Checking Bash syntax...'
 while IFS= read -r -d '' file; do
-    if head -n 1 "$file" | grep -Eq '^#!.*\bbash\b'; then
+    if is_bash_file "$file"; then
         bash -n "$file"
     fi
-done < <(find setup.sh _bash _helpers scripts/.local/bin _dots/bin _dots/tests \
-    -type f ! -name local.sh -print0)
+done < <(find "${BASH_PATHS[@]}" -type f ! -name local.sh -print0)
 
 if command -v shellcheck >/dev/null 2>&1; then
     echo 'Running ShellCheck...'
     while IFS= read -r -d '' file; do
-        if head -n 1 "$file" | grep -Eq '^#!.*\bbash\b'; then
+        if is_bash_file "$file"; then
             shellcheck -x -S warning "$file"
         fi
-    done < <(find setup.sh _bash _helpers scripts/.local/bin _dots/bin _dots/tests \
-        -type f ! -name local.sh -print0)
+    done < <(find "${BASH_PATHS[@]}" -type f ! -name local.sh -print0)
 elif [[ "${REQUIRE_LINTERS:-0}" == 1 ]]; then
     echo 'error: shellcheck is required but unavailable' >&2
     exit 1

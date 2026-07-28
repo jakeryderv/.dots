@@ -1,0 +1,41 @@
+# shellcheck shell=bash
+# Completion for gconf (scripts/.local/bin/gconf).
+#
+# Autoloaded by bash-completion on first Tab, so it costs nothing at shell
+# startup and is only read if the script is actually installed.
+
+_gconf() {
+    # _init_completion assigns all four names; declare them local so it never
+    # leaks into the global namespace, even though gconf never reads prev.
+    # shellcheck disable=SC2034 # prev is for _init_completion's benefit
+    local cur prev words cword i pos=0
+
+    if declare -F _init_completion >/dev/null; then
+        # -n = keeps "--color=auto" as a single word despite COMP_WORDBREAKS
+        _init_completion -n = || return
+    else
+        cur=${COMP_WORDS[COMP_CWORD]}
+        words=("${COMP_WORDS[@]}")
+        cword=$COMP_CWORD
+    fi
+
+    if [[ $cur == -* ]]; then
+        mapfile -t COMPREPLY < <(compgen -W \
+            '--color=always --color=never --color=auto -h --help -V --version' \
+            -- "$cur")
+        return
+    fi
+
+    # gconf takes [scope] [action]; options may appear anywhere, so count the
+    # non-option words before the cursor to find which slot is being filled.
+    for ((i = 1; i < cword; i++)); do
+        [[ ${words[i]} == -* ]] || ((pos++))
+    done
+
+    case $pos in
+    0) mapfile -t COMPREPLY < <(compgen -W 'local global system all help' -- "$cur") ;;
+    1) mapfile -t COMPREPLY < <(compgen -W 'list edit origin' -- "$cur") ;;
+    *) COMPREPLY=() ;;
+    esac
+}
+complete -F _gconf gconf
