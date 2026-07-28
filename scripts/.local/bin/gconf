@@ -10,7 +10,15 @@
 set -uo pipefail
 
 readonly PROG=${0##*/}
-readonly VERSION=1.1.0
+readonly VERSION=1.2.0
+
+# Scratch space for git's NUL-delimited output; see show().
+tmp_dir=''
+cleanup() {
+    [[ -n $tmp_dir ]] && rm -rf -- "$tmp_dir"
+    return 0
+}
+trap cleanup EXIT
 
 # ---------------------------------------------------------------- colors ----
 # Honors NO_COLOR (https://no-color.org), TERM=dumb, and non-tty stdout.
@@ -54,7 +62,7 @@ scopes    l, local     this repository (.git/config)
           a, all       every scope merged, labeled   [default]
 
 actions   l, list      print key=value               [default]
-          e, edit      open the file in \$GIT_EDITOR
+          e, edit      open the file in git's editor
           o, origin    list, annotated with source file
 
 options   --color=WHEN  always | never | auto (default)
@@ -70,35 +78,42 @@ EOF
 }
 
 # ---------------------------------------------------------------- render ----
-# Reads git's tab-separated output on stdin and pretty-prints it:
+# Reads git's NUL-delimited `--null` output on stdin and pretty-prints it:
 #   [meta column]  section.  key = value
 # Two passes so the meta column can be width-aligned.
 render() {
-    local nmeta=${1:-0} # how many tab-separated columns git prefixed
-    local -a metas=() pairs=()
-    local line meta rest width=0 i j n=0 tabs
+    local nmeta=${1:-0} # how many fields git prefixes to each record
+    local -a fields=() metas=() keys=() vals=() valued=()
+    local field meta base width=0 i j n=0
 
-    while IFS= read -r line; do
-        [[ -z $line ]] && continue
+    # git emits a flat NUL-delimited field stream: nmeta meta fields per record,
+    # then one "key\nvalue" field. A value can hold =, tabs, and newlines but
+    # never a NUL, so grouping by stride parses exactly — no guessing which
+    # lines are continuations. A field with no newline at all is a valueless
+    # key (a bare boolean); "key\n" is a key set to the empty string.
+    while IFS= read -r -d '' field; do
+        fields+=("$field")
+    done
 
-        # A value may itself contain tabs or newlines, so peel off exactly nmeta
-        # leading fields rather than splitting on the last tab. A line with too
-        # few fields is a continuation of the previous value.
-        tabs=${line//[!$'\t']/}
-        if ((n > 0)) && { ((nmeta > 0 && ${#tabs} < nmeta)) || { ((nmeta == 0)) && [[ $line != *=* ]]; }; }; then
-            pairs[n - 1]+=$'\n'$line
-            continue
-        fi
-
-        meta="" rest=$line
+    local stride=$((nmeta + 1)) total=${#fields[@]}
+    for ((i = 0; i + stride <= total; i += stride)); do
+        meta=""
         for ((j = 0; j < nmeta; j++)); do
-            meta+="${rest%%$'\t'*} "
-            rest=${rest#*$'\t'}
+            meta+="${fields[i + j]} "
         done
         meta=${meta% }
+        base=${fields[i + nmeta]}
 
         metas+=("$meta")
-        pairs+=("$rest")
+        if [[ $base == *$'\n'* ]]; then
+            keys+=("${base%%$'\n'*}")
+            vals+=("${base#*$'\n'}")
+            valued+=(1)
+        else
+            keys+=("$base")
+            vals+=("")
+            valued+=(0)
+        fi
         ((${#meta} > width)) && width=${#meta}
         ((n++))
     done
@@ -108,16 +123,9 @@ render() {
         return 0
     }
 
-    local pair key val section leaf out cont
-    for i in "${!pairs[@]}"; do
-        pair=${pairs[i]}
-        if [[ $pair == *=* ]]; then
-            key=${pair%%=*}
-            val=${pair#*=}
-        else
-            key=$pair # valueless key, e.g. a bare boolean
-            val=""
-        fi
+    local key val section leaf out cont
+    for ((i = 0; i < n; i++)); do
+        key=${keys[i]} val=${vals[i]}
 
         # git keys are section[.subsection].leaf — subsections may contain dots,
         # so split on the LAST dot to isolate the leaf.
@@ -132,7 +140,7 @@ render() {
         out=""
         ((width > 0)) && printf -v out '%s%-*s%s  ' "$C_META" "$width" "${metas[i]}" "$C_RESET"
         out+="${C_SECTION}${section}${C_RESET}${C_KEY}${leaf}${C_RESET}"
-        out+="${C_EQ} = ${C_RESET}${C_VAL}${val%%$'\n'*}${C_RESET}"
+        ((valued[i])) && out+="${C_EQ} = ${C_RESET}${C_VAL}${val%%$'\n'*}${C_RESET}"
         printf '%s\n' "$out"
 
         # continuation lines of a multi-line value
@@ -146,24 +154,37 @@ render() {
 
 # -------------------------------------------------------------- git call ----
 # Run `git config ...`, capture it, and only render on success — otherwise
-# git's own message is the error, not an empty listing.
+# git's own message is the error, not an empty listing. Output lands in a file
+# rather than a variable because `--null` records contain NUL bytes, which a
+# shell variable cannot hold. Keeping stderr separate also stops a warning
+# emitted on an otherwise successful call from being rendered as a config line.
 show() {
-    local out status nmeta=0 a
+    local status nmeta=0 a
     for a in "$@"; do
         [[ $a == --show-scope || $a == --show-origin ]] && ((nmeta++))
     done
-    out=$(git config "$@" 2>&1)
+
+    tmp_dir=$(mktemp -d) || die "could not create a temporary directory"
+    local out="$tmp_dir/out" err="$tmp_dir/err"
+
+    git config --null "$@" >"$out" 2>"$err"
     status=$?
+
     if ((status != 0)); then
-        out=${out#fatal: }
-        out=${out#error: }
-        die "${out:-git config failed}" "$status"
+        local msg
+        msg=$(<"$err")
+        msg=${msg#fatal: }
+        msg=${msg#error: }
+        die "${msg:-git config failed}" "$status"
     fi
-    if [[ -z $out ]]; then
+
+    [[ -s $err ]] && cat "$err" >&2
+
+    if [[ ! -s $out ]]; then
         printf '%s(no values set)%s\n' "$C_SECTION" "$C_RESET"
         return 0
     fi
-    printf '%s\n' "$out" | render "$nmeta"
+    render "$nmeta" <"$out"
 }
 
 # ------------------------------------------------------------------ main ----
