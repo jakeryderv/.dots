@@ -7,6 +7,9 @@ alias pad="nvim ~/.scratchpad.md"
 # source ~/.bashrc easily
 alias brc='echo "sourcing ~/.bashrc" && source ~/.bashrc'
 
+# vim keybinds for info command
+alias info="info --vi-keys"
+
 # get shell level
 alias shlvl='echo $SHLVL'
 
