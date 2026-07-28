@@ -31,6 +31,10 @@
 	undo = reset --soft HEAD~1
 	branches = branch -a
     cleanup = "!git branch --merged main --format='%(refname:short)' | grep -vE '^(main|master)$' | xargs -r git branch -d"
+    local-ls = config --local --list
+    local-edit = config --local --edit
+    global-ls = config --global --list
+    global-edit = config --global --edit
 
 [include]
 	path = ~/.gitconfig.local

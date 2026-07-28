@@ -83,7 +83,6 @@ alias gco='git checkout'
 alias gcb='git checkout -b'
 alias gb='git branch'
 alias gd='git diff'
-alias gce='git config --global --edit'
 
 # Add all, commit, and push in one shot: gacp "your message"
 gacp() { git add . && git commit -m "$1" && git push; }
