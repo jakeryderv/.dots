@@ -42,5 +42,8 @@
 	navigate = true
 	dark = true
 	hyperlinks = true
+	side-by-side = true
+	line-numbers = true
+	syntax-theme = base16
 [include]
 	path = ~/.gitconfig.local
