@@ -72,6 +72,7 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # ── Git shortcuts ──
 alias g='git'
 alias gs='git status'
+alias gso='git remote show origin'
 alias ga='git add'
 alias gaa='git add .'
 alias gc='git commit -m'
