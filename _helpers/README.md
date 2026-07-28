@@ -18,6 +18,7 @@ to re-run to update unless their header says a pin must be bumped deliberately.
 | Script | Installs | Notes |
 |--------|----------|-------|
 | `check-repo.sh` | — | Portable syntax, parser, lint, and behavior checks used by CI. |
+| `install-delta.sh` | [delta](https://github.com/dandavison/delta) | Verified official `.deb` via `dpkg`. Skips the download when already current; `--force` reinstalls. Wire it into [`git`](../git/README.md) yourself — see the script's closing note. |
 | `install-fzf.sh` | [fzf](https://github.com/junegunn/fzf) | Cloned to `~/.fzf`. `--all` **edits your shell rc files** to add keybindings/completion. |
 | `install-glow.sh` | [glow](https://github.com/charmbracelet/glow) | Charm apt repo. Markdown renderer used by [`_bash`](../_bash/README.md)'s `llm.sh`. |
 | `install-lazygit.sh` | [lazygit](https://github.com/jesseduffield/lazygit) | Verified GitHub release binary → `/usr/local/bin`. |

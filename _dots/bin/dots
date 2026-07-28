@@ -259,7 +259,7 @@ repo_check_cmd() {
 
 deps_cmd() {
     local required=(bash git stow python3 find sed awk grep cmp readlink file)
-    local optional=(shellcheck luac fc-cache starship vim nvim tmux fzf bat batcat rg fd fdfind lazygit glow llm qutebrowser pi opencode claude openspec agy)
+    local optional=(shellcheck luac fc-cache starship vim nvim tmux fzf bat batcat rg fd fdfind delta lazygit glow llm qutebrowser pi opencode claude openspec agy)
     local cmd missing=0
     printf '%sRequired:%s\n' "$BOLD" "$RESET"
     for cmd in "${required[@]}"; do
