@@ -72,17 +72,17 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # ── Git shortcuts ──
 alias g='git'
 alias gs='git status'
-alias gso='git remote show origin'
+alias grso='git remote show origin'
 alias ga='git add'
 alias gaa='git add .'
 alias gaA='git add -A'
 alias gc='git commit -m'
-alias gp='git push'
-alias gl='git pull'
+# alias gp='git push'
+# alias gl='git pull'
 alias gco='git checkout'
 alias gcb='git checkout -b'
-alias gb='git branch'
-alias gd='git diff'
+# alias gb='git branch'
+# alias gd='git diff'
 
 # Add all, commit, and push in one shot: gacp "your message"
 gacp() { git add . && git commit -m "$1" && git push; }
