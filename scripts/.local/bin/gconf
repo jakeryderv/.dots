@@ -34,6 +34,7 @@ setup_colors() {
     esac
 
     if ((on)); then
+        C_TITLE=$'\e[38;5;255m'   # table heading ........ white
         C_META=$'\e[38;5;108m'    # scope / file column .. green
         C_SECTION=$'\e[38;5;244m' # section prefix ....... grey
         C_KEY=$'\e[38;5;81m'      # leaf key ............. cyan
@@ -42,7 +43,7 @@ setup_colors() {
         C_WARN=$'\e[38;5;209m'    # errors ............... orange
         C_RESET=$'\e[0m'
     else
-        C_META='' C_SECTION='' C_KEY='' C_EQ='' C_VAL='' C_WARN='' C_RESET=''
+        C_TITLE='' C_META='' C_SECTION='' C_KEY='' C_EQ='' C_VAL='' C_WARN='' C_RESET=''
     fi
 }
 
@@ -228,11 +229,12 @@ show() { emit strict "$@"; }
 # each annotated with the file every value came from. Within a scope the origin
 # still varies, since include.path and includeIf pull in other files.
 show_all() {
-    local s first=1
+    local s name first=1
     for s in --local --global --system; do
         ((first)) || printf '\n'
         first=0
-        printf '%s%s%s\n' "$C_META" "${s#--}" "$C_RESET"
+        name=${s#--}
+        printf '%s%s%s\n' "$C_TITLE" "${name^^}" "$C_RESET"
 
         if [[ $s == --local ]] && ! git rev-parse --git-dir >/dev/null 2>&1; then
             printf '%s(not inside a git repository)%s\n' "$C_SECTION" "$C_RESET"
