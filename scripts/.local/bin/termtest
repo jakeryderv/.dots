@@ -309,69 +309,6 @@ cmd_all() {
 }
 
 # ---------------------------------------------------------------------------
-# completion
-# ---------------------------------------------------------------------------
-
-cmd_completion() {
-  # @PROG@ placeholders are substituted so the emitted script always matches
-  # whatever this file is actually named / symlinked as.
-  _emit() { sed "s/@PROG@/${PROG}/g"; }
-  case "${1:-bash}" in
-    bash)
-      _emit <<'EOF'
-_@PROG@() {
-  local cur prev subs
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  prev="${COMP_WORDS[COMP_CWORD-1]}"
-  subs="all env link delta styles underlines colors unicode clip title cwd notify graphics cursor keys completion help version"
-  if [ "$COMP_CWORD" -eq 1 ]; then
-    COMPREPLY=( $(compgen -W "$subs" -- "$cur") )
-  elif [ "$prev" = "help" ]; then
-    COMPREPLY=( $(compgen -W "$subs" -- "$cur") )
-  elif [ "$prev" = "delta" ]; then
-    COMPREPLY=( $(compgen -f -- "$cur") )
-  elif [ "$prev" = "completion" ]; then
-    COMPREPLY=( $(compgen -W "bash zsh" -- "$cur") )
-  fi
-}
-complete -F _@PROG@ @PROG@
-EOF
-      ;;
-    zsh)
-      _emit <<'EOF'
-#compdef @PROG@
-_@PROG@() {
-  local -a subs
-  subs=(
-    'all:every non-interactive test'
-    'env:versions, TERM, tmux features'
-    'link:OSC 8 hyperlink'
-    'delta:URLs delta emits for a file'
-    'styles:bold/italic/strikethrough/...'
-    'underlines:curly/dotted/dashed + colors'
-    'colors:16/256/truecolor'
-    'unicode:emoji, CJK, ZWJ, widths'
-    'clip:OSC 52 clipboard'
-    'title:OSC 0 window title'
-    'cwd:OSC 7 cwd reporting'
-    'notify:OSC 9 + 777 notification'
-    'graphics:kitty + sixel probe'
-    'cursor:cursor shapes (interactive)'
-    'keys:raw key bytes (interactive)'
-    'completion:emit shell completion'
-    'help:detailed help'
-    'version:print version'
-  )
-  _describe 'subcommand' subs
-}
-_@PROG@ "$@"
-EOF
-      ;;
-    *) err "unknown shell '${1}' (try: bash, zsh)"; return 1 ;;
-  esac
-}
-
-# ---------------------------------------------------------------------------
 # help
 # ---------------------------------------------------------------------------
 
@@ -410,7 +347,6 @@ usage() {
     keys                print raw bytes per keypress (q to quit)
 
   META
-    completion [shell]  emit completion script (bash|zsh)
     help [subcommand]   this text, or detail on one subcommand
     version             print version
 
@@ -600,19 +536,6 @@ EOF
   editors bind them separately.
 EOF
 ;;
-    completion) cat <<EOF
-
-  ${PROG} completion [bash|zsh]
-
-  Emits a completion script on stdout. Install:
-
-    # bash
-    ${PROG} completion bash > ~/.local/share/bash-completion/completions/${PROG}
-
-    # zsh (somewhere on \$fpath)
-    ${PROG} completion zsh > ~/.zfunc/_${PROG}
-EOF
-;;
     version) printf '\n  %s version — print version and exit\n' "$PROG" ;;
     help)    printf '\n  %s help [subcommand] — this text\n' "$PROG" ;;
     *) err "no help for '$1'"; note "run '$PROG help' for the list"; return 1 ;;
@@ -643,7 +566,6 @@ main() {
     graphics|gfx)     cmd_graphics "$@" ;;
     cursor)           cmd_cursor "$@" ;;
     keys|key)         cmd_keys "$@" ;;
-    completion)       cmd_completion "$@" ;;
     help|-h|--help)   cmd_help "$@" ;;
     version|-V|--version) printf '%s %s\n' "$PROG" "$VERSION" ;;
     *)
