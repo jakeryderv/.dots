@@ -1,0 +1,247 @@
+#!/usr/bin/env bash
+#
+# gconf — inspect and edit git config by scope
+#
+#   gconf [scope] [action]
+#
+# Scopes:  l|local   g|global   s|system   a|all
+# Actions: l|list (default)   e|edit   o|origin
+#
+set -uo pipefail
+
+readonly PROG=${0##*/}
+readonly VERSION=1.1.0
+
+# ---------------------------------------------------------------- colors ----
+# Honors NO_COLOR (https://no-color.org), TERM=dumb, and non-tty stdout.
+color_mode=auto
+
+setup_colors() {
+    local on=0
+    case $color_mode in
+    always) on=1 ;;
+    never) on=0 ;;
+    auto) [[ -t 1 && ${TERM-} != dumb && -z ${NO_COLOR-} ]] && on=1 ;;
+    esac
+
+    if ((on)); then
+        C_META=$'\e[38;5;108m'    # scope / file column .. green
+        C_SECTION=$'\e[38;5;244m' # section prefix ....... grey
+        C_KEY=$'\e[38;5;81m'      # leaf key ............. cyan
+        C_EQ=$'\e[38;5;240m'      # equals ............... dim
+        C_VAL=$'\e[38;5;180m'     # value ................ sand
+        C_WARN=$'\e[38;5;209m'    # errors ............... orange
+        C_RESET=$'\e[0m'
+    else
+        C_META='' C_SECTION='' C_KEY='' C_EQ='' C_VAL='' C_WARN='' C_RESET=''
+    fi
+}
+
+die() {
+    printf '%s%s: %s%s\n' "$C_WARN" "$PROG" "$1" "$C_RESET" >&2
+    exit "${2:-2}"
+}
+
+usage() {
+    cat <<EOF
+${PROG} ${VERSION} — inspect and edit git config by scope
+
+usage: ${PROG} [options] [scope] [action]
+
+scopes    l, local     this repository (.git/config)
+          g, global    your user (~/.gitconfig)
+          s, system    machine-wide (/etc/gitconfig)
+          a, all       every scope merged, labeled   [default]
+
+actions   l, list      print key=value               [default]
+          e, edit      open the file in \$GIT_EDITOR
+          o, origin    list, annotated with source file
+
+options   --color=WHEN  always | never | auto (default)
+          -h, --help    this text
+          -V, --version print version
+
+examples  ${PROG}              # everything, merged and labeled
+          ${PROG} g            # global list
+          ${PROG} g e          # edit ~/.gitconfig
+          ${PROG} g o          # global list + which file each value is in
+          ${PROG} local edit   # long forms work too
+EOF
+}
+
+# ---------------------------------------------------------------- render ----
+# Reads git's tab-separated output on stdin and pretty-prints it:
+#   [meta column]  section.  key = value
+# Two passes so the meta column can be width-aligned.
+render() {
+    local nmeta=${1:-0} # how many tab-separated columns git prefixed
+    local -a metas=() pairs=()
+    local line meta rest width=0 i j n=0 tabs
+
+    while IFS= read -r line; do
+        [[ -z $line ]] && continue
+
+        # A value may itself contain tabs or newlines, so peel off exactly nmeta
+        # leading fields rather than splitting on the last tab. A line with too
+        # few fields is a continuation of the previous value.
+        tabs=${line//[!$'\t']/}
+        if ((n > 0)) && { ((nmeta > 0 && ${#tabs} < nmeta)) || { ((nmeta == 0)) && [[ $line != *=* ]]; }; }; then
+            pairs[n - 1]+=$'\n'$line
+            continue
+        fi
+
+        meta="" rest=$line
+        for ((j = 0; j < nmeta; j++)); do
+            meta+="${rest%%$'\t'*} "
+            rest=${rest#*$'\t'}
+        done
+        meta=${meta% }
+
+        metas+=("$meta")
+        pairs+=("$rest")
+        ((${#meta} > width)) && width=${#meta}
+        ((n++))
+    done
+
+    ((n == 0)) && {
+        printf '%s(no values set)%s\n' "$C_SECTION" "$C_RESET"
+        return 0
+    }
+
+    local pair key val section leaf out cont
+    for i in "${!pairs[@]}"; do
+        pair=${pairs[i]}
+        if [[ $pair == *=* ]]; then
+            key=${pair%%=*}
+            val=${pair#*=}
+        else
+            key=$pair # valueless key, e.g. a bare boolean
+            val=""
+        fi
+
+        # git keys are section[.subsection].leaf — subsections may contain dots,
+        # so split on the LAST dot to isolate the leaf.
+        if [[ $key == *.* ]]; then
+            section="${key%.*}."
+            leaf=${key##*.}
+        else
+            section=""
+            leaf=$key
+        fi
+
+        out=""
+        ((width > 0)) && printf -v out '%s%-*s%s  ' "$C_META" "$width" "${metas[i]}" "$C_RESET"
+        out+="${C_SECTION}${section}${C_RESET}${C_KEY}${leaf}${C_RESET}"
+        out+="${C_EQ} = ${C_RESET}${C_VAL}${val%%$'\n'*}${C_RESET}"
+        printf '%s\n' "$out"
+
+        # continuation lines of a multi-line value
+        if [[ $val == *$'\n'* ]]; then
+            while IFS= read -r cont; do
+                printf '%*s%s%s%s\n' $((width > 0 ? width + 2 : 0)) "" "$C_VAL" "  $cont" "$C_RESET"
+            done <<<"${val#*$'\n'}"
+        fi
+    done
+}
+
+# -------------------------------------------------------------- git call ----
+# Run `git config ...`, capture it, and only render on success — otherwise
+# git's own message is the error, not an empty listing.
+show() {
+    local out status nmeta=0 a
+    for a in "$@"; do
+        [[ $a == --show-scope || $a == --show-origin ]] && ((nmeta++))
+    done
+    out=$(git config "$@" 2>&1)
+    status=$?
+    if ((status != 0)); then
+        out=${out#fatal: }
+        out=${out#error: }
+        die "${out:-git config failed}" "$status"
+    fi
+    if [[ -z $out ]]; then
+        printf '%s(no values set)%s\n' "$C_SECTION" "$C_RESET"
+        return 0
+    fi
+    printf '%s\n' "$out" | render "$nmeta"
+}
+
+# ------------------------------------------------------------------ main ----
+main() {
+    local -a positional=()
+    local arg
+
+    for arg in "$@"; do
+        case $arg in
+        --color=*) color_mode=${arg#--color=} ;;
+        --color) color_mode=always ;;
+        -h | --help | help | h)
+            setup_colors
+            usage
+            exit 0
+            ;;
+        -V | --version)
+            printf '%s %s\n' "$PROG" "$VERSION"
+            exit 0
+            ;;
+        -*)
+            setup_colors
+            die "unknown option '$arg' (try --help)"
+            ;;
+        *) positional+=("$arg") ;;
+        esac
+    done
+
+    case $color_mode in
+    always | never | auto) ;;
+    *)
+        color_mode=auto
+        setup_colors
+        die "--color must be always, never, or auto"
+        ;;
+    esac
+    setup_colors
+
+    command -v git >/dev/null || die "git not found on PATH" 127
+
+    ((${#positional[@]} <= 2)) ||
+        die "too many arguments: ${positional[*]} (want: [scope] [action])"
+
+    local scope action
+    case "${positional[0]-all}" in
+    a | all) scope=all ;;
+    l | local) scope=--local ;;
+    g | global) scope=--global ;;
+    s | system) scope=--system ;;
+    *) die "unknown scope '${positional[0]}' (want: local, global, system, all)" ;;
+    esac
+
+    case "${positional[1]-list}" in
+    l | ls | list) action=list ;;
+    e | ed | edit) action=edit ;;
+    o | origin | where) action=origin ;;
+    *) die "unknown action '${positional[1]}' (want: list, edit, origin)" ;;
+    esac
+
+    # friendlier than git's raw "fatal: --local can only be used inside a git repository"
+    if [[ $scope == --local ]] && ! git rev-parse --git-dir >/dev/null 2>&1; then
+        die "not inside a git repository — try '$PROG global' or '$PROG all'"
+    fi
+
+    if [[ $scope == all ]]; then
+        case $action in
+        edit) die "'all' has no single file to edit — pick local, global, or system" ;;
+        list) show --list --show-scope ;;
+        origin) show --list --show-scope --show-origin ;;
+        esac
+        return
+    fi
+
+    case $action in
+    list) show "$scope" --list ;;
+    origin) show "$scope" --list --show-origin ;;
+    edit) git config "$scope" --edit ;;
+    esac
+}
+
+main "$@"

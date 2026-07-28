@@ -29,6 +29,24 @@ NO_COLOR=1 tmux-cheatsheet  # standard no-color convention
 `tmux` and a running server are required for every mode; `--pick` also requires
 `fzf`.
 
+### `gconf`
+
+Inspects and edits git config by scope, rendering `section.key = value` with the
+scope (and optionally the source file) in an aligned left column.
+
+```bash
+gconf              # every scope, merged and labeled
+gconf g            # global list
+gconf g e          # edit ~/.gitconfig
+gconf g o          # global list, annotated with the file each value came from
+gconf local edit   # long forms work too
+NO_COLOR=1 gconf   # standard no-color convention
+```
+
+Scopes are `l|local`, `g|global`, `s|system`, `a|all` (default); actions are
+`l|list` (default), `e|edit`, `o|origin`. `all` has no single file, so it
+rejects `edit`. `--color=always|never|auto` overrides the tty check.
+
 ### `bs`
 
 A composable `ls` replacement — a self-contained bash pipeline (gather → filter
