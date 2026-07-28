@@ -44,17 +44,20 @@ Inspects and edits git config by scope, rendering `section.key = value` with the
 scope (and optionally the source file) in an aligned left column.
 
 ```bash
-gconf              # every scope, merged and labeled
-gconf g            # global list
-gconf g e          # edit ~/.gitconfig
-gconf g o          # global list, annotated with the file each value came from
-gconf local edit   # long forms work too
-NO_COLOR=1 gconf   # standard no-color convention
+gconf               # brief usage summary
+gconf a             # every scope, merged and labeled
+gconf g             # global list
+gconf g e           # edit ~/.gitconfig
+gconf g o           # global list, annotated with the file each value came from
+gconf local edit    # long forms work too
+NO_COLOR=1 gconf a  # standard no-color convention
 ```
 
-Scopes are `l|local`, `g|global`, `s|system`, `a|all` (default); actions are
-`l|list` (default), `e|edit`, `o|origin`. `all` has no single file, so it
-rejects `edit`. `--color=always|never|auto` overrides the tty check.
+Scopes are `l|local`, `g|global`, `s|system`, `a|all`; actions are `l|list`
+(default), `e|edit`, `o|origin`. A bare `gconf` prints the summary rather than
+picking a scope for you, so the merged view is `gconf a`. `all` has no single
+file, so it rejects `edit`. `--color=always|never|auto` overrides the tty
+check.
 
 ### `bs`
 

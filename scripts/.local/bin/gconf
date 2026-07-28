@@ -10,7 +10,7 @@
 set -uo pipefail
 
 readonly PROG=${0##*/}
-readonly VERSION=1.2.0
+readonly VERSION=1.3.0
 
 # Scratch space for git's NUL-delimited output; see show().
 tmp_dir=''
@@ -50,6 +50,22 @@ die() {
     exit "${2:-2}"
 }
 
+# Shown when invoked with no scope, so a bare `gconf` orients rather than
+# dumping every scope. Mirrors the summary at the top of this file.
+brief() {
+    cat <<EOF
+${PROG} — inspect and edit git config by scope
+
+usage: ${PROG} [scope] [action]
+
+scopes    l|local   g|global   s|system   a|all
+actions   l|list (default)   e|edit   o|origin
+
+${PROG} a   every scope merged and labeled
+${PROG} -h  full help
+EOF
+}
+
 usage() {
     cat <<EOF
 ${PROG} ${VERSION} — inspect and edit git config by scope
@@ -59,7 +75,7 @@ usage: ${PROG} [options] [scope] [action]
 scopes    l, local     this repository (.git/config)
           g, global    your user (~/.gitconfig)
           s, system    machine-wide (/etc/gitconfig)
-          a, all       every scope merged, labeled   [default]
+          a, all       every scope merged, labeled
 
 actions   l, list      print key=value               [default]
           e, edit      open the file in git's editor
@@ -69,7 +85,8 @@ options   --color=WHEN  always | never | auto (default)
           -h, --help    this text
           -V, --version print version
 
-examples  ${PROG}              # everything, merged and labeled
+examples  ${PROG}              # this summary
+          ${PROG} a            # everything, merged and labeled
           ${PROG} g            # global list
           ${PROG} g e          # edit ~/.gitconfig
           ${PROG} g o          # global list + which file each value is in
@@ -223,13 +240,20 @@ main() {
     esac
     setup_colors
 
+    # No scope given: orient instead of dumping every scope. `gconf a` is the
+    # explicit way to ask for the merged view.
+    if ((${#positional[@]} == 0)); then
+        brief
+        exit 0
+    fi
+
     command -v git >/dev/null || die "git not found on PATH" 127
 
     ((${#positional[@]} <= 2)) ||
         die "too many arguments: ${positional[*]} (want: [scope] [action])"
 
     local scope action
-    case "${positional[0]-all}" in
+    case "${positional[0]}" in
     a | all) scope=all ;;
     l | local) scope=--local ;;
     g | global) scope=--global ;;
