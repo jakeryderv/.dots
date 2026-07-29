@@ -9,14 +9,14 @@ esac
 
 # ls colors (LS_COLORS)
 if [ -x /usr/bin/dircolors ]; then
-	test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 fi
 
 # Editor
 if [[ -n $SSH_CONNECTION ]]; then
-	export EDITOR='vim'
+    export EDITOR='vim'
 else
-	export EDITOR='nvim'
+    export EDITOR='nvim'
 fi
 
 # Tool telemetry opt-out. OpenSpec has no config-file switch — it checks
