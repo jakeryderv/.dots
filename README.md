@@ -43,6 +43,7 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 | [`starship`](starship/README.md) | `~/.config/starship.toml` | Starship prompt |
 | [`git`](git/README.md) | `~/.gitconfig` | Global Git behavior, aliases, and defaults |
 | [`direnv`](direnv/README.md) | `~/.config/direnv/` | Shared direnv helpers (per-directory gh account pinning) |
+| [`tealdeer`](tealdeer/README.md) | `~/.config/tealdeer/` | tldr-pages client cache policy (binary via `_helpers`) |
 
 ### Coding agents
 

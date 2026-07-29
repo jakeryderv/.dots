@@ -1,0 +1,19 @@
+# tealdeer configuration.
+#
+# Only deviations from tealdeer's built-in defaults live here; anything omitted
+# keeps upstream's value. To see the full default set, seed a throwaway copy:
+#
+#     tldr --config-path /tmp/tealdeer-defaults.toml --seed-config
+#
+# [style] blocks are deliberately absent. tealdeer's defaults use *named*
+# colors ("cyan", "green"), which resolve through the terminal's ANSI palette,
+# so tldr output follows carbonfox automatically — the same mechanism as
+# delta's `syntax-theme = base16` in ../../git/.gitconfig. Naming hex values
+# here would add another copy of the palette to keep in sync.
+
+[updates]
+# Refresh the page cache in the background so `tldr --update` is never a
+# prerequisite for a working `tldr`. 720 hours (30 days) is upstream's default
+# interval and is kept explicit because the cadence is the point of enabling it.
+auto_update = true
+auto_update_interval_hours = 720
