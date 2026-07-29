@@ -24,5 +24,4 @@ fi
 export OPENSPEC_TELEMETRY=0
 
 # man stuff
-export PAGER='less'
 export MANPAGER='less -R'
