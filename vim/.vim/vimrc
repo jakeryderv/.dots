@@ -9,6 +9,8 @@ let maplocalleader = " "
 filetype plugin indent on
 syntax enable
 
+runtime! ftplugin/man.vim
+
 " Editing and navigation
 set number
 set relativenumber

@@ -24,4 +24,16 @@ fi
 export OPENSPEC_TELEMETRY=0
 
 # man stuff
-export MANPAGER='less -R'
+if command -v nvim >/dev/null 2>&1; then
+    export MANPAGER='nvim +Man!'
+elif command -v vim >/dev/null 2>&1; then
+    export MANPAGER='vim -M -c "runtime! ftplugin/man.vim" -c MANPAGER -'
+else
+    export LESS='-R'
+    export LESS_TERMCAP_md=$'\e[1;36m'
+    export LESS_TERMCAP_us=$'\e[1;32m'
+    export LESS_TERMCAP_so=$'\e[1;44;37m'
+    export LESS_TERMCAP_me=$'\e[0m'
+    export LESS_TERMCAP_ue=$'\e[0m'
+    export LESS_TERMCAP_se=$'\e[0m'
+fi
