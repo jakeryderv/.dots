@@ -16,8 +16,16 @@ it is missing, Tab silently falls back to filename completion.
 ## Activate
 
 ```bash
-cd ~/.dots && stow scripts
+cd ~/.dots && dots stow --no-folding --apply scripts
 ```
+
+`--no-folding` matters here. A plain `stow scripts` folds
+`~/.local/share/bash-completion` into a single symlink pointing at this
+package, so anything else that installs a completion — such as
+[`_helpers/install-tealdeer.sh`](../_helpers/README.md) — writes a
+third-party file straight into the repo. Unfolded, the target stays a real
+directory holding one symlink per tracked completion, and non-stowed
+completions can sit beside them.
 
 ## Scripts
 
