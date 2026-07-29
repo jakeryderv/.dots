@@ -22,3 +22,7 @@ fi
 # Tool telemetry opt-out. OpenSpec has no config-file switch — it checks
 # OPENSPEC_TELEMETRY === '0' (and the cross-tool DO_NOT_TRACK === '1').
 export OPENSPEC_TELEMETRY=0
+
+# man stuff
+export PAGER='less'
+export MANPAGER='less -R'
