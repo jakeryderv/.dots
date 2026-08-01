@@ -127,7 +127,7 @@
   "autoDreamEnabled": true,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "verbose": true,
+  "verbose": false,
   "remoteControlAtStartup": false,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true
