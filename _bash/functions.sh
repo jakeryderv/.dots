@@ -24,3 +24,9 @@ up() {
     done
     cd "$path" || return 1
 }
+
+explain() {
+    local url
+    url=$(python3 -c 'import sys,urllib.parse; print("https://explainshell.com/explain?cmd="+urllib.parse.quote(" ".join(sys.argv[1:])))' "$@")
+    xdg-open "$url" 2>/dev/null || echo "$url"
+}
