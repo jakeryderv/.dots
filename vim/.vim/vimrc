@@ -41,6 +41,24 @@ set expandtab
 set list
 set listchars=tab:»\ ,trail:·,nbsp:␣
 
+" Two-space filetypes, mirroring the web-indent autocmd in the Neovim config and
+" the matching rules in ~/.editorconfig. Vim has no EditorConfig support, so this
+" hardcodes the convention instead of reading a project's file: a repository with
+" different rules is NOT honoured here (Neovim, which reads EditorConfig, is).
+"
+" softtabstop is repeated even though it is -1 globally: 'filetype plugin indent
+" on' above registers the bundled ftplugins first, so they run before this and
+" some pin their own value -- runtime/ftplugin/markdown.vim sets softtabstop=4.
+" Without restoring -1 here, <Tab> would insert 4 spaces while >> shifted 2.
+let s:two_space_filetypes = 'lua,html,css,scss,sass,less,'
+      \ . 'javascript,javascriptreact,typescript,typescriptreact,'
+      \ . 'json,jsonc,yaml,markdown'
+augroup web_indent
+  autocmd!
+  execute 'autocmd FileType ' . s:two_space_filetypes
+        \ . ' setlocal tabstop=2 shiftwidth=2 softtabstop=-1'
+augroup END
+
 " Responsiveness and terminal colors
 set updatetime=250
 set timeoutlen=300

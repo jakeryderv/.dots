@@ -31,7 +31,15 @@ by the package.
 ## Included behavior
 
 - Relative and absolute line numbers, mouse support, visible whitespace, and
-  four-space indentation.
+  four-space indentation (`softtabstop=-1`, so `<Tab>`/`<BS>` move a whole
+  step). A `FileType` autocmd drops to two spaces for Lua, the web filetypes,
+  and Markdown, matching the [`nvim`](../nvim/README.md) config.
+- **No EditorConfig support.** Vim cannot read `.editorconfig`, so the two-space
+  list above hardcodes the convention rather than reading a project's file — a
+  repository with different rules is not honoured here, though Neovim does
+  honour it. See [`editorconfig`](../editorconfig/README.md). Adding
+  `editorconfig-vim` would close the gap at the cost of this config's
+  zero-plugin property; the tradeoff was judged not worth it.
 - Smart-case incremental search, persistent undo, true color, and predictable
   split placement.
 - `Ctrl-h/j/k/l` and `Ctrl-\` navigation across Vim splits and tmux panes,
