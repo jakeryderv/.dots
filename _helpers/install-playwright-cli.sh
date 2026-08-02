@@ -6,12 +6,11 @@
 set -euo pipefail
 
 if ! command -v npm >/dev/null 2>&1; then
-	echo "install-playwright-cli: npm is required" >&2
-	exit 1
+    echo "install-playwright-cli: npm is required" >&2
+    exit 1
 fi
 
 npm install -g @playwright/cli@latest
 playwright-cli install-browser chromium
 
 echo "Installed playwright-cli $(playwright-cli --version)"
-

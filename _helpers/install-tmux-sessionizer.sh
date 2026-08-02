@@ -11,19 +11,22 @@ TMP_FILE="$(mktemp "${TMPDIR:-/tmp}/tmux-sessionizer.XXXXXX")"
 trap 'rm -f "$TMP_FILE"' EXIT
 
 for command in curl sha256sum; do
-	command -v "$command" >/dev/null 2>&1 || { echo "Error: required command '$command' was not found" >&2; exit 1; }
+    command -v "$command" >/dev/null 2>&1 || {
+        echo "Error: required command '$command' was not found" >&2
+        exit 1
+    }
 done
 
 mkdir -p "$INSTALL_DIR"
 
 echo "Downloading tmux-sessionizer at $COMMIT..."
 curl -fL --retry 3 -o "$TMP_FILE" \
-	"https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/$COMMIT/tmux-sessionizer"
+    "https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/$COMMIT/tmux-sessionizer"
 
 ACTUAL_SHA256=$(sha256sum "$TMP_FILE" | awk '{print $1}')
 if [[ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]]; then
-	echo "Error: SHA-256 verification failed for tmux-sessionizer" >&2
-	exit 1
+    echo "Error: SHA-256 verification failed for tmux-sessionizer" >&2
+    exit 1
 fi
 
 install -m 0755 "$TMP_FILE" "$INSTALL_DIR/tmux-sessionizer"

@@ -19,27 +19,27 @@ missing=()
 ok=()
 
 for dir in "$REPO_ROOT"/*/; do
-	name="$(basename "$dir")"
-	[[ "$name" == ".git" ]] && continue
-	if [[ -f "$dir/README.md" ]]; then
-		ok+=("$name")
-	else
-		missing+=("$name")
-	fi
+    name="$(basename "$dir")"
+    [[ "$name" == ".git" ]] && continue
+    if [[ -f "$dir/README.md" ]]; then
+        ok+=("$name")
+    else
+        missing+=("$name")
+    fi
 done
 
 for name in "${ok[@]}"; do
-	printf '  \033[1;32m✓\033[0m %s\n' "$name"
+    printf '  \033[1;32m✓\033[0m %s\n' "$name"
 done
 
 if ((${#missing[@]})); then
-	echo
-	for name in "${missing[@]}"; do
-		printf '  \033[1;31m✗ %s — missing README.md\033[0m\n' "$name"
-	done
-	echo
-	printf '\033[1;31m%d dir(s) missing a README.\033[0m\n' "${#missing[@]}"
-	exit 1
+    echo
+    for name in "${missing[@]}"; do
+        printf '  \033[1;31m✗ %s — missing README.md\033[0m\n' "$name"
+    done
+    echo
+    printf '\033[1;31m%d dir(s) missing a README.\033[0m\n' "${#missing[@]}"
+    exit 1
 fi
 
 echo

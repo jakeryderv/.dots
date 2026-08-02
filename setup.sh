@@ -15,23 +15,23 @@ TARGET_DIR="${DOTS_BIN_DIR:-$HOME/.local/bin}"
 TARGET="$TARGET_DIR/dots"
 
 if [[ ! -x "$DOTS_BIN" ]]; then
-	echo "error: dots CLI is not executable: $DOTS_BIN" >&2
-	exit 1
+    echo "error: dots CLI is not executable: $DOTS_BIN" >&2
+    exit 1
 fi
 
 mkdir -p "$TARGET_DIR"
 
 if [[ -e "$TARGET" || -L "$TARGET" ]]; then
-	current="$(readlink -f "$TARGET" 2>/dev/null || true)"
-	desired="$(readlink -f "$DOTS_BIN")"
-	if [[ "$current" == "$desired" ]]; then
-		echo "dots already linked: $TARGET -> $DOTS_BIN"
-		exit 0
-	fi
+    current="$(readlink -f "$TARGET" 2>/dev/null || true)"
+    desired="$(readlink -f "$DOTS_BIN")"
+    if [[ "$current" == "$desired" ]]; then
+        echo "dots already linked: $TARGET -> $DOTS_BIN"
+        exit 0
+    fi
 
-	backup="$TARGET.backup.$(date +%Y%m%d%H%M%S)"
-	mv "$TARGET" "$backup"
-	echo "backed up existing dots entrypoint: $backup"
+    backup="$TARGET.backup.$(date +%Y%m%d%H%M%S)"
+    mv "$TARGET" "$backup"
+    echo "backed up existing dots entrypoint: $backup"
 fi
 
 ln -s "$DOTS_BIN" "$TARGET"

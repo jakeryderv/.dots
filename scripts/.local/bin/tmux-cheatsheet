@@ -222,8 +222,14 @@ classify_binding() {
     searchable="${description,,} ${friendly,,} ${command,,}"
 
     case "$searchable" in
-    *tmux-resurrect*) printf '%s' sessions; return ;;
-    *tmux-fzf* | *extrakto* | *tpm/bindings/* | */plugins/*) printf '%s' plugins; return ;;
+    *tmux-resurrect*)
+        printf '%s' sessions
+        return
+        ;;
+    *tmux-fzf* | *extrakto* | *tpm/bindings/* | */plugins/*)
+        printf '%s' plugins
+        return
+        ;;
     esac
 
     case "$primary" in

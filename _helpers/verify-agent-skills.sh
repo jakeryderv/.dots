@@ -48,10 +48,10 @@ for skill_dir in "${skill_dirs[@]}"; do
     [[ "$(readlink "$claude_link")" == "../../.agents/skills/$skill_name" ]] || fail "incorrect Claude mirror target for $skill_name"
     [[ "$(readlink -f "$claude_link")" == "$(readlink -f "$skill_dir")" ]] || fail "broken Claude mirror link for $skill_name"
 
-    [[ ! -e "$REPO_ROOT/pi/.pi/agent/skills/$skill_name" && ! -L "$REPO_ROOT/pi/.pi/agent/skills/$skill_name" ]] \
-        || fail "Pi still has a redundant local copy of $skill_name"
-    [[ ! -e "$REPO_ROOT/opencode/.config/opencode/skills/$skill_name" && ! -L "$REPO_ROOT/opencode/.config/opencode/skills/$skill_name" ]] \
-        || fail "OpenCode still has a redundant local copy of $skill_name"
+    [[ ! -e "$REPO_ROOT/pi/.pi/agent/skills/$skill_name" && ! -L "$REPO_ROOT/pi/.pi/agent/skills/$skill_name" ]] ||
+        fail "Pi still has a redundant local copy of $skill_name"
+    [[ ! -e "$REPO_ROOT/opencode/.config/opencode/skills/$skill_name" && ! -L "$REPO_ROOT/opencode/.config/opencode/skills/$skill_name" ]] ||
+        fail "OpenCode still has a redundant local copy of $skill_name"
 
     if ((CHECK_LIVE)); then
         expected="$(readlink -f "$skill_dir")"

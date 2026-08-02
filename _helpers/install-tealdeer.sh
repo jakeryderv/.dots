@@ -28,49 +28,55 @@ case "${1-}" in
 "") ;;
 -f | --force) FORCE=1 ;;
 -h | --help)
-	echo "usage: ${0##*/} [--force]"
-	echo "  --force  reinstall even when already at the latest version"
-	exit 0
-	;;
+    echo "usage: ${0##*/} [--force]"
+    echo "  --force  reinstall even when already at the latest version"
+    exit 0
+    ;;
 *)
-	echo "Error: unknown argument '$1' (try --help)" >&2
-	exit 2
-	;;
+    echo "Error: unknown argument '$1' (try --help)" >&2
+    exit 2
+    ;;
 esac
 
 if [[ "$(uname -s)" != Linux || "$(uname -m)" != x86_64 ]]; then
-	echo "Error: this helper supports Linux x86_64 only" >&2
-	exit 1
+    echo "Error: this helper supports Linux x86_64 only" >&2
+    exit 1
 fi
 
 for command in curl jq sha256sum awk dpkg; do
-	command -v "$command" >/dev/null 2>&1 || { echo "Error: required command '$command' was not found" >&2; exit 1; }
+    command -v "$command" >/dev/null 2>&1 || {
+        echo "Error: required command '$command' was not found" >&2
+        exit 1
+    }
 done
 
 # Download an asset by name and check it against the digest GitHub publishes
 # alongside it, so a corrupted or substituted file never reaches the install.
 fetch_asset() {
-	local name="$1" dest="$2" asset url digest expected actual
-	asset=$(printf '%s' "$RELEASE_JSON" | jq -cer --arg name "$name" '
+    local name="$1" dest="$2" asset url digest expected actual
+    asset=$(printf '%s' "$RELEASE_JSON" | jq -cer --arg name "$name" '
 		[.assets[] | select(.name == $name)]
 		| if length == 1 then .[0] else error("expected exactly one matching asset") end
 	')
-	url=$(printf '%s' "$asset" | jq -er '.browser_download_url')
-	digest=$(printf '%s' "$asset" | jq -er '.digest')
-	[[ "$digest" =~ ^sha256:([0-9a-fA-F]{64})$ ]] || { echo "Error: invalid SHA-256 digest for $name" >&2; exit 1; }
-	expected="${BASH_REMATCH[1],,}"
+    url=$(printf '%s' "$asset" | jq -er '.browser_download_url')
+    digest=$(printf '%s' "$asset" | jq -er '.digest')
+    [[ "$digest" =~ ^sha256:([0-9a-fA-F]{64})$ ]] || {
+        echo "Error: invalid SHA-256 digest for $name" >&2
+        exit 1
+    }
+    expected="${BASH_REMATCH[1],,}"
 
-	if ! curl -fL --retry 3 -o "$dest" "$url"; then
-		echo "Error: failed to download $name" >&2
-		exit 1
-	fi
+    if ! curl -fL --retry 3 -o "$dest" "$url"; then
+        echo "Error: failed to download $name" >&2
+        exit 1
+    fi
 
-	actual=$(sha256sum "$dest" | awk '{print $1}')
-	if [[ "$actual" != "$expected" ]]; then
-		echo "Error: SHA-256 verification failed for $name" >&2
-		exit 1
-	fi
-	echo "Verified SHA-256: $actual ($name)"
+    actual=$(sha256sum "$dest" | awk '{print $1}')
+    if [[ "$actual" != "$expected" ]]; then
+        echo "Error: SHA-256 verification failed for $name" >&2
+        exit 1
+    fi
+    echo "Verified SHA-256: $actual ($name)"
 }
 
 echo "Resolving latest tealdeer release..."
@@ -82,13 +88,13 @@ echo "Latest version:    $VERSION"
 # the version string when the binary actually identifies itself as tealdeer.
 INSTALLED=""
 if command -v "$BINARY" >/dev/null 2>&1; then
-	VERSION_LINE=$("$BINARY" --version 2>/dev/null | head -n1 || true)
-	if [[ "$VERSION_LINE" == "tealdeer "* ]]; then
-		INSTALLED="${VERSION_LINE#tealdeer }"
-	else
-		echo "Note: existing '$BINARY' at $(command -v "$BINARY") is not tealdeer:"
-		echo "      ${VERSION_LINE:-<no version output>}"
-	fi
+    VERSION_LINE=$("$BINARY" --version 2>/dev/null | head -n1 || true)
+    if [[ "$VERSION_LINE" == "tealdeer "* ]]; then
+        INSTALLED="${VERSION_LINE#tealdeer }"
+    else
+        echo "Note: existing '$BINARY' at $(command -v "$BINARY") is not tealdeer:"
+        echo "      ${VERSION_LINE:-<no version output>}"
+    fi
 fi
 echo "Installed version: ${INSTALLED:-none}"
 
@@ -96,7 +102,7 @@ echo "Installed version: ${INSTALLED:-none}"
 # a string compare, which would call 1.9.0 older than 1.10.0.
 NEED_BINARY=1
 if [[ -n "$INSTALLED" ]] && dpkg --compare-versions "$INSTALLED" ge "$VERSION"; then
-	NEED_BINARY=0
+    NEED_BINARY=0
 fi
 
 # Tracked separately from the binary: the completion can go missing on its own
@@ -110,57 +116,57 @@ NEED_COMPLETION=1
 # a third-party file into version control, so refuse and name the fix instead.
 COMPLETION_TARGET="$(readlink -f "$COMPLETION_DIR")"
 if [[ "$COMPLETION_TARGET" == "$REPO_ROOT"/* ]]; then
-	echo ""
-	echo "Warning: $COMPLETION_DIR resolves into the dotfiles repo:"
-	echo "         $COMPLETION_TARGET"
-	echo "         Installing there would commit tealdeer's completion as a tracked file."
-	echo "         Unfold the owning package first, e.g.:  dots restow --no-folding --apply scripts"
-	echo "         Skipping the completion for now."
-	NEED_COMPLETION=0
-	SKIPPED_COMPLETION=1
+    echo ""
+    echo "Warning: $COMPLETION_DIR resolves into the dotfiles repo:"
+    echo "         $COMPLETION_TARGET"
+    echo "         Installing there would commit tealdeer's completion as a tracked file."
+    echo "         Unfold the owning package first, e.g.:  dots restow --no-folding --apply scripts"
+    echo "         Skipping the completion for now."
+    NEED_COMPLETION=0
+    SKIPPED_COMPLETION=1
 fi
 
 if ((FORCE)); then
-	if ((NEED_BINARY == 0)); then
-		echo "Reinstalling anyway (--force)..."
-	fi
-	NEED_BINARY=1
-	((${SKIPPED_COMPLETION:-0})) || NEED_COMPLETION=1
+    if ((NEED_BINARY == 0)); then
+        echo "Reinstalling anyway (--force)..."
+    fi
+    NEED_BINARY=1
+    ((${SKIPPED_COMPLETION:-0})) || NEED_COMPLETION=1
 fi
 
 if ((NEED_BINARY == 0 && NEED_COMPLETION == 0)); then
-	echo ""
-	echo "✓ tealdeer is already up to date."
-	exit 0
+    echo ""
+    echo "✓ tealdeer is already up to date."
+    exit 0
 fi
 
 if ((NEED_BINARY)); then
-	# Downloaded under the final command name so the install step needs no rename.
-	echo "Downloading tealdeer $VERSION..."
-	fetch_asset "$ASSET_NAME" "$WORK_DIR/$BINARY"
-	chmod +x "$WORK_DIR/$BINARY"
+    # Downloaded under the final command name so the install step needs no rename.
+    echo "Downloading tealdeer $VERSION..."
+    fetch_asset "$ASSET_NAME" "$WORK_DIR/$BINARY"
+    chmod +x "$WORK_DIR/$BINARY"
 
-	echo "Testing binary..."
-	if ! "$WORK_DIR/$BINARY" --version >/dev/null 2>&1; then
-		echo "Error: downloaded tealdeer is not working properly" >&2
-		exit 1
-	fi
+    echo "Testing binary..."
+    if ! "$WORK_DIR/$BINARY" --version >/dev/null 2>&1; then
+        echo "Error: downloaded tealdeer is not working properly" >&2
+        exit 1
+    fi
 
-	echo "Installing to $INSTALL_DIR (requires sudo)..."
-	if ! sudo install "$WORK_DIR/$BINARY" -D -t "$INSTALL_DIR"; then
-		echo "Error: failed to install tealdeer to $INSTALL_DIR" >&2
-		exit 1
-	fi
-	hash -r 2>/dev/null || true
+    echo "Installing to $INSTALL_DIR (requires sudo)..."
+    if ! sudo install "$WORK_DIR/$BINARY" -D -t "$INSTALL_DIR"; then
+        echo "Error: failed to install tealdeer to $INSTALL_DIR" >&2
+        exit 1
+    fi
+    hash -r 2>/dev/null || true
 fi
 
 if ((NEED_COMPLETION)); then
-	# bash-completion loads on demand from the XDG data dir, so the file only
-	# has to be named after the command. No shell rc changes are needed.
-	echo "Installing bash completion to $COMPLETION_DIR..."
-	fetch_asset "$COMPLETION_ASSET" "$WORK_DIR/completion"
-	mkdir -p "$COMPLETION_DIR"
-	install -m 0644 "$WORK_DIR/completion" "$COMPLETION_DIR/$BINARY"
+    # bash-completion loads on demand from the XDG data dir, so the file only
+    # has to be named after the command. No shell rc changes are needed.
+    echo "Installing bash completion to $COMPLETION_DIR..."
+    fetch_asset "$COMPLETION_ASSET" "$WORK_DIR/completion"
+    mkdir -p "$COMPLETION_DIR"
+    install -m 0644 "$WORK_DIR/completion" "$COMPLETION_DIR/$BINARY"
 fi
 
 echo ""
@@ -169,16 +175,16 @@ echo "✓ tealdeer is installed."
 
 RESOLVED="$(command -v "$BINARY" || true)"
 if [[ "$RESOLVED" != "$INSTALL_DIR/$BINARY" ]]; then
-	echo ""
-	echo "Warning: '$BINARY' on PATH resolves to ${RESOLVED:-nothing}, not $INSTALL_DIR/$BINARY."
-	echo "         Another tldr client is shadowing this one (apt ships tealdeer as"
-	echo "         /usr/bin/tldr). Remove it, or put $INSTALL_DIR earlier in PATH."
+    echo ""
+    echo "Warning: '$BINARY' on PATH resolves to ${RESOLVED:-nothing}, not $INSTALL_DIR/$BINARY."
+    echo "         Another tldr client is shadowing this one (apt ships tealdeer as"
+    echo "         /usr/bin/tldr). Remove it, or put $INSTALL_DIR earlier in PATH."
 fi
 
 echo ""
 echo "Installation location: $INSTALL_DIR/$BINARY"
 if ((${SKIPPED_COMPLETION:-0} == 0)); then
-	echo "Bash completion:       $COMPLETION_DIR/$BINARY (new shells pick it up)"
+    echo "Bash completion:       $COMPLETION_DIR/$BINARY (new shells pick it up)"
 fi
 echo ""
 echo "The page cache starts empty. Populate it before first use:"

@@ -3,14 +3,14 @@
 set -euo pipefail
 
 D=$'\x1f'
-C_DIR=$'\033[1;34m'  C_EXEC=$'\033[1;32m'
+C_DIR=$'\033[1;34m' C_EXEC=$'\033[1;32m'
 C_LINK=$'\033[1;36m' C_RESET=$'\033[0m'
-C_GIT_M=$'\033[1;33m'  # modified
-C_GIT_U=$'\033[1;31m'  # untracked
-C_GIT_A=$'\033[1;32m'  # added
-C_GIT_D=$'\033[1;31m'  # deleted
-C_GIT_R=$'\033[1;35m'  # renamed
-C_DIM=$'\033[2m'       # dim for targets
+C_GIT_M=$'\033[1;33m' # modified
+C_GIT_U=$'\033[1;31m' # untracked
+C_GIT_A=$'\033[1;32m' # added
+C_GIT_D=$'\033[1;31m' # deleted
+C_GIT_R=$'\033[1;35m' # renamed
+C_DIM=$'\033[2m'      # dim for targets
 
 # Temp files (mktemp, not predictable PID paths). TMPDIR-aware.
 BS_TOTAL=$(mktemp "${TMPDIR:-/tmp}/bs_total.XXXXXX")
@@ -34,11 +34,14 @@ parse_size() {
         exit 1
     fi
     case "${unit^^}" in
-        K) echo $((num * 1024)) ;;
-        M) echo $((num * 1048576)) ;;
-        G) echo $((num * 1073741824)) ;;
-        "") echo "$num" ;;
-        *) echo "error: invalid size unit '$unit' - use K, M, or G" >&2; exit 1 ;;
+    K) echo $((num * 1024)) ;;
+    M) echo $((num * 1048576)) ;;
+    G) echo $((num * 1073741824)) ;;
+    "") echo "$num" ;;
+    *)
+        echo "error: invalid size unit '$unit' - use K, M, or G" >&2
+        exit 1
+        ;;
     esac
 }
 
@@ -61,21 +64,21 @@ load_preset() {
         fi
 
         # Add args if in the right preset
-        if (( in_preset )); then
+        if ((in_preset)); then
             local line_args=()
             read -r -a line_args <<<"$line"
             args+=("${line_args[@]}")
         fi
-    done < "$CONFIG_FILE"
+    done <"$CONFIG_FILE"
 
-    (( ${#args[@]} > 0 )) && printf '%s\n' "${args[@]}"
+    ((${#args[@]} > 0)) && printf '%s\n' "${args[@]}"
 }
 
 # ============ PRIMITIVES ============
 
 _find() { find "$1" -maxdepth 1 -mindepth 1 "${@:2}"; }
 _findr() { find "$1" -mindepth 1 "${@:2}"; }
-_awk()  { awk -F"$D" -v OFS="$D" "$1"; }
+_awk() { awk -F"$D" -v OFS="$D" "$1"; }
 _sort() { sort -t"$D" "$@"; }
 
 # ============ COMPOSABLE PIECES ============
@@ -92,10 +95,10 @@ gather_r() {
 }
 
 # Filters: which rows to keep
-no_hidden()  { _awk '$5 !~ /(^|\/)\./' ; }
+no_hidden() { _awk '$5 !~ /(^|\/)\./'; }
 # Pass user regexes via -v (not string-interpolated into the program) so a
 # stray slash or brace can't break/inject the awk script.
-matching()   { awk -F"$D" -v OFS="$D" -v pat="$1" '$5 ~ pat'; }
+matching() { awk -F"$D" -v OFS="$D" -v pat="$1" '$5 ~ pat'; }
 not_matching() { awk -F"$D" -v OFS="$D" -v pat="$1" '$5 !~ pat'; }
 
 # Extension filter: match file extensions (comma-separated)
@@ -110,23 +113,23 @@ min_size() { _awk "\$3 >= $1"; }
 max_size() { _awk "\$3 <= $1"; }
 
 # Type filters
-only_dirs()  { _awk '$4 == "d"'; }
+only_dirs() { _awk '$4 == "d"'; }
 only_files() { _awk '$4 == "f"'; }
-only_exec()  { _awk '$4 == "f" && $2 ~ /x/'; }
+only_exec() { _awk '$4 == "f" && $2 ~ /x/'; }
 only_links() { _awk '$4 == "l"'; }
 
 # Age filters (compute now at call time for --watch accuracy)
 from_today() { _awk "\$1 >= $(($(date +%s) - 86400))"; }
-from_week()  { _awk "\$1 >= $(($(date +%s) - 604800))"; }
+from_week() { _awk "\$1 >= $(($(date +%s) - 604800))"; }
 
 # Sorts: how to order
-by_time()    { _sort -k1 -rn; }
-by_size()    { _sort -k3 -rn; }
-by_name()    { _awk '{ print ($5 ~ /^[a-zA-Z]/ ? "1" : "0") OFS $0 }' | _sort -k1,1 -k6f | _awk '{ $1=""; print substr($0,2) }'; }
+by_time() { _sort -k1 -rn; }
+by_size() { _sort -k3 -rn; }
+by_name() { _awk '{ print ($5 ~ /^[a-zA-Z]/ ? "1" : "0") OFS $0 }' | _sort -k1,1 -k6f | _awk '{ $1=""; print substr($0,2) }'; }
 by_ext_sort() { _awk '{ n=$5; ext=(match(n,/\.[^.]+$/) ? substr(n,RSTART+1) : ""); print ext OFS $0 }' | _sort -k1,1f -k6f | _awk '{ $1=""; print substr($0,2) }'; }
 
 # Reverse wrapper
-reversed()   { tac; }
+reversed() { tac; }
 
 # Transforms: modify fields
 prettify() {
@@ -160,12 +163,12 @@ count_summary() {
     while IFS="$D" read -r time perms size ftype name owner group target; do
         printf '%s\n' "${time}${D}${perms}${D}${size}${D}${ftype}${D}${name}${D}${owner}${D}${group}${D}${target}"
         case "$ftype" in
-            d) ((dirs++)) || true ;;
-            l) ((links++)) || true ;;
-            f) ((files++)) || true ;;
+        d) ((dirs++)) || true ;;
+        l) ((links++)) || true ;;
+        f) ((files++)) || true ;;
         esac
     done
-    echo "${files}:${dirs}:${links}" > "$BS_SUMMARY"
+    echo "${files}:${dirs}:${links}" >"$BS_SUMMARY"
 }
 
 # Nerd font icons (using printf for proper Unicode)
@@ -174,53 +177,56 @@ get_icon() {
     local ext="${name##*.}"
 
     # Directories
-    [[ "$ftype" == "d" ]] && { printf '\uf115'; return; }
+    [[ "$ftype" == "d" ]] && {
+        printf '\uf115'
+        return
+    }
 
     # By extension
     case "${ext,,}" in
-        # Programming
-        sh|bash|zsh)    printf '\uf489' ;;
-        py)             printf '\ue718' ;;
-        js)             printf '\ue74e' ;;
-        ts)             printf '\ue628' ;;
-        rb)             printf '\ue21e' ;;
-        go)             printf '\ue626' ;;
-        rs)             printf '\ue7a8' ;;
-        c|h)            printf '\ue61e' ;;
-        cpp|hpp|cc)     printf '\ue61d' ;;
-        java)           printf '\ue738' ;;
-        lua)            printf '\ue620' ;;
-        vim)            printf '\ue62b' ;;
-        # Web
-        html|htm)       printf '\ue736' ;;
-        css|scss|sass)  printf '\ue749' ;;
-        json)           printf '\ue60b' ;;
-        xml)            printf '\ue619' ;;
-        svg)            printf '\uf1c5' ;;
-        # Data
-        md|markdown)    printf '\ue73e' ;;
-        txt)            printf '\uf15c' ;;
-        pdf)            printf '\uf1c1' ;;
-        csv)            printf '\uf1c3' ;;
-        yaml|yml)       printf '\ue6a8' ;;
-        toml)           printf '\ue6b2' ;;
-        # Media
-        jpg|jpeg|png|gif|bmp|ico|webp) printf '\uf1c5' ;;
-        mp3|wav|flac|ogg|m4a)          printf '\uf001' ;;
-        mp4|mkv|avi|mov|webm)          printf '\uf03d' ;;
-        # Archives
-        zip|tar|gz|bz2|xz|7z|rar)      printf '\uf410' ;;
-        # Config
-        conf|cfg|ini)   printf '\ue615' ;;
-        env)            printf '\uf462' ;;
-        # Git
-        gitignore)      printf '\ue702' ;;
-        # Docker
-        dockerfile)     printf '\uf308' ;;
-        # Default
-        *)
-            [[ "$ftype" == "l" ]] && printf '\uf481' || printf '\uf15b'
-            ;;
+    # Programming
+    sh | bash | zsh) printf '\uf489' ;;
+    py) printf '\ue718' ;;
+    js) printf '\ue74e' ;;
+    ts) printf '\ue628' ;;
+    rb) printf '\ue21e' ;;
+    go) printf '\ue626' ;;
+    rs) printf '\ue7a8' ;;
+    c | h) printf '\ue61e' ;;
+    cpp | hpp | cc) printf '\ue61d' ;;
+    java) printf '\ue738' ;;
+    lua) printf '\ue620' ;;
+    vim) printf '\ue62b' ;;
+    # Web
+    html | htm) printf '\ue736' ;;
+    css | scss | sass) printf '\ue749' ;;
+    json) printf '\ue60b' ;;
+    xml) printf '\ue619' ;;
+    svg) printf '\uf1c5' ;;
+    # Data
+    md | markdown) printf '\ue73e' ;;
+    txt) printf '\uf15c' ;;
+    pdf) printf '\uf1c1' ;;
+    csv) printf '\uf1c3' ;;
+    yaml | yml) printf '\ue6a8' ;;
+    toml) printf '\ue6b2' ;;
+    # Media
+    jpg | jpeg | png | gif | bmp | ico | webp) printf '\uf1c5' ;;
+    mp3 | wav | flac | ogg | m4a) printf '\uf001' ;;
+    mp4 | mkv | avi | mov | webm) printf '\uf03d' ;;
+    # Archives
+    zip | tar | gz | bz2 | xz | 7z | rar) printf '\uf410' ;;
+    # Config
+    conf | cfg | ini) printf '\ue615' ;;
+    env) printf '\uf462' ;;
+    # Git
+    gitignore) printf '\ue702' ;;
+    # Docker
+    dockerfile) printf '\uf308' ;;
+    # Default
+    *)
+        [[ "$ftype" == "l" ]] && printf '\uf481' || printf '\uf15b'
+        ;;
     esac
 }
 
@@ -238,11 +244,11 @@ colorize() {
         if [[ "$show_git" == "1" ]]; then
             local base="${name##*/}"
             case "${git_status_map[$base]:-}" in
-                M*|" M")    gs="${C_GIT_M}[M]${C_RESET} " ;;
-                "??")       gs="${C_GIT_U}[?]${C_RESET} " ;;
-                A*)         gs="${C_GIT_A}[A]${C_RESET} " ;;
-                D*|" D")    gs="${C_GIT_D}[D]${C_RESET} " ;;
-                R*)         gs="${C_GIT_R}[R]${C_RESET} " ;;
+            M* | " M") gs="${C_GIT_M}[M]${C_RESET} " ;;
+            "??") gs="${C_GIT_U}[?]${C_RESET} " ;;
+            A*) gs="${C_GIT_A}[A]${C_RESET} " ;;
+            D* | " D") gs="${C_GIT_D}[D]${C_RESET} " ;;
+            R*) gs="${C_GIT_R}[R]${C_RESET} " ;;
             esac
         fi
 
@@ -255,11 +261,11 @@ colorize() {
 
         # Type suffix and color
         case "$ftype" in
-            d) display="${C_DIR}${icon}${gs}${name}/${C_RESET}" ;;
-            l) display="${C_LINK}${icon}${gs}${name}@${C_RESET}${target_str}" ;;
-            *) [[ -x "$dir/$name" ]] \
-                && display="${C_EXEC}${icon}${gs}${name}*${C_RESET}" \
-                || display="${icon}${gs}${name}" ;;
+        d) display="${C_DIR}${icon}${gs}${name}/${C_RESET}" ;;
+        l) display="${C_LINK}${icon}${gs}${name}@${C_RESET}${target_str}" ;;
+        *) [[ -x "$dir/$name" ]] &&
+            display="${C_EXEC}${icon}${gs}${name}*${C_RESET}" ||
+            display="${icon}${gs}${name}" ;;
         esac
 
         # Build output line
@@ -279,10 +285,12 @@ colorize_plain() {
         [[ "$show_icons" == "1" ]] && icon="$(get_icon "$name" "$ftype") "
 
         case "$ftype" in
-            d) suffix="/" ;;
-            l) suffix="@"
-               [[ "$show_target" == "1" && -n "$target" ]] && target_str=" -> $target" ;;
-            *) [[ -x "$dir/$name" ]] && suffix="*" ;;
+        d) suffix="/" ;;
+        l)
+            suffix="@"
+            [[ "$show_target" == "1" && -n "$target" ]] && target_str=" -> $target"
+            ;;
+        *) [[ -x "$dir/$name" ]] && suffix="*" ;;
         esac
 
         if [[ "$show_long" == "1" ]]; then
@@ -299,7 +307,7 @@ tree_output() {
     while IFS="$D" read -r time perms size ftype name owner group target; do
         local depth="${name//[^\/]/}"
         local indent=""
-        for ((i=0; i<${#depth}; i++)); do indent+="  "; done
+        for ((i = 0; i < ${#depth}; i++)); do indent+="  "; done
         local base="${name##*/}"
         local display="$base"
         local icon=""
@@ -308,15 +316,15 @@ tree_output() {
 
         if [[ "$use_color" == "1" ]]; then
             case "$ftype" in
-                d) display="${C_DIR}${icon}${base}/${C_RESET}" ;;
-                l) display="${C_LINK}${icon}${base}@${C_RESET}" ;;
-                *) [[ -x "$dir/$name" ]] && display="${C_EXEC}${icon}${base}*${C_RESET}" || display="${icon}${base}" ;;
+            d) display="${C_DIR}${icon}${base}/${C_RESET}" ;;
+            l) display="${C_LINK}${icon}${base}@${C_RESET}" ;;
+            *) [[ -x "$dir/$name" ]] && display="${C_EXEC}${icon}${base}*${C_RESET}" || display="${icon}${base}" ;;
             esac
         else
             case "$ftype" in
-                d) display="${icon}${base}/" ;;
-                l) display="${icon}${base}@" ;;
-                *) [[ -x "$dir/$name" ]] && display="${icon}${base}*" || display="${icon}${base}" ;;
+            d) display="${icon}${base}/" ;;
+            l) display="${icon}${base}@" ;;
+            *) [[ -x "$dir/$name" ]] && display="${icon}${base}*" || display="${icon}${base}" ;;
             esac
         fi
         printf '%s%s\n' "$indent" "$display"
@@ -332,15 +340,15 @@ names_only() {
 
         if [[ "$use_color" == "1" ]]; then
             case "$ftype" in
-                d) printf '%s\n' "${C_DIR}${icon}${name}/${C_RESET}" ;;
-                l) printf '%s\n' "${C_LINK}${icon}${name}@${C_RESET}" ;;
-                *) [[ -x "$dir/$name" ]] && printf '%s\n' "${C_EXEC}${icon}${name}*${C_RESET}" || printf '%s\n' "${icon}${name}" ;;
+            d) printf '%s\n' "${C_DIR}${icon}${name}/${C_RESET}" ;;
+            l) printf '%s\n' "${C_LINK}${icon}${name}@${C_RESET}" ;;
+            *) [[ -x "$dir/$name" ]] && printf '%s\n' "${C_EXEC}${icon}${name}*${C_RESET}" || printf '%s\n' "${icon}${name}" ;;
             esac
         else
             case "$ftype" in
-                d) printf '%s/\n' "${icon}${name}" ;;
-                l) printf '%s@\n' "${icon}${name}" ;;
-                *) [[ -x "$dir/$name" ]] && printf '%s*\n' "${icon}${name}" || printf '%s\n' "${icon}${name}" ;;
+            d) printf '%s/\n' "${icon}${name}" ;;
+            l) printf '%s@\n' "${icon}${name}" ;;
+            *) [[ -x "$dir/$name" ]] && printf '%s*\n' "${icon}${name}" || printf '%s\n' "${icon}${name}" ;;
             esac
         fi
     done
@@ -357,11 +365,11 @@ raw_names() {
 # JSON escape special characters
 json_escape() {
     local s="$1"
-    s="${s//\\/\\\\}"    # backslash
-    s="${s//\"/\\\"}"    # quote
-    s="${s//$'\t'/\\t}"  # tab
-    s="${s//$'\n'/\\n}"  # newline
-    s="${s//$'\r'/\\r}"  # carriage return
+    s="${s//\\/\\\\}"   # backslash
+    s="${s//\"/\\\"}"   # quote
+    s="${s//$'\t'/\\t}" # tab
+    s="${s//$'\n'/\\n}" # newline
+    s="${s//$'\r'/\\r}" # carriage return
     printf '%s' "$s"
 }
 
@@ -382,18 +390,18 @@ calc_total() {
     local total=0
     while IFS="$D" read -r time perms size ftype name owner group target; do
         printf '%s\n' "${time}${D}${perms}${D}${size}${D}${ftype}${D}${name}${D}${owner}${D}${group}${D}${target}"
-        (( total += size )) || true
+        ((total += size)) || true
     done
-    echo "$total" > "$BS_TOTAL"
+    echo "$total" >"$BS_TOTAL"
 }
 
 format_total() {
     local s="$1"
-    if (( s >= 1073741824 )); then
+    if ((s >= 1073741824)); then
         awk "BEGIN { printf \"%.1fGiB\n\", $s/1073741824 }"
-    elif (( s >= 1048576 )); then
+    elif ((s >= 1048576)); then
         awk "BEGIN { printf \"%.1fMiB\n\", $s/1048576 }"
-    elif (( s >= 1024 )); then
+    elif ((s >= 1024)); then
         awk "BEGIN { printf \"%.1fKiB\n\", $s/1024 }"
     else
         echo "${s}B"
@@ -402,7 +410,8 @@ format_total() {
 
 # ============ MAIN ============
 
-usage() { cat <<EOF
+usage() {
+    cat <<EOF
 usage: bs [options] [directory]
 
 FILTERS:
@@ -485,14 +494,14 @@ expand_flags() {
     for arg in "$@"; do
         if [[ "$arg" =~ ^-[a-zA-Z0-9]{2,}$ && ! "$arg" =~ ^-- ]]; then
             local flags="${arg:1}"
-            for ((i=0; i<${#flags}; i++)); do
+            for ((i = 0; i < ${#flags}; i++)); do
                 args+=("-${flags:$i:1}")
             done
         else
             args+=("$arg")
         fi
     done
-    (( ${#args[@]} > 0 )) && printf '%s\n' "${args[@]}"
+    ((${#args[@]} > 0)) && printf '%s\n' "${args[@]}"
 }
 
 # Load preset first if --preset is in args
@@ -501,8 +510,11 @@ for arg in "$@"; do
     if [[ "$arg" == "--preset" ]]; then
         next_index=$((i + 1))
         PRESET="${!next_index:-}"
-        [[ -n "$PRESET" ]] || { echo 'bs: --preset requires a name' >&2; exit 2; }
-        set -- "${@:1:$((i-1))}" "${@:$((i+2))}"
+        [[ -n "$PRESET" ]] || {
+            echo 'bs: --preset requires a name' >&2
+            exit 2
+        }
+        set -- "${@:1:$((i - 1))}" "${@:$((i + 2))}"
         break
     fi
     ((i++))
@@ -512,7 +524,7 @@ done
 preset_args=()
 if [[ -n "$PRESET" ]]; then
     mapfile -t preset_args < <(load_preset "$PRESET")
-    if (( ${#preset_args[@]} == 0 )); then
+    if ((${#preset_args[@]} == 0)); then
         echo "error: preset '$PRESET' not found in $CONFIG_FILE" >&2
         exit 1
     fi
@@ -528,57 +540,100 @@ fi
 all_args=("${preset_args[@]}" "$@")
 
 # Expand flags
-if (( ${#all_args[@]} > 0 )); then
+if ((${#all_args[@]} > 0)); then
     mapfile -t ARGS < <(expand_flags "${all_args[@]}")
     set -- "${ARGS[@]}"
 fi
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        -a|--all)       ALL=1 ;;
-        -d|--dirs)      ONLY_DIRS=1 ;;
-        -f|--files)     ONLY_FILES=1 ;;
-        -x|--exec)      ONLY_EXEC=1 ;;
-        -l|--links)     ONLY_LINKS=1 ;;
-        -g|--grep)      PAT="$2"; shift ;;
-        -e|--ext)       EXT="$2"; shift ;;
-        --exclude)      EXCLUDE="$2"; shift ;;
-        --min-size)     MIN_SIZE=$(parse_size "$2"); shift ;;
-        --max-size)     MAX_SIZE=$(parse_size "$2"); shift ;;
-        --today)        TODAY=1 ;;
-        --week)         WEEK=1 ;;
-        -t|--time)      SORT=by_time ;;
-        -s|--size)      SORT=by_size ;;
-        -n|--name)      SORT=by_name ;;
-        -E|--sort-ext)  SORT=by_ext_sort ;;
-        -r|--reverse)   REVERSE=1 ;;
-        -H|--group)     GROUP_HIDDEN=1 ;;
-        -1|--oneline)   ONELINE=1 ;;
-        -c|--count)     COUNT=1 ;;
-        -L|--long)      LONG=1 ;;
-        -T|--target)    TARGET=1 ;;
-        --icons)        ICONS=1 ;;
-        --relative)     RELATIVE=1 ;;
-        --tree)         TREE=1 ;;
-        --summary)      SUMMARY=1 ;;
-        --no-color)     NO_COLOR=1 ;;
-        --json)         JSON=1 ;;
-        --total)        TOTAL=1 ;;
-        --fzf)          FZF=1 ;;
-        --multi)        MULTI=1 ;;
-        --preview)      FZF=1; PREVIEW=1 ;;
-        --edit)         FZF=1; PREVIEW=1; EDIT=1 ;;
-        -R|--recursive) RECURSIVE=1 ;;
-        --depth)        DEPTH="$2"
-                        [[ "$DEPTH" =~ ^[1-9][0-9]*$ ]] || { echo "bs: --depth must be a positive integer (got '$DEPTH')" >&2; exit 2; }
-                        shift ;;
-        --git)          GIT=1 ;;
-        --watch)        WATCH=1; [[ "${2:-}" =~ ^[0-9]+$ ]] && { WATCH_INTERVAL="$2"; shift; } ;;
-        --preset)       shift ;;  # already handled
-        -h|--help)      usage; exit 0 ;;
-        --)             shift; [[ $# -gt 0 ]] && DIR="$1"; break ;;
-        -*)             echo "unknown: $1"; exit 1 ;;
-        *)              DIR="$1" ;;
+    -a | --all) ALL=1 ;;
+    -d | --dirs) ONLY_DIRS=1 ;;
+    -f | --files) ONLY_FILES=1 ;;
+    -x | --exec) ONLY_EXEC=1 ;;
+    -l | --links) ONLY_LINKS=1 ;;
+    -g | --grep)
+        PAT="$2"
+        shift
+        ;;
+    -e | --ext)
+        EXT="$2"
+        shift
+        ;;
+    --exclude)
+        EXCLUDE="$2"
+        shift
+        ;;
+    --min-size)
+        MIN_SIZE=$(parse_size "$2")
+        shift
+        ;;
+    --max-size)
+        MAX_SIZE=$(parse_size "$2")
+        shift
+        ;;
+    --today) TODAY=1 ;;
+    --week) WEEK=1 ;;
+    -t | --time) SORT=by_time ;;
+    -s | --size) SORT=by_size ;;
+    -n | --name) SORT=by_name ;;
+    -E | --sort-ext) SORT=by_ext_sort ;;
+    -r | --reverse) REVERSE=1 ;;
+    -H | --group) GROUP_HIDDEN=1 ;;
+    -1 | --oneline) ONELINE=1 ;;
+    -c | --count) COUNT=1 ;;
+    -L | --long) LONG=1 ;;
+    -T | --target) TARGET=1 ;;
+    --icons) ICONS=1 ;;
+    --relative) RELATIVE=1 ;;
+    --tree) TREE=1 ;;
+    --summary) SUMMARY=1 ;;
+    --no-color) NO_COLOR=1 ;;
+    --json) JSON=1 ;;
+    --total) TOTAL=1 ;;
+    --fzf) FZF=1 ;;
+    --multi) MULTI=1 ;;
+    --preview)
+        FZF=1
+        PREVIEW=1
+        ;;
+    --edit)
+        FZF=1
+        PREVIEW=1
+        EDIT=1
+        ;;
+    -R | --recursive) RECURSIVE=1 ;;
+    --depth)
+        DEPTH="$2"
+        [[ "$DEPTH" =~ ^[1-9][0-9]*$ ]] || {
+            echo "bs: --depth must be a positive integer (got '$DEPTH')" >&2
+            exit 2
+        }
+        shift
+        ;;
+    --git) GIT=1 ;;
+    --watch)
+        WATCH=1
+        [[ "${2:-}" =~ ^[0-9]+$ ]] && {
+            WATCH_INTERVAL="$2"
+            shift
+        }
+        ;;
+    --preset) shift ;; # already handled
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    --)
+        shift
+        [[ $# -gt 0 ]] && DIR="$1"
+        break
+        ;;
+    -*)
+        echo "unknown: $1"
+        exit 1
+        ;;
+    *) DIR="$1" ;;
     esac
     shift
 done
@@ -619,14 +674,19 @@ run_bs() {
         fi
     } | {
         # Filter: hidden
-        (( ALL )) && cat || no_hidden
+        ((ALL)) && cat || no_hidden
     } | {
         # Filter: type
-        if (( ONLY_DIRS )); then only_dirs
-        elif (( ONLY_FILES )); then only_files
-        elif (( ONLY_EXEC )); then only_exec
-        elif (( ONLY_LINKS )); then only_links
-        elif (( EDIT )); then only_files  # edit mode implies files only
+        if ((ONLY_DIRS)); then
+            only_dirs
+        elif ((ONLY_FILES)); then
+            only_files
+        elif ((ONLY_EXEC)); then
+            only_exec
+        elif ((ONLY_LINKS)); then
+            only_links
+        elif ((EDIT)); then
+            only_files # edit mode implies files only
         else cat; fi
     } | {
         # Filter: extension
@@ -641,55 +701,57 @@ run_bs() {
         [[ -n "$MAX_SIZE" ]] && max_size "$MAX_SIZE" || cat
     } | {
         # Filter: age
-        if (( TODAY )); then from_today
-        elif (( WEEK )); then from_week
+        if ((TODAY)); then
+            from_today
+        elif ((WEEK)); then
+            from_week
         else cat; fi
     } | {
         # Filter: pattern
         [[ -n "$PAT" ]] && matching "$PAT" || cat
     } | {
         # Sort (with optional hidden grouping)
-        if (( GROUP_HIDDEN )); then
+        if ((GROUP_HIDDEN)); then
             case "$SORT" in
-                by_time) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS $0 }' | _sort -k1,1 -k2rn | _awk '{ $1=""; print substr($0,2) }' ;;
-                by_size) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS $0 }' | _sort -k1,1 -k4rn | _awk '{ $1=""; print substr($0,2) }' ;;
-                by_name) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS ($5 ~ /^\.?[a-zA-Z]/ ? "1" : "0") OFS $0 }' | _sort -k1,1 -k2,2 -k7f | _awk '{ $1=""; $2=""; print substr($0,3) }' ;;
-                by_ext_sort) _awk '{ n=$5; ext=(match(n,/\.[^.]+$/) ? substr(n,RSTART+1) : ""); print ($5 ~ /^\./ ? "0" : "1") OFS ext OFS $0 }' | _sort -k1,1 -k2,2f -k7f | _awk '{ $1=""; $2=""; print substr($0,3) }' ;;
+            by_time) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS $0 }' | _sort -k1,1 -k2rn | _awk '{ $1=""; print substr($0,2) }' ;;
+            by_size) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS $0 }' | _sort -k1,1 -k4rn | _awk '{ $1=""; print substr($0,2) }' ;;
+            by_name) _awk '{ print ($5 ~ /^\./ ? "0" : "1") OFS ($5 ~ /^\.?[a-zA-Z]/ ? "1" : "0") OFS $0 }' | _sort -k1,1 -k2,2 -k7f | _awk '{ $1=""; $2=""; print substr($0,3) }' ;;
+            by_ext_sort) _awk '{ n=$5; ext=(match(n,/\.[^.]+$/) ? substr(n,RSTART+1) : ""); print ($5 ~ /^\./ ? "0" : "1") OFS ext OFS $0 }' | _sort -k1,1 -k2,2f -k7f | _awk '{ $1=""; $2=""; print substr($0,3) }' ;;
             esac
         else
             "$SORT"
         fi
     } | {
         # Reverse
-        (( REVERSE )) && reversed || cat
+        ((REVERSE)) && reversed || cat
     } | {
         # Total (calculate before prettify changes size)
-        if (( TOTAL )); then
+        if ((TOTAL)); then
             calc_total
         else
             cat
         fi
     } | {
         # Summary count
-        if (( SUMMARY )); then
+        if ((SUMMARY)); then
             count_summary
         else
             cat
         fi
     } | {
         # Output format
-        if (( FZF )); then
+        if ((FZF)); then
             raw_names
-        elif (( COUNT )); then
+        elif ((COUNT)); then
             wc -l | tr -d ' '
-        elif (( JSON )); then
+        elif ((JSON)); then
             json_output
-        elif (( ONELINE )); then
+        elif ((ONELINE)); then
             names_only "$DIR" "$((1 - NO_COLOR))" "$ICONS"
-        elif (( TREE )); then
+        elif ((TREE)); then
             tree_output "$DIR" "$((1 - NO_COLOR))" "$ICONS"
         else
-            prettify "$RELATIVE" | if (( NO_COLOR )); then
+            prettify "$RELATIVE" | if ((NO_COLOR)); then
                 colorize_plain "$DIR" "$LONG" "$TARGET" "$ICONS"
             else
                 colorize "$DIR" "$GIT" "$LONG" "$TARGET" "$ICONS"
@@ -697,7 +759,7 @@ run_bs() {
         fi
     } | {
         # FZF integration
-        if (( FZF )); then
+        if ((FZF)); then
             if ! command -v fzf &>/dev/null; then
                 echo "error: fzf is not installed" >&2
                 cat >/dev/null
@@ -705,9 +767,9 @@ run_bs() {
             fi
 
             fzf_opts=(--read0 --print0 --reverse)
-            (( MULTI )) && fzf_opts+=(--multi)
+            ((MULTI)) && fzf_opts+=(--multi)
 
-            if (( PREVIEW )); then
+            if ((PREVIEW)); then
                 if command -v bat &>/dev/null; then
                     bat_cmd="bat"
                 elif command -v batcat &>/dev/null; then
@@ -726,7 +788,7 @@ run_bs() {
             fi
 
             while IFS= read -r -d '' file; do
-                if (( EDIT )); then
+                if ((EDIT)); then
                     editor="${EDITOR:-${VISUAL:-vim}}"
                     if [[ -f "$DIR/$file" ]]; then
                         exec "$editor" "$DIR/$file"
@@ -745,24 +807,24 @@ run_bs() {
     }
 
     # Show summary if requested
-    if (( SUMMARY )) && [[ -f "$BS_SUMMARY" ]]; then
-        IFS=: read -r files dirs links < "$BS_SUMMARY"
+    if ((SUMMARY)) && [[ -f "$BS_SUMMARY" ]]; then
+        IFS=: read -r files dirs links <"$BS_SUMMARY"
         rm -f "$BS_SUMMARY"
         echo "---"
         echo "$files files, $dirs dirs, $links links"
     fi
 
     # Show total if requested
-    if (( TOTAL )) && [[ -f "$BS_TOTAL" ]]; then
+    if ((TOTAL)) && [[ -f "$BS_TOTAL" ]]; then
         total_size=$(cat "$BS_TOTAL")
         rm -f "$BS_TOTAL"
-        (( SUMMARY )) || echo "---"
+        ((SUMMARY)) || echo "---"
         echo "Total: $(format_total "$total_size")"
     fi
 }
 
 # Watch mode or single run
-if (( WATCH )); then
+if ((WATCH)); then
     while true; do
         clear
         echo "Every ${WATCH_INTERVAL}s: bs $DIR ($(date '+%H:%M:%S'))"

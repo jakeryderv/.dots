@@ -26,12 +26,12 @@ PYVER="3.12"                             # Python version uv provisions for the 
 
 # Clone on first run; mkvenv.py --update handles the `git pull` on later runs.
 if [ ! -d "$SRC/.git" ]; then
-	echo "Cloning qutebrowser into $SRC..."
-	mkdir -p "$(dirname "$SRC")"
-	if ! git clone "$REPO" "$SRC"; then
-		echo "Error: failed to clone qutebrowser"
-		exit 1
-	fi
+    echo "Cloning qutebrowser into $SRC..."
+    mkdir -p "$(dirname "$SRC")"
+    if ! git clone "$REPO" "$SRC"; then
+        echo "Error: failed to clone qutebrowser"
+        exit 1
+    fi
 fi
 
 # --keep reuses the existing venv (skip the Qt re-download); default recreates it.
@@ -39,23 +39,23 @@ KEEP=0
 [ "${1:-}" = "--keep" ] && KEEP=1
 
 if ! command -v uv >/dev/null 2>&1; then
-	echo "Error: uv is required to build the venv but was not found on PATH"
-	exit 1
+    echo "Error: uv is required to build the venv but was not found on PATH"
+    exit 1
 fi
 
 if [ "$KEEP" -eq 1 ]; then
-	if [ ! -x "$VENV_BIN" ]; then
-		echo "Error: --keep given but no usable venv at $VENV (run without --keep first)"
-		exit 1
-	fi
-	echo "Reusing existing venv (--keep)..."
+    if [ ! -x "$VENV_BIN" ]; then
+        echo "Error: --keep given but no usable venv at $VENV (run without --keep first)"
+        exit 1
+    fi
+    echo "Reusing existing venv (--keep)..."
 else
-	echo "Creating fresh venv with uv (downloads Qt; takes a few minutes)..."
-	rm -rf "$VENV"
-	if ! uv venv "$VENV" --python "$PYVER" --seed; then
-		echo "Error: failed to create venv with uv"
-		exit 1
-	fi
+    echo "Creating fresh venv with uv (downloads Qt; takes a few minutes)..."
+    rm -rf "$VENV"
+    if ! uv venv "$VENV" --python "$PYVER" --seed; then
+        echo "Error: failed to create venv with uv"
+        exit 1
+    fi
 fi
 
 # mkvenv.py --keep populates the (uv-created) venv: git pull via --update, install
@@ -63,8 +63,8 @@ fi
 # loudly here, before we touch the symlink or launcher entry.
 echo "Building qutebrowser into the venv via mkvenv.py..."
 if ! (cd "$SRC" && python3 scripts/mkvenv.py --keep --update); then
-	echo "Error: mkvenv.py failed to build the qutebrowser environment"
-	exit 1
+    echo "Error: mkvenv.py failed to build the qutebrowser environment"
+    exit 1
 fi
 
 echo "Linking $BIN -> $VENV_BIN..."
@@ -79,14 +79,14 @@ ln -sf "$VENV_BIN" "$BIN"
 echo "Installing desktop entry + icons..."
 mkdir -p "$APPS"
 sed -E "s|^Exec=qutebrowser|Exec=$BIN|; s|^TryExec=.*|TryExec=$BIN|" \
-	"$SRC/misc/org.qutebrowser.qutebrowser.desktop" \
-	>"$APPS/org.qutebrowser.qutebrowser.desktop"
+    "$SRC/misc/org.qutebrowser.qutebrowser.desktop" \
+    >"$APPS/org.qutebrowser.qutebrowser.desktop"
 
 for png in "$SRC"/qutebrowser/icons/qutebrowser-*x*.png; do
-	sz=$(basename "$png" | sed -E 's/qutebrowser-([0-9]+)x[0-9]+\.png/\1/')
-	dir="$ICONS/${sz}x${sz}/apps"
-	mkdir -p "$dir"
-	cp "$png" "$dir/qutebrowser.png"
+    sz=$(basename "$png" | sed -E 's/qutebrowser-([0-9]+)x[0-9]+\.png/\1/')
+    dir="$ICONS/${sz}x${sz}/apps"
+    mkdir -p "$dir"
+    cp "$png" "$dir/qutebrowser.png"
 done
 mkdir -p "$ICONS/scalable/apps"
 cp "$SRC/qutebrowser/icons/qutebrowser.svg" "$ICONS/scalable/apps/qutebrowser.svg"

@@ -22,15 +22,20 @@ readonly PROG="${0##*/}"
 # ---------------------------------------------------------------------------
 
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
-    C_HDR=$'\033[1;34m'; C_DIM=$'\033[2m'; C_ERR=$'\033[1;31m'
+    C_HDR=$'\033[1;34m'
+    C_DIM=$'\033[2m'
+    C_ERR=$'\033[1;31m'
     C_RST=$'\033[0m'
 else
-    C_HDR=''; C_DIM=''; C_ERR=''; C_RST=''
+    C_HDR=''
+    C_DIM=''
+    C_ERR=''
+    C_RST=''
 fi
 
-hdr()  { printf '\n%s▸ %s%s\n' "$C_HDR" "$1" "$C_RST"; }
+hdr() { printf '\n%s▸ %s%s\n' "$C_HDR" "$1" "$C_RST"; }
 note() { printf '%s  %s%s\n' "$C_DIM" "$1" "$C_RST"; }
-err()  { printf '%s%s: %s%s\n' "$C_ERR" "$PROG" "$1" "$C_RST" >&2; }
+err() { printf '%s%s: %s%s\n' "$C_ERR" "$PROG" "$1" "$C_RST" >&2; }
 
 in_tmux() { [ -n "${TMUX:-}" ]; }
 
@@ -65,10 +70,10 @@ passthru() {
 
 cmd_env() {
     hdr "environment"
-    printf '  %-14s %s\n' "TERM"          "${TERM:-unset}"
-    printf '  %-14s %s\n' "TERM_PROGRAM"  "${TERM_PROGRAM:-unset}"
-    printf '  %-14s %s\n' "COLORTERM"     "${COLORTERM:-unset (truecolor apps may fall back)}"
-    printf '  %-14s %s\n' "size"          "$(tput cols 2>/dev/null)x$(tput lines 2>/dev/null)"
+    printf '  %-14s %s\n' "TERM" "${TERM:-unset}"
+    printf '  %-14s %s\n' "TERM_PROGRAM" "${TERM_PROGRAM:-unset}"
+    printf '  %-14s %s\n' "COLORTERM" "${COLORTERM:-unset (truecolor apps may fall back)}"
+    printf '  %-14s %s\n' "size" "$(tput cols 2>/dev/null)x$(tput lines 2>/dev/null)"
     printf '  %-14s %s\n' "terminfo colors" "$(tput colors 2>/dev/null || echo n/a)"
 
     if in_tmux; then
@@ -86,11 +91,11 @@ cmd_env() {
     fi
 
     hdr "toolchain"
-    printf '  %-14s %s\n' "less"     "$(less --version 2>/dev/null | head -1 || echo missing)"
-    printf '  %-14s %s\n' "delta"    "$(delta --version 2>/dev/null || echo missing)"
-    printf '  %-14s %s\n' "git"      "$(git --version 2>/dev/null || echo missing)"
+    printf '  %-14s %s\n' "less" "$(less --version 2>/dev/null | head -1 || echo missing)"
+    printf '  %-14s %s\n' "delta" "$(delta --version 2>/dev/null || echo missing)"
+    printf '  %-14s %s\n' "git" "$(git --version 2>/dev/null || echo missing)"
     printf '  %-14s %s\n' "xdg-open" "$(command -v xdg-open || echo missing)"
-    printf '  %-14s %s\n' "browser"  "$(xdg-settings get default-web-browser 2>/dev/null || echo n/a)"
+    printf '  %-14s %s\n' "browser" "$(xdg-settings get default-web-browser 2>/dev/null || echo n/a)"
 }
 
 # ---------------------------------------------------------------------------
@@ -114,21 +119,30 @@ cmd_link() {
 }
 
 cmd_delta() {
-    command -v delta >/dev/null || { err "delta not installed"; return 2; }
-    command -v git   >/dev/null || { err "git not installed";   return 2; }
+    command -v delta >/dev/null || {
+        err "delta not installed"
+        return 2
+    }
+    command -v git >/dev/null || {
+        err "git not installed"
+        return 2
+    }
     local file="${1:-}"
     if [ -z "$file" ]; then
         file=$(git ls-files 2>/dev/null | head -1)
-        [ -z "$file" ] && { err "not in a git repo; pass a file explicitly"; return 1; }
+        [ -z "$file" ] && {
+            err "not in a git repo; pass a file explicitly"
+            return 1
+        }
     fi
     hdr "delta hyperlinks: $file"
-    git blame -- "$file" 2>/dev/null \
-        | delta --hyperlinks --paging=never \
-        | cat -v \
-        | grep -o ']8;;[^^]*' \
-        | sed 's/^]8;;//' \
-        | awk 'NF' \
-        | sort -u
+    git blame -- "$file" 2>/dev/null |
+        delta --hyperlinks --paging=never |
+        cat -v |
+        grep -o ']8;;[^^]*' |
+        sed 's/^]8;;//' |
+        awk 'NF' |
+        sort -u
     note "expect https://<host>/.../commit/<sha> if commit linking works"
 }
 
@@ -166,7 +180,8 @@ cmd_underlines() {
 cmd_colors() {
     local i
     hdr "16 base colors"
-    printf '  '; for i in $(seq 0 7);  do printf '\033[48;5;%dm  \033[0m' "$i"; done
+    printf '  '
+    for i in $(seq 0 7); do printf '\033[48;5;%dm  \033[0m' "$i"; done
     printf '  normal\n  '
     for i in $(seq 8 15); do printf '\033[48;5;%dm  \033[0m' "$i"; done
     printf '  bright\n'
@@ -174,7 +189,7 @@ cmd_colors() {
     hdr "256 color cube"
     for i in $(seq 16 231); do
         printf '\033[48;5;%dm \033[0m' "$i"
-        [ $(( (i - 15) % 36 )) -eq 0 ] && printf '\n'
+        [ $(((i - 15) % 36)) -eq 0 ] && printf '\n'
     done
     printf '\n'
 
@@ -182,7 +197,7 @@ cmd_colors() {
     printf '  '
     for i in $(seq 0 77); do
         printf '\033[48;2;%d;%d;%dm \033[0m' \
-            $(( 255 - i * 3 )) $(( i * 3 )) $(( 128 + (i % 2) * 60 ))
+            $((255 - i * 3)) $((i * 3)) $((128 + (i % 2) * 60))
     done
     printf '\n'
     note "smooth = truecolor · visible banding = 256-color fallback"
@@ -207,7 +222,10 @@ cmd_unicode() {
 # ---------------------------------------------------------------------------
 
 cmd_clip() {
-    command -v base64 >/dev/null || { err "base64 not installed"; return 2; }
+    command -v base64 >/dev/null || {
+        err "base64 not installed"
+        return 2
+    }
     local msg="${1:-$PROG-osc52-$(date +%s)}" b64
     b64=$(printf '%s' "$msg" | base64 | tr -d '\n')
     hdr "OSC 52 clipboard write"
@@ -272,9 +290,9 @@ cmd_cursor() {
     hdr "cursor shapes (DECSCUSR)"
     for n in 1 2 3 4 5 6; do
         case $n in
-            1) d="blinking block";;     2) d="steady block";;
-            3) d="blinking underline";; 4) d="steady underline";;
-            5) d="blinking bar";;       6) d="steady bar";;
+        1) d="blinking block" ;; 2) d="steady block" ;;
+        3) d="blinking underline" ;; 4) d="steady underline" ;;
+        5) d="blinking bar" ;; 6) d="steady bar" ;;
         esac
         printf '  \033[%d q%-20s' "$n" "$d"
         read -rp "  [Enter]" _ </dev/tty
@@ -285,7 +303,10 @@ cmd_cursor() {
 
 cmd_keys() {
     need_tty keys || return 1
-    command -v od >/dev/null || { err "od not installed"; return 2; }
+    command -v od >/dev/null || {
+        err "od not installed"
+        return 2
+    }
     hdr "extended keys (tmux extkeys / CSI u)"
     note "press keys to see raw bytes · q to quit"
     note "try: Enter then Ctrl+Enter · Shift+Enter · Ctrl+/ · F13"
@@ -372,9 +393,13 @@ EOF
 }
 
 cmd_help() {
-    [ $# -eq 0 ] && { usage; return 0; }
+    [ $# -eq 0 ] && {
+        usage
+        return 0
+    }
     case "$1" in
-        all)   cat <<EOF
+    all)
+        cat <<EOF
 
   ${PROG} all
 
@@ -384,8 +409,9 @@ cmd_help() {
   Safe to pipe to a file, though the escape codes will be literal:
     ${PROG} all | cat -v > term-report.txt
 EOF
-;;
-        env)   cat <<EOF
+        ;;
+    env)
+        cat <<EOF
 
   ${PROG} env
 
@@ -396,8 +422,9 @@ EOF
   Also prints versions for less, delta, git, xdg-open and the default browser.
   Start here when something is not rendering; it usually names the culprit.
 EOF
-;;
-        link)  cat <<EOF
+        ;;
+    link)
+        cat <<EOF
 
   ${PROG} link [url] [text]
 
@@ -413,8 +440,9 @@ EOF
   Ctrl+Shift+click whenever mouse reporting or the alternate buffer is
   active — which includes any tmux session with mouse on.
 EOF
-;;
-        delta) cat <<EOF
+        ;;
+    delta)
+        cat <<EOF
 
   ${PROG} delta [file]
 
@@ -430,8 +458,9 @@ EOF
 
   Requires: delta, git, and a git repo.
 EOF
-;;
-        styles) cat <<EOF
+        ;;
+    styles)
+        cat <<EOF
 
   ${PROG} styles
 
@@ -440,8 +469,9 @@ EOF
 
   Note blink (ESC[5m) is ignored by most modern terminals on purpose.
 EOF
-;;
-        underlines) cat <<EOF
+        ;;
+    underlines)
+        cat <<EOF
 
   ${PROG} underlines
 
@@ -452,8 +482,9 @@ EOF
   it is not getting through — and nvim LSP diagnostics and spell-check
   squiggles will be flat underlines instead of colored curls.
 EOF
-;;
-        colors) cat <<EOF
+        ;;
+    colors)
+        cat <<EOF
 
   ${PROG} colors
 
@@ -464,8 +495,9 @@ EOF
   Requires 'RGB' in tmux terminal-features. COLORTERM=truecolor also helps,
   since some applications check that instead of querying the terminal.
 EOF
-;;
-        unicode) cat <<EOF
+        ;;
+    unicode)
+        cat <<EOF
 
   ${PROG} unicode
 
@@ -477,8 +509,9 @@ EOF
   disagree about a character's width. tmux 3.6 adds codepoint-widths to
   correct specific cases.
 EOF
-;;
-        clip) cat <<EOF
+        ;;
+    clip)
+        cat <<EOF
 
   ${PROG} clip [text]
 
@@ -488,24 +521,27 @@ EOF
   Then paste (Ctrl+Shift+V) and compare. tmux relays OSC 52 only when
   set-clipboard is on.
 EOF
-;;
-        title) cat <<EOF
+        ;;
+    title)
+        cat <<EOF
 
   ${PROG} title [text]
 
   Sets the window title via OSC 0. Inside tmux this sets the tmux window
   name rather than the terminal title, unless allow-rename is off.
 EOF
-;;
-        cwd) cat <<EOF
+        ;;
+    cwd)
+        cat <<EOF
 
   ${PROG} cwd
 
   Reports the current directory via OSC 7. When supported, new tabs and
   splits open in that directory instead of \$HOME.
 EOF
-;;
-        notify) cat <<EOF
+        ;;
+    notify)
+        cat <<EOF
 
   ${PROG} notify [title] [body]
 
@@ -516,8 +552,9 @@ EOF
   Inside tmux these go through DCS passthrough, so allow-passthrough must
   be on or all.
 EOF
-;;
-        graphics) cat <<EOF
+        ;;
+    graphics)
+        cat <<EOF
 
   ${PROG} graphics
 
@@ -527,8 +564,9 @@ EOF
 
   Inside tmux both require allow-passthrough on or all.
 EOF
-;;
-        cursor) cat <<EOF
+        ;;
+    cursor)
+        cat <<EOF
 
   ${PROG} cursor
 
@@ -537,8 +575,9 @@ EOF
 
   Needs a real terminal — it reads from /dev/tty.
 EOF
-;;
-        keys) cat <<EOF
+        ;;
+    keys)
+        cat <<EOF
 
   ${PROG} keys
 
@@ -549,10 +588,14 @@ EOF
   csi-u) they get distinct sequences like ESC[13;5u, which is what lets
   editors bind them separately.
 EOF
-;;
-        version) printf '\n  %s version — print version and exit\n' "$PROG" ;;
-        help)    printf '\n  %s help [subcommand] — this text\n' "$PROG" ;;
-        *) err "no help for '$1'"; note "run '$PROG help' for the list"; return 1 ;;
+        ;;
+    version) printf '\n  %s version — print version and exit\n' "$PROG" ;;
+    help) printf '\n  %s help [subcommand] — this text\n' "$PROG" ;;
+    *)
+        err "no help for '$1'"
+        note "run '$PROG help' for the list"
+        return 1
+        ;;
     esac
     printf '\n'
 }
@@ -562,31 +605,35 @@ EOF
 # ---------------------------------------------------------------------------
 
 main() {
-    [ $# -eq 0 ] && { usage; exit 0; }
-    local sub="$1"; shift
+    [ $# -eq 0 ] && {
+        usage
+        exit 0
+    }
+    local sub="$1"
+    shift
     case "$sub" in
-        all)              cmd_all "$@" ;;
-        env|info)         cmd_env "$@" ;;
-        link|links)       cmd_link "$@" ;;
-        delta)            cmd_delta "$@" ;;
-        styles|style|sgr) cmd_styles "$@" ;;
-        underlines|ul)    cmd_underlines "$@" ;;
-        colors|color)     cmd_colors "$@" ;;
-        unicode|uni)      cmd_unicode "$@" ;;
-        clip|clipboard)   cmd_clip "$@" ;;
-        title)            cmd_title "$@" ;;
-        cwd)              cmd_cwd "$@" ;;
-        notify)           cmd_notify "$@" ;;
-        graphics|gfx)     cmd_graphics "$@" ;;
-        cursor)           cmd_cursor "$@" ;;
-        keys|key)         cmd_keys "$@" ;;
-        help|-h|--help)   cmd_help "$@" ;;
-        version|-V|--version) printf '%s %s\n' "$PROG" "$VERSION" ;;
-        *)
-            err "unknown subcommand '$sub'"
-            note "run '$PROG help' for the list"
-            exit 1
-            ;;
+    all) cmd_all "$@" ;;
+    env | info) cmd_env "$@" ;;
+    link | links) cmd_link "$@" ;;
+    delta) cmd_delta "$@" ;;
+    styles | style | sgr) cmd_styles "$@" ;;
+    underlines | ul) cmd_underlines "$@" ;;
+    colors | color) cmd_colors "$@" ;;
+    unicode | uni) cmd_unicode "$@" ;;
+    clip | clipboard) cmd_clip "$@" ;;
+    title) cmd_title "$@" ;;
+    cwd) cmd_cwd "$@" ;;
+    notify) cmd_notify "$@" ;;
+    graphics | gfx) cmd_graphics "$@" ;;
+    cursor) cmd_cursor "$@" ;;
+    keys | key) cmd_keys "$@" ;;
+    help | -h | --help) cmd_help "$@" ;;
+    version | -V | --version) printf '%s %s\n' "$PROG" "$VERSION" ;;
+    *)
+        err "unknown subcommand '$sub'"
+        note "run '$PROG help' for the list"
+        exit 1
+        ;;
     esac
 }
 
