@@ -20,7 +20,12 @@ Each top-level directory is a **stow package** whose internal layout mirrors
   4-space default, 2 for lua/web/markdown, tabs for Makefiles. Neovim reads it
   natively, and so do the formatters conform runs (`stylua`, `prettierd`,
   `shfmt`), so the editor and the formatters can't drift apart. It is a
-  root-level file, not part of any package, so it is never stowed.
+  root-level file, not part of any package, so it is never stowed. The
+  [`editorconfig`](editorconfig/README.md) package deploys the same rules to
+  `~/.editorconfig` as a fallback for projects that ship no config of their own.
+- **`.shellcheckrc` at the repo root configures ShellCheck once**, for both the
+  editor (via bash-language-server) and CI (`_helpers/check-repo.sh`), so
+  diagnostics match what the gate enforces.
 
 ## Packages
 
@@ -48,6 +53,7 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 | [`starship`](starship/README.md) | `~/.config/starship.toml` | Starship prompt |
 | [`git`](git/README.md) | `~/.gitconfig` | Global Git behavior, aliases, and defaults |
 | [`direnv`](direnv/README.md) | `~/.config/direnv/` | Shared direnv helpers (per-directory gh account pinning) |
+| [`editorconfig`](editorconfig/README.md) | `~/.editorconfig` | Machine-wide EditorConfig fallback (indentation for editors *and* formatters) |
 | [`tealdeer`](tealdeer/README.md) | `~/.config/tealdeer/` | tldr-pages client cache policy (binary via `_helpers`) |
 
 ### Coding agents

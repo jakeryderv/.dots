@@ -1,0 +1,35 @@
+# Machine-wide EditorConfig fallback, deployed to ~/.editorconfig.
+#
+# Intentionally has NO `root = true`. EditorConfig walks up from a file until it
+# hits a config marked root, so this applies only to files whose project does not
+# ship its own root config -- a project .editorconfig always wins. Its job is to
+# stop stray scripts (~/tmp/foo.sh and friends) from picking up tool defaults:
+# without it, shfmt formats shell with TABS regardless of the editor's expandtab.
+#
+# Read natively by Neovim and by stylua, prettierd and shfmt, so the editor and
+# the formatters agree everywhere, not just inside ~/.dots.
+#
+# Keep in sync with ~/.dots/.editorconfig (that one is root = true).
+
+[*]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.lua]
+indent_size = 2
+
+[*.{html,css,scss,sass,less,js,jsx,ts,tsx,json,jsonc,yaml,yml,md}]
+indent_size = 2
+
+# Two trailing spaces are a hard line break in markdown
+[*.md]
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab
+
+# Not set: switch_case_indent. shfmt's default leaves `case` branches level with
+# `case`, which is exactly what nvim-treesitter's bash indentexpr produces --
+# enabling it would make `=` and format-on-save fight over every case statement.
