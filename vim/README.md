@@ -42,6 +42,14 @@ by the package.
   zero-plugin property; the tradeoff was judged not worth it.
 - Smart-case incremental search, persistent undo, true color, and predictable
   split placement.
+- **No colorscheme.** `syntax enable` plus Vim's built-in default highlighting;
+  `Normal` is left cleared, so the terminal's background and foreground show
+  through — the carbonfox palette comes from
+  [`ghostty`](../ghostty/README.md), not from Vim. Three groups are overridden
+  to match the [`nvim`](../nvim/README.md) chrome: `CursorLine` (`#353535`,
+  replacing the default `Grey40` glare) and `SpecialKey`/`NonText` (`#535353`,
+  so `listchars` stay dim instead of bright cyan). They are re-applied from a
+  `ColorScheme` autocmd, so they survive if a scheme is ever loaded.
 - `Ctrl-h/j/k/l` and `Ctrl-\` navigation across Vim splits and tmux panes,
   implemented directly without a Vim plugin.
 

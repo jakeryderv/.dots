@@ -65,6 +65,31 @@ set timeoutlen=300
 set termguicolors
 set background=dark
 
+" Chrome tweaks over Vim's built-in default highlighting, using the carbonfox
+" values the Neovim config keeps in lua/colors.lua (the terminal supplies the
+" same palette, see ghostty/.config/ghostty/carbonfox.ghostty):
+"   - CursorLine defaults to Grey40 (#666666), a bright band against the
+"     #161616 background. #353535 is what carbonfox renders in Neovim; note it
+"     is not one of the entries in lua/colors.lua, so it is spelled out here.
+"   - listchars default to Cyan/bold Blue; bg4 (#535353) keeps them dim but
+"     legible against both the normal and cursorline backgrounds. Same value
+"     Neovim uses for Whitespace/NonText/SpecialKey.
+" Vim draws listchars with SpecialKey and NonText -- it has no 'Whitespace'
+" group, that one is a Neovim addition (:highlight Whitespace gives E411).
+" cterm values are fallbacks for terminals without true colour.
+function! s:ChromeOverrides() abort
+  highlight CursorLine guibg=#353535 ctermbg=236 cterm=NONE
+  highlight SpecialKey guifg=#535353 ctermfg=240
+  highlight NonText    guifg=#535353 ctermfg=240 gui=NONE cterm=NONE
+endfunction
+
+" Re-apply on :colorscheme, which resets highlight groups, then apply once now.
+augroup chrome_overrides
+  autocmd!
+  autocmd ColorScheme * call s:ChromeOverrides()
+augroup END
+call s:ChromeOverrides()
+
 " Keep persistent undo data local and out of the dotfiles repository.
 let s:undo_dir = expand('~/.vim/undo')
 if !isdirectory(s:undo_dir)
