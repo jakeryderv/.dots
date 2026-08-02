@@ -51,6 +51,31 @@ else
     echo 'Skipping ShellCheck (not installed).'
 fi
 
+# Formatting drift. shfmt takes no flags on purpose: with none it reads
+# .editorconfig, which is what Neovim's format-on-save uses, so this checks the
+# same rules the editor applies. Passing -i or similar would make shfmt ignore
+# .editorconfig and silently diverge from the editor.
+if command -v shfmt >/dev/null 2>&1; then
+    echo 'Checking Bash formatting...'
+    unformatted=0
+    while IFS= read -r -d '' file; do
+        if is_bash_file "$file"; then
+            if ! shfmt --diff "$file"; then
+                unformatted=$((unformatted + 1))
+            fi
+        fi
+    done < <(find "${BASH_PATHS[@]}" -type f ! -name local.sh -print0)
+    if ((unformatted > 0)); then
+        echo "error: $unformatted file(s) are not shfmt-formatted; run: shfmt -w <file>" >&2
+        exit 1
+    fi
+elif [[ "${REQUIRE_LINTERS:-0}" == 1 ]]; then
+    echo 'error: shfmt is required but unavailable' >&2
+    exit 1
+else
+    echo 'Skipping Bash formatting check (shfmt not installed).'
+fi
+
 echo 'Parsing JSON, TOML, and Python configuration...'
 python3 - <<'PY'
 import json

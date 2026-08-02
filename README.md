@@ -26,6 +26,10 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 - **`.shellcheckrc` at the repo root configures ShellCheck once**, for both the
   editor (via bash-language-server) and CI (`_helpers/check-repo.sh`), so
   diagnostics match what the gate enforces.
+- **Bash formatting is enforced in CI** — `check-repo.sh` runs `shfmt --diff`
+  with no flags, so it reads the same `.editorconfig` as format-on-save. If it
+  fails, `shfmt -w <file>` fixes it. Bulk reformats belong in their own commit,
+  listed in `.git-blame-ignore-revs`.
 
 ## Packages
 
