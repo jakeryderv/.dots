@@ -29,8 +29,10 @@ return {
     end,
     formatters_by_ft = {
       lua = { 'stylua' },
+      -- Bash files are filetype 'sh' in Neovim (it sets b:is_bash rather than
+      -- ft=bash), so a 'bash' key here would never match. shfmt gets no
+      -- prepend_args: any formatting flag makes it ignore .editorconfig.
       sh = { 'shfmt' },
-      bash = { 'shfmt' },
       -- ruff is system-managed (not via Mason). Install with: uv tool install ruff
       python = { 'ruff_organize_imports', 'ruff_format' },
       html = { 'prettierd', 'prettier', stop_after_first = true },

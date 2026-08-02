@@ -80,6 +80,9 @@ nvim --headless '+checkhealth' '+qa'
   that is the intended precedence. Do **not** add `prepend_args` to the `shfmt`
   formatter: shfmt ignores `.editorconfig` as soon as formatting flags are
   passed.
-- **Lint on save/read** via `nvim-lint`.
+- **Lint on save/read** via `nvim-lint`. **Shell is not listed there on
+  purpose** — `bashls` runs ShellCheck internally, on every change rather than
+  only on write, so listing it in `nvim-lint` too surfaced every warning twice.
+  Settings live in `~/.dots/.shellcheckrc`, which bashls and CI both read.
 - `lazy-lock.json` pins plugin versions — commit it when you intentionally
   update plugins (`:Lazy update`).
