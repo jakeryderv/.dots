@@ -20,6 +20,9 @@ vim.o.timeoutlen = 300
 
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
+-- -1 makes softtabstop follow shiftwidth, so <Tab>/<BS> move by a whole indent
+-- step instead of a single space (the default sts=0 with expandtab).
+vim.o.softtabstop = -1
 vim.o.expandtab = true
 
 vim.o.splitright = true

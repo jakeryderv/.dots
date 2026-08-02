@@ -16,6 +16,11 @@ Each top-level directory is a **stow package** whose internal layout mirrors
   `ghostty/.config/ghostty/README.md`) and are never symlinked into `$HOME`
   (the `README[.]md` entry in `.stowrc` catches them at any depth).
 - `_helpers/verify-readmes.sh` checks that every package/asset/tooling dir has a README.
+- **`.editorconfig` at the repo root is the indentation source of truth** —
+  4-space default, 2 for lua/web/markdown, tabs for Makefiles. Neovim reads it
+  natively, and so do the formatters conform runs (`stylua`, `prettierd`,
+  `shfmt`), so the editor and the formatters can't drift apart. It is a
+  root-level file, not part of any package, so it is never stowed.
 
 ## Packages
 

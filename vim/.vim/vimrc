@@ -34,6 +34,9 @@ set wildmode=longest:full,full
 " Indentation and visible whitespace
 set tabstop=4
 set shiftwidth=4
+" -1 makes softtabstop follow shiftwidth, so <Tab>/<BS> move by a whole indent
+" step instead of a single space.
+set softtabstop=-1
 set expandtab
 set list
 set listchars=tab:»\ ,trail:·,nbsp:␣

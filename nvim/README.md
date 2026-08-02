@@ -73,6 +73,13 @@ nvim --headless '+checkhealth' '+qa'
 
 - **Format on save** via `conform.nvim` (`lsp_format = 'fallback'`,
   `timeout_ms = 2000`); disabled for `c`/`cpp`.
+- **Indentation**: 4-space soft tabs by default (`softtabstop = -1`, so
+  `<Tab>`/`<BS>` move a whole step); a `FileType` autocmd drops to 2 for lua,
+  the web filetypes, and markdown, matching what `stylua`/`prettierd` emit. A
+  project `.editorconfig` is applied *after* that autocmd and overrides it —
+  that is the intended precedence. Do **not** add `prepend_args` to the `shfmt`
+  formatter: shfmt ignores `.editorconfig` as soon as formatting flags are
+  passed.
 - **Lint on save/read** via `nvim-lint`.
 - `lazy-lock.json` pins plugin versions — commit it when you intentionally
   update plugins (`:Lazy update`).

@@ -1,0 +1,35 @@
+# Indentation source of truth for this repository.
+#
+# Read natively by Neovim (built-in, 0.9+) and by every formatter conform runs:
+# stylua, prettierd, and shfmt. Keeping the rules here instead of in per-tool
+# config means the editor and the formatters can't drift apart.
+#
+# Precedence notes:
+#   - EditorConfig is applied after ftplugins and after nvim's own web-indent
+#     autocmd, so it wins for files under this tree.
+#   - stylua ignores EditorConfig when a stylua.toml is found in the file's
+#     directory -- nvim/.config/nvim/.stylua.toml still governs there (it also
+#     says 2, so the two agree).
+#   - shfmt ignores EditorConfig if formatting flags (-i, -bn, ...) are passed,
+#     so conform must NOT set prepend_args for it.
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.lua]
+indent_size = 2
+
+[*.{html,css,scss,sass,less,js,jsx,ts,tsx,json,jsonc,yaml,yml,md}]
+indent_size = 2
+
+# Two trailing spaces are a hard line break in markdown
+[*.md]
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab

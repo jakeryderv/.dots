@@ -17,10 +17,17 @@ vim.api.nvim_create_autocmd('InsertLeave', {
   end,
 })
 
--- 2-space indent for web filetypes (matches prettier's default)
+-- 2-space indent for filetypes whose formatter emits 2 (prettier's default;
+-- stylua for lua). Without lua here you'd type 4-wide and stylua would rewrite
+-- the file to 2 on save. softtabstop is global (-1, follows shiftwidth), so it
+-- doesn't need setting per filetype.
+--
+-- A project .editorconfig overrides all of this -- it is applied after FileType
+-- and wins, which is the intended precedence.
 vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('web-indent', { clear = true }),
   pattern = {
+    'lua',
     'html', 'css', 'scss', 'sass', 'less',
     'javascript', 'javascriptreact', 'typescript', 'typescriptreact',
     'json', 'jsonc', 'yaml', 'markdown',
@@ -28,7 +35,6 @@ vim.api.nvim_create_autocmd('FileType', {
   callback = function()
     vim.bo.tabstop = 2
     vim.bo.shiftwidth = 2
-    vim.bo.softtabstop = 2
   end,
 })
 
