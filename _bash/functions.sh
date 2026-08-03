@@ -68,3 +68,9 @@ bashstyle() {
         ;;
     esac
 }
+
+hello_colors() {
+    printf '\e[31mHello, World!\e[0m\n' # Red
+    printf '\e[32mHello, World!\e[0m\n' # Green
+    printf '\e[34mHello, World!\e[0m\n' # Blue
+}
