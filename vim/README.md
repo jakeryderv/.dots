@@ -42,14 +42,16 @@ by the package.
   zero-plugin property; the tradeoff was judged not worth it.
 - Smart-case incremental search, persistent undo, true color, and predictable
   split placement.
-- **No colorscheme.** `syntax enable` plus Vim's built-in default highlighting;
-  `Normal` is left cleared, so the terminal's background and foreground show
-  through — the carbonfox palette comes from
-  [`ghostty`](../ghostty/README.md), not from Vim. Three groups are overridden
-  to match the [`nvim`](../nvim/README.md) chrome: `CursorLine` (`#353535`,
-  replacing the default `Grey40` glare) and `SpecialKey`/`NonText` (`#535353`,
-  so `listchars` stay dim instead of bright cyan). They are re-applied from a
-  `ColorScheme` autocmd, so they survive if a scheme is ever loaded.
+- **Local carbonfox colorscheme**, `.vim/colors/carbonfox.vim` — hand-written
+  to match what `nightfox.nvim` renders in [`nvim`](../nvim/README.md), so the
+  two editors agree. Still zero plugins; it's just a file in `~/.vim/colors/`.
+  Without it Vim uses its own defaults, which are unrelated to carbonfox (blue
+  comments, yellow keywords) and come from two places: compiled into the binary
+  for UI groups, and `$VIMRUNTIME/syntax/syncolor.vim` for syntax groups.
+  `Normal` is deliberately left cleared so the terminal background — and
+  Ghostty's background image — still shows through. `cterm` values use
+  carbonfox's ANSI slot numbers rather than 256-colour approximations, since
+  the terminal palette is itself carbonfox.
 - `Ctrl-h/j/k/l` and `Ctrl-\` navigation across Vim splits and tmux panes,
   implemented directly without a Vim plugin.
 
