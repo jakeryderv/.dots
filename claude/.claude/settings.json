@@ -99,7 +99,8 @@
     "commit-commands@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
     "codex@openai-codex": true,
-    "agy@jakeryderv": true
+    "agy@jakeryderv": true,
+    "cloudflare@cloudflare": true
   },
   "extraKnownMarketplaces": {
     "openai-codex": {
@@ -115,6 +116,12 @@
         "repo": "jakeryderv/agent-plugins"
       },
       "autoUpdate": true
+    },
+    "cloudflare": {
+      "source": {
+        "source": "github",
+        "repo": "cloudflare/skills"
+      }
     }
   },
   "effortLevel": "high",
