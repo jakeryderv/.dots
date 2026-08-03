@@ -1,0 +1,18 @@
+# bat configuration. One command-line argument per line.
+#
+# The carbonfox theme is a .tmTheme (Sublime/TextMate format) shipped in
+# themes/ next to this file. It must be compiled into bat's cache before it
+# resolves -- see the package README:
+#
+#     bat cache --build     # 'batcat' on Debian/Ubuntu
+#
+# git-delta reads bat's theme registry, so building the cache also makes
+# `syntax-theme = carbonfox` work in ~/.gitconfig.
+
+--theme="carbonfox"
+
+# Show line numbers and git modification markers, but no heavy box drawing.
+--style="numbers,changes,header"
+
+# Keep bat's output in the terminal when it fits on one screen.
+--paging=auto

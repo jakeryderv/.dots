@@ -44,6 +44,8 @@
 	hyperlinks = true
 	side-by-side = true
 	line-numbers = true
-	syntax-theme = base16
+	# carbonfox, installed as a .tmTheme by the `bat` package -- delta reads
+	# bat's theme registry. Requires `bat cache --build`; see bat/README.md.
+	syntax-theme = carbonfox
 [include]
 	path = ~/.gitconfig.local
