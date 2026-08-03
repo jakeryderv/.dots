@@ -30,3 +30,41 @@ explain() {
     url=$(python3 -c 'import sys,urllib.parse; print("https://explainshell.com/explain?cmd="+urllib.parse.quote(" ".join(sys.argv[1:])))' "$@")
     xdg-open "$url" 2>/dev/null || echo "$url"
 }
+
+bashstyle() {
+    local url='https://style.ysap.sh'
+    local mode=${1:-auto}
+    local bat=''
+
+    # debian/ubuntu ship bat as batcat
+    if hash batcat 2>/dev/null; then
+        bat=batcat
+    elif hash bat 2>/dev/null; then
+        bat=bat
+    fi
+
+    if [[ $mode == auto ]]; then
+        if [[ -n $bat ]]; then
+            mode=bat
+        else
+            mode=less
+        fi
+    fi
+
+    case "$mode" in
+    bat)
+        [[ -n $bat ]] || {
+            echo 'bashstyle: bat/batcat not found' >&2
+            return 1
+        }
+        curl -fsSL "$url" | "$bat" -l md --style=plain
+        ;;
+    less)
+        curl -fsSL "$url" | less -R
+        ;;
+    *)
+        echo 'usage: bashstyle [bat|less]' >&2
+        return 1
+        ;;
+    esac
+}
