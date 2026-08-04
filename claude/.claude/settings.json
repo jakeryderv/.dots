@@ -96,7 +96,6 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "commit-commands@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
     "codex@openai-codex": true,
     "agy@jakeryderv": true,
