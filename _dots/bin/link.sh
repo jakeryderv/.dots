@@ -47,6 +47,33 @@ expand_target() {
 
 pretty() { printf '%s\n' "${1/#$HOME/\~}"; }
 
+# A package name that matches no manifest row would filter every row out and
+# turn the command into a silent no-op -- the same failure mode the manifest
+# checks guard against at apply time, so a typo must be loud here too.
+require_known_pkgs() {
+    local -a known=()
+    local pkg w hit bad=0
+    while read -r pkg _; do
+        if [[ -z "$pkg" || "$pkg" == \#* ]]; then
+            continue
+        fi
+        known+=("$pkg")
+    done <"$MANIFEST"
+    for w in "$@"; do
+        hit=0
+        for pkg in "${known[@]}"; do
+            if [[ "$w" == "$pkg" ]]; then
+                hit=1
+            fi
+        done
+        if ((hit == 0)); then
+            err "unknown package: $w (list them with \`just packages\`)"
+            bad=1
+        fi
+    done
+    ((bad == 0))
+}
+
 # Emit "MODE<TAB>SOURCE<TAB>EXPANDED_TARGET" for each manifest row, optionally
 # filtered to the packages named in "$@". PKG is read from the manifest rather
 # than derived from SOURCE: once a package moves to the flat layout the first
@@ -316,16 +343,22 @@ main() {
     shift || true
 
     case "$cmd" in
-    status) cmd_status "$@" ;;
-    plan) cmd_link 0 "$@" ;;
-    apply) cmd_link 1 "$@" ;;
-    unlink) cmd_unlink "$@" ;;
-    diff) cmd_diff "$@" ;;
+    status | plan | apply | unlink | diff) ;;
     *)
         err "unknown command: $cmd"
         printf 'usage: link.sh {status|plan|apply|unlink|diff} [PKG...]\n' >&2
         exit 2
         ;;
+    esac
+
+    require_known_pkgs "$@" || exit 2
+
+    case "$cmd" in
+    status) cmd_status "$@" ;;
+    plan) cmd_link 0 "$@" ;;
+    apply) cmd_link 1 "$@" ;;
+    unlink) cmd_unlink "$@" ;;
+    diff) cmd_diff "$@" ;;
     esac
 }
 

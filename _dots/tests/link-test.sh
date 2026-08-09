@@ -103,8 +103,9 @@ run_link status >/dev/null || fail 'status not clean after second apply'
 # --- package filter uses the PKG column, not the path ------------------------
 output="$(run_link plan alpha)"
 [[ "$output" != *'beta'* ]] || fail 'package filter leaked another package'
-output="$(run_link plan nosuchpkg)"
-[[ "$output" == *'0 link(s) in scope'* ]] || fail 'unknown package should match no rows'
+output="$(expect_rc 2 'unknown package is an error' run_link plan nosuchpkg)"
+[[ "$output" == *'unknown package: nosuchpkg'* ]] || fail "expected an unknown-package error
+$output"
 
 # --- diff is quiet when everything resolves ----------------------------------
 run_link diff >/dev/null || fail 'diff reported differences on a clean tree'
