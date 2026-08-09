@@ -74,9 +74,19 @@ BASH_PATHS=(
     _bash
     _helpers
     bin
+    config
+    home
     data/bash-completion/completions
     _dots/bin
     _dots/tests
+)
+
+# Vendored content: tracked here but authored upstream. Linted like everything
+# else, but never reformatted -- rewriting it would widen the diff against the
+# source it was forked from and make the next re-sync harder. See
+# docs/agent-skills.md for provenance.
+NO_REFORMAT=(
+    home/agent-skills
 )
 
 LUA_PATHS=(
@@ -87,9 +97,9 @@ LUA_PATHS=(
 # `find` reports a missing path on stderr and keeps going, and these traversals
 # feed process substitutions whose exit status is discarded -- so a stale entry
 # here would silently shrink the lint surface instead of failing. Check first.
-for path in "${BASH_PATHS[@]}" "${LUA_PATHS[@]}"; do
+for path in "${BASH_PATHS[@]}" "${LUA_PATHS[@]}" "${NO_REFORMAT[@]}"; do
     if [[ ! -e "$path" ]]; then
-        echo "error: BASH_PATHS entry does not exist: $path" >&2
+        echo "error: path list entry does not exist: $path" >&2
         exit 1
     fi
 done
@@ -129,10 +139,14 @@ if command -v shfmt >/dev/null 2>&1; then
     echo 'Checking Bash formatting...'
     unformatted=0
     while IFS= read -r -d '' file; do
-        if is_bash_file "$file"; then
-            if ! shfmt --diff "$file"; then
-                unformatted=$((unformatted + 1))
-            fi
+        is_bash_file "$file" || continue
+        skip=0
+        for vendored in "${NO_REFORMAT[@]}"; do
+            [[ "$file" == "$vendored"/* ]] && skip=1
+        done
+        ((skip)) && continue
+        if ! shfmt --diff "$file"; then
+            unformatted=$((unformatted + 1))
         fi
     done < <(find "${BASH_PATHS[@]}" -type f ! -name local.sh -print0)
     if ((unformatted > 0)); then
