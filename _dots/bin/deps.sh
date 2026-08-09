@@ -16,7 +16,7 @@ fi
 ok() { printf '%s✓%s %s\n' "$GREEN" "$RESET" "$*"; }
 warn() { printf '%s!%s %s\n' "$YELLOW" "$RESET" "$*"; }
 
-required=(bash git just python3 find sed awk grep cmp readlink file)
+required=(bash git just python3 find sed awk grep diff readlink file)
 optional=(
     shellcheck shfmt luac fc-cache
     starship vim nvim tmux fzf bat batcat rg fd fdfind delta lazygit glow llm
