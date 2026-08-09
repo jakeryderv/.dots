@@ -2,7 +2,7 @@
 #
 # Read automatically by every consumer -- bash-language-server (which runs
 # ShellCheck internally for editor diagnostics) and `shellcheck` invoked by
-# tools/check-repo.sh in CI -- so the editor and the CI gate can't drift.
+# _dots/checks/check-repo.sh in CI -- so the editor and the CI gate can't drift.
 # ShellCheck searches the checked file's directory and its parents, so this
 # root-level file covers _bash/, tools/, bin/, config/, home/ and _dots/.
 

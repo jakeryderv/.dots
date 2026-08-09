@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # doctor.sh - health checks for this machine's dotfiles installation.
 #
-# Unlike tools/check-repo.sh, which validates the repository and is safe to
+# Unlike _dots/checks/check-repo.sh, which validates the repository and is safe to
 # run in CI, this inspects the caller's live environment: shell wiring, the
 # deployed CLI entrypoint, and the state of the links the manifest declares.
 
@@ -74,7 +74,7 @@ check_log="$(mktemp)"
 status_log="$(mktemp)"
 trap 'rm -f "$check_log" "$status_log"' EXIT
 
-if bash "$REPO_ROOT/tools/check-repo.sh" >"$check_log" 2>&1; then
+if bash "$REPO_ROOT/_dots/checks/check-repo.sh" >"$check_log" 2>&1; then
     ok "portable repository checks pass"
 else
     warn "portable repository checks failed"

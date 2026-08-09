@@ -16,4 +16,4 @@ jobs:
       - name: Run portable checks
         env:
           REQUIRE_LINTERS: "1"
-        run: bash tools/check-repo.sh
+        run: bash _dots/checks/check-repo.sh

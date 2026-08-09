@@ -124,13 +124,13 @@ bash tools/install-playwright-cli.sh
 Validate the tracked structure in CI or before deploying:
 
 ```bash
-bash tools/verify-agent-skills.sh
+bash _dots/checks/verify-agent-skills.sh
 ```
 
 After deploying, also validate the live paths:
 
 ```bash
-bash tools/verify-agent-skills.sh --live
+bash _dots/checks/verify-agent-skills.sh --live
 ```
 
 For a Playwright smoke test:
