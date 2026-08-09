@@ -8,7 +8,7 @@
 #   - EditorConfig is applied after ftplugins and after nvim's own web-indent
 #     autocmd, so it wins for files under this tree.
 #   - stylua ignores EditorConfig when a stylua.toml is found in the file's
-#     directory -- nvim/.config/nvim/.stylua.toml still governs there (it also
+#     directory -- config/nvim/.stylua.toml still governs there (it also
 #     says 2, so the two agree).
 #   - shfmt ignores EditorConfig if formatting flags (-i, -bn, ...) are passed,
 #     so conform must NOT set prepend_args for it.

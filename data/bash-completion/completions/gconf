@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# Completion for gconf (scripts/.local/bin/gconf).
+# Completion for gconf (bin/gconf).
 #
 # Autoloaded by bash-completion on first Tab, so it costs nothing at shell
 # startup and is only read if the script is actually installed.

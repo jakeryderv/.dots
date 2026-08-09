@@ -28,7 +28,7 @@ project with no config               ->  falls through to ~/.editorconfig
 The two files carry the same rules; keep them in sync when either changes.
 
 Within Neovim, EditorConfig is applied after ftplugins and after the
-`web-indent` autocmd in `nvim/.config/nvim/lua/autocmds.lua`, so it overrides
+`web-indent` autocmd in `config/nvim/lua/autocmds.lua`, so it overrides
 them. That is the intended ordering.
 
 ## Rules
@@ -53,7 +53,7 @@ just apply editorconfig
 ## Caveats
 
 - **`stylua` ignores EditorConfig when a `stylua.toml` is present** in the
-  file's directory. `nvim/.config/nvim/.stylua.toml` therefore governs the
+  file's directory. `config/nvim/.stylua.toml` therefore governs the
   Neovim config; it also says 2, so the two agree.
 - **`shfmt` ignores EditorConfig as soon as formatting flags are passed.** Do
   not add `prepend_args` to the `shfmt` entry in `conform.lua` — set the
