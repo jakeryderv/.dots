@@ -10,7 +10,7 @@ Each script ships a bash completion in
 `.local/share/bash-completion/completions/`, named after the command. They are
 autoloaded on first Tab rather than at shell startup, so they cost nothing until
 used and disappear along with the script if this package is unlinked. They need
-the `bash-completion` package, which `_bash/completions.sh` already sources; if
+the `bash-completion` package, which `shell/completions.sh` already sources; if
 it is missing, Tab silently falls back to filename completion.
 
 ## Activate

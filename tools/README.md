@@ -25,7 +25,7 @@ to re-run to update unless their header says a pin must be bumped deliberately.
 |--------|----------|-------|
 | `install-delta.sh` | [delta](https://github.com/dandavison/delta) | Verified official `.deb` via `dpkg`. Skips the download when already current; `--force` reinstalls. Wire it into [`git`](../docs/git.md) yourself — see the script's closing note. |
 | `install-fzf.sh` | [fzf](https://github.com/junegunn/fzf) | Cloned to `~/.fzf`. `--all` **edits your shell rc files** to add keybindings/completion. |
-| `install-glow.sh` | [glow](https://github.com/charmbracelet/glow) | Charm apt repo. Markdown renderer used by [`_bash`](../_bash/README.md)'s `llm.sh`. |
+| `install-glow.sh` | [glow](https://github.com/charmbracelet/glow) | Charm apt repo. Markdown renderer used by [`shell`](../shell/README.md)'s `llm.sh`. |
 | `install-lazygit.sh` | [lazygit](https://github.com/jesseduffield/lazygit) | Verified GitHub release binary → `/usr/local/bin`. |
 | `install-playwright-cli.sh` | [Playwright CLI](https://playwright.dev/agent-cli/installation) | Global npm CLI + its Chromium build. Shared Agent Skill is tracked in [`agent-skills`](../docs/agent-skills.md). |
 | `install-qutebrowser.sh` | [qutebrowser](https://qutebrowser.org) | From source via `uv` + `mkvenv.py` (newer Qt than apt). `--keep` reuses the venv for a fast update. Also installs the `.desktop` entry + icons. See [`qutebrowser`](../docs/qutebrowser.md). |

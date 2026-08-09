@@ -46,17 +46,17 @@ else
     fail=1
 fi
 
-if grep -q '\.dots/_bash/_init_\.sh' "$HOME/.bashrc" 2>/dev/null; then
-    ok "\$HOME/.bashrc sources _bash/_init_.sh"
+if grep -q '\.dots/shell/_init_\.sh' "$HOME/.bashrc" 2>/dev/null; then
+    ok "\$HOME/.bashrc sources shell/_init_.sh"
 else
-    warn "\$HOME/.bashrc does not appear to source _bash/_init_.sh"
+    warn "\$HOME/.bashrc does not appear to source shell/_init_.sh"
     fail=1
 fi
 
-if [[ -f "$REPO_ROOT/_bash/local.sh" ]]; then
-    ok "_bash/local.sh exists"
+if [[ -f "$REPO_ROOT/shell/local.sh" ]]; then
+    ok "shell/local.sh exists"
 else
-    warn "_bash/local.sh missing; copy _bash/local.sh.example"
+    warn "shell/local.sh missing; copy shell/local.sh.example"
 fi
 
 if command -v opencode >/dev/null 2>&1; then
