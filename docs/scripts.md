@@ -1,31 +1,31 @@
 # scripts
 
-Personal scripts. Stowed to `~/.local/bin/` (must be on your `PATH`).
+Personal scripts. Deployed to `~/.local/bin/` (must be on your `PATH`).
 
-See the root [README](../README.md) for shared stow mechanics.
+See the root [README](../README.md) for shared deployment mechanics.
 
 ## Completions
 
 Each script ships a bash completion in
 `.local/share/bash-completion/completions/`, named after the command. They are
 autoloaded on first Tab rather than at shell startup, so they cost nothing until
-used and disappear along with the script if this package is unstowed. They need
+used and disappear along with the script if this package is unlinked. They need
 the `bash-completion` package, which `_bash/completions.sh` already sources; if
 it is missing, Tab silently falls back to filename completion.
 
 ## Activate
 
 ```bash
-cd ~/.dots && dots stow --no-folding --apply scripts
+cd ~/.dots && just apply scripts
 ```
 
-`--no-folding` matters here. A plain `stow scripts` folds
-`~/.local/share/bash-completion` into a single symlink pointing at this
-package, so anything else that installs a completion — such as
-[`_helpers/install-tealdeer.sh`](../_helpers/README.md) — writes a
-third-party file straight into the repo. Unfolded, the target stays a real
-directory holding one symlink per tracked completion, and non-stowed
-completions can sit beside them.
+Both rows are `tree` mode, which matters here. A single symlink at
+`~/.local/bin` or `~/.local/share/bash-completion/completions` would mean
+anything else installing there — such as
+[`_helpers/install-tealdeer.sh`](../_helpers/README.md) — writes a third-party
+file straight into the repo. As `tree` rows the targets stay real directories
+holding one symlink per tracked file; `~/.local/bin` currently has 48 entries,
+of which three are ours.
 
 ## Scripts
 

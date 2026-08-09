@@ -1,27 +1,27 @@
 # git
 
-Global Git configuration. Stowed to `~/.gitconfig`.
+Global Git configuration. Deployed to `~/.gitconfig`.
 
-See the root [README](../README.md) for shared stow mechanics.
+See the root [README](../README.md) for shared deployment mechanics.
 
 ## Files
 
 | File | Role |
 |------|------|
 | `.gitconfig` | Shared Git behavior, aliases, and defaults. |
-| `.gitconfig.local.example` | Template for untracked identity, credentials, and machine-specific overrides. Ignored by Stow. |
+| `.gitconfig.local.example` | Template for untracked identity, credentials, and machine-specific overrides. Not a manifest row, so never deployed. |
 
 The tracked config includes `~/.gitconfig.local` last, so local scalar values
 can override shared defaults. A missing local file is allowed.
 
 ## Activate
 
-Create the local config before stowing on a new machine:
+Create the local config before deploying on a new machine:
 
 ```bash
 cp ~/.dots/git/.gitconfig.local.example ~/.gitconfig.local
 nvim ~/.gitconfig.local
-cd ~/.dots && stow git
+just apply git
 ```
 
 Because `~/.gitconfig` is a symlink into this repository, ordinary
@@ -49,7 +49,7 @@ The explicit `--includes` makes `git config --global` show entries loaded from
 
 ## External dependencies
 
-Not managed by Stow:
+Not managed by this repo:
 
 - **Git LFS** — needed by the tracked `filter.lfs` configuration when working
   with repositories that use LFS.

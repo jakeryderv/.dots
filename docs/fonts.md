@@ -1,8 +1,8 @@
 # fonts
 
-Nerd Fonts. Stowed to `~/.local/share/fonts/`.
+Nerd Fonts. Deployed to `~/.local/share/fonts/`.
 
-See the root [README](../README.md) for shared stow mechanics.
+See the root [README](../README.md) for shared deployment mechanics.
 
 ## What's here
 
@@ -20,7 +20,7 @@ Every config in this repo that sets a font uses `0xProto Nerd Font Mono`.
 ## Activate
 
 ```bash
-cd ~/.dots && stow fonts
+just apply fonts
 fc-cache -f ~/.local/share/fonts     # refresh the font cache
 fc-match '0xProto Nerd Font Mono'    # confirm it resolves
 ```

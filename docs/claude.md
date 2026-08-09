@@ -1,6 +1,6 @@
 # claude
 
-Claude Code global configuration, managed as a GNU Stow package. Tracks the
+Claude Code global configuration, managed as a the manifest deployer package. Tracks the
 user-authored config files under `~/.claude/`; everything else there is
 tool-managed state (sessions, history, plugin cache, credentials) and stays
 untracked, with `.gitignore` guards in the repo root as a safety net.
@@ -19,9 +19,9 @@ All other skills under `~/.claude/skills/` are owned by the separate
 `agent-skills` package (shared across agents via `~/.agents/skills/`); the two
 packages both link items into the real `~/.claude/skills/` directory.
 Claude-specific skills belong here; agent-portable ones belong in
-`agent-skills`. Prefer `--no-folding` when restowing either package — both
-link into `~/.claude/skills/`, and plain restows can transiently race on
-folding that directory. Third-party skills (cloudflare, playwright, railway)
+`agent-skills`. Both are `tree` rows in the manifest, so each links only its
+own files into the real `~/.claude/skills/` directory and the two never
+interact. Third-party skills (cloudflare, playwright, railway)
 are not tracked at all — they're managed by skills.sh / vendor CLIs; see the
 `agent-skills` README.
 
@@ -45,10 +45,10 @@ are not tracked at all — they're managed by skills.sh / vendor CLIs; see the
 
 ## Caveats
 
-- **Fresh machine:** run Claude Code once before stowing so `~/.claude/` exists
-  as a real directory, or stow with `--no-folding`. If stow folds the whole
-  directory into a symlink, Claude Code will write session state, history, and
-  credentials into this repo (the `.gitignore` guards are the backstop).
+- **Fresh machine:** no special ordering is needed. This is a `tree` row, so
+  `~/.claude/` is always created as a real directory holding one symlink per
+  tracked file — Claude Code's session state, history, and credentials stay
+  outside the repo by construction rather than by `.gitignore` alone.
 - **Symlinked settings.json:** Claude Code rewrites `settings.json` when
   plugins are enabled/disabled or settings change via the UI. If it ever
   replaces the file atomically (rename-over), the symlink breaks silently and

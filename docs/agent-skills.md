@@ -1,6 +1,6 @@
 # agent-skills
 
-Personal and forked coding-agent skills, managed as one GNU Stow package.
+Personal and forked coding-agent skills, managed as one the manifest deployer package.
 Only skills authored or modified here are tracked; **third-party skills are
 not vendored** — they're installed and updated by [skills.sh](https://skills.sh)
 or their own vendor CLI (see below), keeping this package purely "my config"
@@ -89,17 +89,16 @@ session while still sharing the CLI and browser downloads.
 
 ## Install
 
-Stow the tracked package, then install third-party skills:
+Deploy the tracked package, then install third-party skills:
 
 ```bash
-dots stow agent-skills --apply
+just apply agent-skills
 # then run the third-party install commands above
 ```
 
-Prefer `--no-folding` when restowing: this package and the `claude` package
-both link items into `~/.claude/skills/`, and plain restows can transiently
-try to fold that directory into a single-package symlink (stow detects the
-conflict and reverts, but `--no-folding` avoids the race entirely).
+This package and the `claude` package both link into `~/.claude/skills/`. Both
+are `tree` rows, so each links only its own tracked files and the two never
+interact — no ordering or special flags required.
 
 Install the Playwright CLI runtime separately when browser automation is
 wanted:
@@ -122,13 +121,13 @@ bash _helpers/install-playwright-cli.sh
 
 ## Verify
 
-Validate the tracked structure in CI or before stowing:
+Validate the tracked structure in CI or before deploying:
 
 ```bash
 bash _helpers/verify-agent-skills.sh
 ```
 
-After stowing, also validate the live paths:
+After deploying, also validate the live paths:
 
 ```bash
 bash _helpers/verify-agent-skills.sh --live

@@ -1,6 +1,6 @@
 # nvim
 
-Personal Neovim config (Lua, `lazy.nvim`). Stowed to `~/.config/nvim/`.
+Personal Neovim config (Lua, `lazy.nvim`). Deployed to `~/.config/nvim/`.
 
 ## Requirements
 

@@ -1,8 +1,8 @@
 # ghostty
 
-[Ghostty](https://ghostty.org) terminal config. Stowed to `~/.config/ghostty/`.
+[Ghostty](https://ghostty.org) terminal config. Deployed to `~/.config/ghostty/`.
 
-See the root [README](../README.md) for shared stow mechanics.
+See the root [README](../README.md) for shared deployment mechanics.
 
 ## Files
 
@@ -22,7 +22,7 @@ Only `config.ghostty` is read directly by Ghostty; it pulls in the other two via
 ## Activate
 
 ```bash
-cd ~/.dots && stow ghostty
+just apply ghostty
 ```
 
 Reload a running instance with the config-reload keybind (default
@@ -31,7 +31,7 @@ Reload a running instance with the config-reload keybind (default
 ## Links, mouse, and clipboard
 
 Mostly Ghostty defaults, documented here because
-[`tmux`](../tmux/README.md) depends on them and nothing in `config.ghostty`
+[`tmux`](tmux.md) depends on them and nothing in `config.ghostty`
 mentions them.
 
 - **Opening links** — `link-url` (default on) matches URLs on **`Ctrl`+hover**,
@@ -57,7 +57,7 @@ mentions them.
 - **Startup directory** — new windows always open in `$HOME`
   (`working-directory = home`, `window-inherit-working-directory = false`);
   tabs and splits still inherit the current dir.
-- **Background image** — pulls from `~/.dots/_wallpapers/` (not stowed; see
+- **Background image** — pulls from `~/.dots/_wallpapers/` (not deployed; see
   [`_wallpapers`](../_wallpapers/README.md)).
 - **No window decorations** + zero padding, matching the kitty/alacritty setups.
 - **Keybinds** — `ctrl+alt`-based tab/split scheme chosen to avoid clashing with

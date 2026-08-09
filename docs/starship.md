@@ -1,9 +1,9 @@
 # starship
 
-[Starship](https://starship.rs) prompt config. Stowed to
+[Starship](https://starship.rs) prompt config. Deployed to
 `~/.config/starship.toml`.
 
-See the root [README](../README.md) for shared stow mechanics.
+See the root [README](../README.md) for shared deployment mechanics.
 
 ## Files
 
@@ -13,7 +13,7 @@ See the root [README](../README.md) for shared stow mechanics.
 
 ## Activate
 
-Stowing installs the config but does **not** enable the prompt. You must also:
+Deploying installs the config but does **not** enable the prompt. You must also:
 
 1. Install starship (see [starship.rs](https://starship.rs)).
 2. Enable it in [`_bash/local.sh`](../_bash/README.md) (machine-local, not
@@ -24,7 +24,7 @@ Stowing installs the config but does **not** enable the prompt. You must also:
    ```
 
 ```bash
-cd ~/.dots && stow starship
+just apply starship
 ```
 
 ## Notable choices
@@ -32,5 +32,5 @@ cd ~/.dots && stow starship
 - **Two-line prompt** — context (user/host/dir/git/duration) on line one, the
   `❯` character on line two.
 - **Carbonfox-matched** colors; git status uses Nerd Font glyphs (needs a
-  [Nerd Font](../fonts/README.md)).
+  [Nerd Font](fonts.md)).
 - **Python module** shows only the active virtualenv (no version noise).

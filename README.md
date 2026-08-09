@@ -151,18 +151,13 @@ own `docs/<pkg>.md`.
 4. `just plan <pkg>` to preview, then `just apply <pkg>`.
 5. `just check` to confirm the gate stays green.
 
-## Migration status
+## History
 
-Phases 1 and 2 are complete: every manifest row is in the flat XDG layout and
-`just status` reports 23 rows matching with zero drift.
-
-**Phase 3 is outstanding** — GNU Stow is no longer used, but its remnants are
-still present: [`.stowrc`](.stowrc), the stow code paths in
-[`_dots/bin/dots`](_dots/bin/dots), and the `stow` dependency in
-[CI](.github/workflows/ci.yml). Until those are removed, `dots status` reports
-nonsense (it rediscovers `config/` and `home/` as stow packages and expects them
-in `$HOME`). **`just status` is the authority.** See
-[`docs/migration.md`](docs/migration.md).
+This repo used GNU Stow until August 2026. The move off it, why it happened,
+and the bugs the migration surfaced are recorded in
+[`docs/migration.md`](docs/migration.md) — worth reading before changing how
+deployment works, because most of the design here is a reaction to a specific
+failure of Stow's implicit behaviour.
 
 ## Implement next/later
 

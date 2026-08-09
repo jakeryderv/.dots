@@ -1,6 +1,6 @@
 # editorconfig
 
-Machine-wide [EditorConfig](https://editorconfig.org/) fallback. Stowed to
+Machine-wide [EditorConfig](https://editorconfig.org/) fallback. Deployed to
 `~/.editorconfig`.
 
 ## Why
@@ -47,7 +47,7 @@ spaces are a hard line break.
 
 ```bash
 cd ~/.dots
-dots stow --apply editorconfig
+just apply editorconfig
 ```
 
 ## Caveats

@@ -1,7 +1,7 @@
 # serena
 
 Documentation-only entry for [Serena](https://github.com/oraios/serena) (MIT,
-`oraios/serena`) — **nothing is stowed**. Serena is an MCP server that gives a
+`oraios/serena`) — **nothing is deployed**. Serena is an MCP server that gives a
 coding agent LSP-backed semantic code tools: symbol lookup, reference search,
 rename, replace-symbol-body, diagnostics.
 

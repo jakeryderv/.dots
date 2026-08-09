@@ -2,46 +2,62 @@
 
 Repo-local tooling for managing this dotfiles repository.
 
-**Not a stow package.** This directory is intentionally underscore-prefixed, so
-the `dots` CLI excludes it from package discovery.
+**Not a manifest package.** This directory is underscore-prefixed by convention
+and, more to the point, is not named in the [`manifest`](../manifest) — so
+nothing here is ever deployed.
 
-## Entrypoint
+## Contents
 
-- `_dots/bin/dots` — control-plane CLI for Stow/package visibility, health
-  checks, diffs, dependency checks, and bootstrap guidance.
+| Path | Purpose |
+| --- | --- |
+| `bin/link.sh` | The deployer. Reads the manifest and creates the symlinks it declares. |
+| `bin/doctor.sh` | Live-machine health: shell wiring, deployed entrypoint, link state. |
+| `bin/deps.sh` | Reports which expected tools are installed. |
+| `tests/` | Behaviour tests, run by `just check`. |
 
-Install the PATH entrypoint with the root setup script:
-
-```bash
-cd ~/.dots
-./setup.sh
-```
-
-That creates:
-
-```text
-~/.local/bin/dots -> ~/.dots/_dots/bin/dots
-```
+The user-facing entrypoint is the repo-root [`justfile`](../justfile). The
+`dots` command in [`bin/`](../bin) is a thin wrapper that points `just` back at
+it, so the commands below work from any directory.
 
 ## Common commands
 
 ```bash
-dots status          # verify every package file resolves back to this repo
-dots doctor          # repo health: git, ignores, READMEs, syntax, JSON, stow
-dots stow            # dry-run all stow packages
-dots stow --apply    # stow all packages
-dots stow --no-folding --apply vim  # keep ~/.vim real; link tracked files inside
-dots diff <pkg>      # compare live target files against repo sources
-dots check           # portable syntax/parser/lint/behavior checks (CI-safe)
+dots status          # every manifest row: does the target resolve into the repo?
+dots plan            # dry-run all rows (never mutates)
+dots apply           # create or repoint symlinks
+dots plan vim        # scope any command to one package
+dots diff            # content differences for targets that drifted
+dots unlink          # remove symlinks that resolve into this repo
+dots doctor          # live-machine health checks
+dots check           # portable syntax/parser/lint/behaviour checks (CI-safe)
 dots deps            # required/optional external command check
 ```
 
-Run `dots help` for the full command list.
+Run `dots` with no arguments for the full recipe list.
 
-## Future growth
+## Design notes
 
-If the CLI grows, keep implementation details here instead of in `scripts/`:
+Two decisions carry most of the weight, both reactions to how GNU Stow behaved
+before the migration (see [`docs/migration.md`](../docs/migration.md)):
 
-- `lib/` for shared shell helpers
-- `checks/` for doctor/status modules
-- `tests/` for focused behavior checks
+- **`git ls-files` is the file enumerator.** `.gitignore` is therefore the only
+  ignore list in the repo. There is no second ignore syntax, and no
+  compatibility shim to keep the two agreeing.
+- **Nothing is inferred.** The manifest declares the package name and the link
+  topology. Deriving either from a path was tried, and produced silent no-ops
+  when the layout changed underneath it.
+
+`link.sh` has one expansion function — manifest row to concrete
+(source, target) pairs — and every command consumes it. Adding a command means
+adding a consumer, not another traversal.
+
+## Testing
+
+```bash
+bash _dots/tests/run.sh
+```
+
+`tests/link-test.sh` builds a throwaway fixture repo with its own manifest and
+git history, then exercises `link.sh` against a scratch `$HOME`: both modes,
+untracked-file exclusion, idempotent apply, package filtering, conflict
+refusal, and selective unlink.
