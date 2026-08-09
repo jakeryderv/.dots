@@ -23,7 +23,7 @@ config-file = carbonfox.ghostty
 config-file = overrides.ghostty
 
 # --- Background image ---
-# Dark-space wallpaper (tracked in ~/.dots/_wallpapers, not stowed)
+# Dark-space wallpaper (tracked in ~/.dots/_wallpapers, never deployed)
 background-image = ~/.dots/_wallpapers/black_2560x1600.png
 
 # Fill the window, preserving aspect ratio (may clip edges)

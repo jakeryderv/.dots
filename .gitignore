@@ -1,70 +1,70 @@
+# Paths here mirror the repo layout, not $HOME. See the manifest for the
+# source -> target mapping.
+#
+# These are backstops, not the primary defence. Every source below is a `tree`
+# row in the manifest, which means its target is created as a real directory
+# holding one symlink per tracked file — so a tool's state lands in $HOME beside
+# the links, not inside this repo. That is structural. These patterns guard the
+# remaining cases: state copied in by hand, or a row switched to `link` mode
+# without thinking through what the tool writes.
+
 # Pi — track user-authored agent config; ignore secrets + tool-managed state.
-# Safety nets: with ~/.pi/agent pre-existing, stow only links the config files,
-# so state never enters the repo. These guard against an accidental fold (fresh
-# machine) or state copied in by hand.
-pi/.pi/agent/auth.json
-pi/.pi/agent/trust.json
-pi/.pi/agent/npm/
-pi/.pi/agent/sessions/
-pi/.pi/agent/bin/
-pi/.pi/agent/intercom/
-pi/.pi/agent/mcp-cache.json
-pi/.pi/agent/mcp-npx-cache.json
-pi/.pi/agent/run-history.jsonl
-pi/.pi/agent/settings.json.bak
-# Parent-level secrets/state (only relevant if ~/.pi gets folded on a fresh machine)
-pi/.pi/web-search.json
-pi/.pi/exa-usage.json
-pi/.pi/playwright-profile/
-pi/.pi/rules/
+home/pi/agent/auth.json
+home/pi/agent/trust.json
+home/pi/agent/npm/
+home/pi/agent/sessions/
+home/pi/agent/bin/
+home/pi/agent/intercom/
+home/pi/agent/mcp-cache.json
+home/pi/agent/mcp-npx-cache.json
+home/pi/agent/run-history.jsonl
+home/pi/agent/settings.json.bak
+home/pi/web-search.json
+home/pi/exa-usage.json
+home/pi/playwright-profile/
+home/pi/rules/
 
 # Bash — machine-specific config (use local.sh.example as template)
 _bash/local.sh
 
 # Git — machine-specific identity, credentials, and overrides
-git/.gitconfig.local
+home/gitconfig.local
 
 # Claude Code — track user-authored config; ignore secrets + tool-managed state.
-# Safety nets: with ~/.claude pre-existing, stow only links the tracked files,
-# so state never enters the repo. These guard against an accidental fold (fresh
-# machine) or state copied in by hand.
-claude/.claude/.credentials.json
-claude/.claude/settings.local.json
-claude/.claude/history.jsonl
-claude/.claude/projects/
-claude/.claude/sessions/
-claude/.claude/session-env/
-claude/.claude/plugins/
-claude/.claude/shell-snapshots/
-claude/.claude/file-history/
-claude/.claude/paste-cache/
-claude/.claude/telemetry/
-claude/.claude/tasks/
-claude/.claude/jobs/
-claude/.claude/todos/
-claude/.claude/backups/
-claude/.claude/cache/
-claude/.claude/daemon/
-claude/.claude/daemon*.log
-claude/.claude/stats-cache.json
-claude/.claude/ide/
-claude/.claude/debug/
-claude/.claude/downloads/
-claude/.claude/chrome/
-claude/.claude/statsig/
+home/claude/.credentials.json
+home/claude/settings.local.json
+home/claude/history.jsonl
+home/claude/projects/
+home/claude/sessions/
+home/claude/session-env/
+home/claude/plugins/
+home/claude/shell-snapshots/
+home/claude/file-history/
+home/claude/paste-cache/
+home/claude/telemetry/
+home/claude/tasks/
+home/claude/jobs/
+home/claude/todos/
+home/claude/backups/
+home/claude/cache/
+home/claude/daemon/
+home/claude/daemon*.log
+home/claude/stats-cache.json
+home/claude/ide/
+home/claude/debug/
+home/claude/downloads/
+home/claude/chrome/
+home/claude/statsig/
 
 # opencode — track user-authored config; ignore plugin machinery
-opencode/.config/opencode/node_modules/
-opencode/.config/opencode/package*.json
-opencode/.config/opencode/bun.lock
+config/opencode/node_modules/
+config/opencode/package*.json
+config/opencode/bun.lock
 
 # Installer-managed skills (skills.sh, railway CLI) must never enter the repo.
-# If an agent skills dir gets stow-folded into a symlink, installers write
-# through it into the repo — these guard against committing that. Keep agent
-# skill dirs real (restow with --no-folding).
-pi/.pi/agent/skills/*
-!pi/.pi/agent/skills/.gitkeep
-opencode/.config/opencode/skills/use-railway/
+home/pi/agent/skills/*
+!home/pi/agent/skills/.gitkeep
+config/opencode/skills/use-railway/
 
 # Python build cruft (e.g. qutebrowser config.py)
 **/__pycache__/
