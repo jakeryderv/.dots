@@ -8,7 +8,7 @@ Next up / ideas for the dotfiles repo.
 ## Agent workflow — deferred items (superpowers → OpenSpec migration, 2026-07-23)
 
 Deliberately not implemented yet; each has a trigger. Don't batch-install
-speculatively. Context: claude/README.md history note.
+speculatively. Context: docs/claude.md history note.
 
 **Next up (only uncovered gap):**
 

@@ -19,7 +19,7 @@ can override shared defaults. A missing local file is allowed.
 Create the local config before deploying on a new machine:
 
 ```bash
-cp ~/.dots/git/.gitconfig.local.example ~/.gitconfig.local
+cp ~/.dots/home/gitconfig.local.example ~/.gitconfig.local
 nvim ~/.gitconfig.local
 just apply git
 ```

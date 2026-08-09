@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# Completion for tmux-cheatsheet (scripts/.local/bin/tmux-cheatsheet).
+# Completion for tmux-cheatsheet (bin/tmux-cheatsheet).
 #
 # The script takes no positional arguments, so options are the whole surface.
 

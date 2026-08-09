@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# Completion for bs (scripts/.local/bin/bs).
+# Completion for bs (bin/bs).
 #
 # Options come from `bs -h`; keep the two in sync when adding a flag.
 

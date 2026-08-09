@@ -18,7 +18,7 @@ and tool-managed state stay in the live `~/.pi/` dir and are gitignored.
 > **Note:** `settings.json` is written by pi at runtime (`lastChangelogVersion`
 > on updates, plus model/thinking/`enabledModels` changes from `/settings` and
 > the model picker), so it will show up dirty in `git status`. Commit when a
-> change is intentional; `git restore pi/.pi/agent/settings.json` to drop noise.
+> change is intentional; `git restore home/pi/agent/settings.json` to drop noise.
 
 `settings.json`'s `packages` array is the source of truth for which npm packages
 pi installs into `npm/node_modules`, so `npm/` is reproducible and not tracked.
