@@ -54,7 +54,3 @@ tools:
 # Run an installer from tools, e.g. `just install delta`.
 install TOOL:
     @bash tools/install-{{ TOOL }}.sh
-
-# Install the latest stable Neovim from the official release build.
-update-nvim:
-    @bash tools/update-nvim.sh

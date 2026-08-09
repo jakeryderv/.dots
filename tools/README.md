@@ -22,7 +22,7 @@ to re-run to update unless their header says a pin must be bumped deliberately.
 ## Shared library
 
 The installers that download GitHub release assets (`delta`, `lazygit`,
-`tealdeer`, `t3code`, `update-nvim`) source
+`tealdeer`, `t3code`, `nvim`) source
 [`lib/github-release.sh`](lib/github-release.sh)
 for the parts that must not drift between them: platform and dependency
 preflight, latest-release resolution, asset selection, and the SHA-256 digest
@@ -46,14 +46,13 @@ source builds) and stay self-contained.
 | `install-t3code.sh` | [T3 Code](https://t3.codes) | Verified official x86_64 AppImage → `~/.local/opt/t3code`, symlinked to `~/.local/bin`; also installs launcher entry + icon. The app handles routine updates itself. |
 | `install-tealdeer.sh` | [tealdeer](https://github.com/tealdeer-rs/tealdeer) | Verified static release binary → `/usr/local/bin/tldr`, plus its bash completion. Skips the download when already current; `--force` reinstalls. Newer than apt's `tealdeer`. Run `tldr --update` once to seed the page cache. |
 | `install-tmux-sessionizer.sh` | [tmux-sessionizer](https://github.com/ThePrimeagen/tmux-sessionizer) | Pinned commit + checksum → `~/.local/bin`. Used by [`tmux`](../docs/tmux.md). |
-| `update-nvim.sh` | [Neovim](https://neovim.io) | Verified official `.tar.gz` stable build → `/opt`, symlinked to `/usr/local/bin`. See [`nvim`](../docs/nvim.md) (needs ≥ 0.12). |
+| `install-nvim.sh` | [Neovim](https://neovim.io) | Verified official `.tar.gz` stable build → `/opt`, symlinked to `/usr/local/bin`. See [`nvim`](../docs/nvim.md) (needs ≥ 0.12). |
 
 ## Usage
 
 ```bash
 just tools               # list the installers
 just install delta       # run tools/install-delta.sh
-just update-nvim         # the one installer not named install-*
 ```
 
 Or run any of them directly:

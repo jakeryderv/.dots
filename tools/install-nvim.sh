@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# update-nvim.sh - Download and install the latest Neovim (official .tar.gz build, no FUSE needed)
+# install-nvim.sh - Download and install the latest Neovim (official .tar.gz build, no FUSE needed)
 # Assumes: Linux x86_64 (sudo for /opt + /usr/local/bin), curl + jq +
 # sha256sum + tar, network. Installs stable after verifying the release digest.
 
