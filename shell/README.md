@@ -1,17 +1,29 @@
-# bash
+# shell
 
 Modular bash configuration. `_init_.sh` sources each module in a defined
 order; `~/.bashrc` just sources `_init_.sh`.
+
+**Sourced, not deployed.** This is the only part of the repo that `just apply`
+cannot install or repair — `~/.bashrc` lives outside the manifest, so the wiring
+below is a manual step on each machine.
 
 ## Wiring
 
 In `~/.bashrc`:
 
 ```bash
-if [ -f "$HOME/.dots/_bash/_init_.sh" ]; then
-    source "$HOME/.dots/_bash/_init_.sh"
+if [ -f "$HOME/.dots/shell/_init_.sh" ]; then
+    source "$HOME/.dots/shell/_init_.sh"
+else
+    printf 'warning: %s missing; shell config NOT loaded\n' \
+        "$HOME/.dots/shell/_init_.sh" >&2
 fi
 ```
+
+The `else` branch matters. With a bare `[ -f ]` test, moving or renaming this
+directory does not fail — the shell simply starts with no aliases, exports,
+functions, or keybinds, and says nothing about why. `just doctor` also checks
+that `~/.bashrc` references this loader.
 
 ## Load order
 
@@ -41,13 +53,13 @@ Missing modules are skipped silently, so `local.sh` is optional.
 
 ```bash
 git clone <dots> ~/.dots
-cp ~/.dots/_bash/local.sh.example ~/.dots/_bash/local.sh   # uncomment what applies
+cp ~/.dots/shell/local.sh.example ~/.dots/shell/local.sh   # uncomment what applies
 # then add the _init_.sh source block to ~/.bashrc
 ```
 
 ## Adding a module
 
-1. Create `_bash/<name>.sh`.
+1. Create `shell/<name>.sh`.
 2. Add `<name>` to the `bash_modules` array in `_init_.sh` (in the right spot).
 
 ## local.sh

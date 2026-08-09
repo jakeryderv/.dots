@@ -4,13 +4,13 @@
 # ShellCheck internally for editor diagnostics) and `shellcheck` invoked by
 # _dots/checks/check-repo.sh in CI -- so the editor and the CI gate can't drift.
 # ShellCheck searches the checked file's directory and its parents, so this
-# root-level file covers _bash/, tools/, bin/, config/, home/ and _dots/.
+# root-level file covers shell/, tools/, bin/, config/, home/ and _dots/.
 
 # Follow `source`d files so functions/variables defined in a sibling module are
 # known. This is what CI's `shellcheck -x` was doing via a flag.
 external-sources=true
 
-# SC1091 "not following: file was not specified as input". The _bash modules are
+# SC1091 "not following: file was not specified as input". The shell modules are
 # sourced at runtime through paths that only exist once deployed to $HOME, so
 # static resolution can't find them. external-sources handles the cases that are
 # resolvable; this silences the remainder.

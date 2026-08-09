@@ -4,7 +4,7 @@ Configuration and carbonfox theme for [bat](https://github.com/sharkdp/bat).
 Deployed to `~/.config/bat/`.
 
 On Debian/Ubuntu the binary is **`batcat`** (the `bat` name is taken by another
-package); `_bash/aliases.sh` handles the alias. The config directory is
+package); `shell/aliases.sh` handles the alias. The config directory is
 `~/.config/bat` either way.
 
 ## Why this package exists

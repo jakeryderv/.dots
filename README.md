@@ -68,7 +68,7 @@ mechanism:
 
 | Dir | Purpose |
 | --- | --- |
-| [`_bash`](_bash/README.md) | Modular bash config, *sourced* not linked |
+| [`shell`](shell/README.md) | Modular bash config, *sourced* not linked |
 | [`_dots`](_dots/README.md) | The deployer, the repo gate, health checks, and tests |
 | [`tools`](tools/README.md) | Install/update scripts for third-party software (`just tools`) |
 | [`_wallpapers`](_wallpapers/README.md) | Wallpaper / terminal background images |
@@ -131,9 +131,10 @@ cd ~/.dots
 just plan            # preview every link
 just apply           # deploy
 
-# _bash is sourced, not linked — add this to ~/.bashrc:
-#   [ -f "$HOME/.dots/_bash/_init_.sh" ] && source "$HOME/.dots/_bash/_init_.sh"
-cp _bash/local.sh.example _bash/local.sh   # then edit for this machine
+# shell/ is sourced, not linked — wire it into ~/.bashrc by hand. Use the
+# snippet in shell/README.md, which warns instead of failing silently if the
+# loader ever goes missing. This is the one step `just apply` cannot do.
+cp shell/local.sh.example shell/local.sh   # then edit for this machine
 cp home/gitconfig.local.example ~/.gitconfig.local
 ```
 

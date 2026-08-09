@@ -71,7 +71,7 @@ echo 'Checking shared agent skills...'
 bash _dots/checks/verify-agent-skills.sh
 
 BASH_PATHS=(
-    _bash
+    shell
     tools
     bin
     config

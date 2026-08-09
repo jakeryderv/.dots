@@ -25,7 +25,7 @@ home/pi/playwright-profile/
 home/pi/rules/
 
 # Bash — machine-specific config (use local.sh.example as template)
-_bash/local.sh
+shell/local.sh
 
 # Git — machine-specific identity, credentials, and overrides
 home/gitconfig.local

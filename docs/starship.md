@@ -16,7 +16,7 @@ See the root [README](../README.md) for shared deployment mechanics.
 Deploying installs the config but does **not** enable the prompt. You must also:
 
 1. Install starship (see [starship.rs](https://starship.rs)).
-2. Enable it in [`_bash/local.sh`](../_bash/README.md) (machine-local, not
+2. Enable it in [`shell/local.sh`](../shell/README.md) (machine-local, not
    committed):
 
    ```bash

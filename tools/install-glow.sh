@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # install-glow.sh - Install glow (Charm's markdown renderer) via Charm's apt repo.
-# Used by _bash/llm.sh to pretty-print LLM output. Re-run anytime to update.
+# Used by shell/llm.sh to pretty-print LLM output. Re-run anytime to update.
 # Assumes: Debian/Ubuntu (apt/sudo), curl + gpg, network. Installs latest.
 
 set -euo pipefail # Exit on error, unset vars, and pipe failures
