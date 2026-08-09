@@ -5,9 +5,9 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CANONICAL_ROOT="$REPO_ROOT/agent-skills/.agents/skills"
-CLAUDE_ROOT="$REPO_ROOT/agent-skills/.claude/skills"
-MANIFEST="$REPO_ROOT/agent-skills/README.md"
+CANONICAL_ROOT="$REPO_ROOT/home/agent-skills/agents/skills"
+CLAUDE_ROOT="$REPO_ROOT/home/agent-skills/claude/skills"
+MANIFEST="$REPO_ROOT/docs/agent-skills.md"
 CHECK_LIVE=0
 
 if [[ "${1:-}" == "--live" ]]; then
@@ -45,12 +45,12 @@ for skill_dir in "${skill_dirs[@]}"; do
 
     claude_link="$CLAUDE_ROOT/$skill_name"
     [[ -L "$claude_link" ]] || fail "missing Claude mirror link for $skill_name"
-    [[ "$(readlink "$claude_link")" == "../../.agents/skills/$skill_name" ]] || fail "incorrect Claude mirror target for $skill_name"
+    [[ "$(readlink "$claude_link")" == "../../agents/skills/$skill_name" ]] || fail "incorrect Claude mirror target for $skill_name"
     [[ "$(readlink -f "$claude_link")" == "$(readlink -f "$skill_dir")" ]] || fail "broken Claude mirror link for $skill_name"
 
-    [[ ! -e "$REPO_ROOT/pi/.pi/agent/skills/$skill_name" && ! -L "$REPO_ROOT/pi/.pi/agent/skills/$skill_name" ]] ||
+    [[ ! -e "$REPO_ROOT/home/pi/agent/skills/$skill_name" && ! -L "$REPO_ROOT/home/pi/agent/skills/$skill_name" ]] ||
         fail "Pi still has a redundant local copy of $skill_name"
-    [[ ! -e "$REPO_ROOT/opencode/.config/opencode/skills/$skill_name" && ! -L "$REPO_ROOT/opencode/.config/opencode/skills/$skill_name" ]] ||
+    [[ ! -e "$REPO_ROOT/config/opencode/skills/$skill_name" && ! -L "$REPO_ROOT/config/opencode/skills/$skill_name" ]] ||
         fail "OpenCode still has a redundant local copy of $skill_name"
 
     if ((CHECK_LIVE)); then

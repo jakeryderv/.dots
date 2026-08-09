@@ -18,8 +18,8 @@ BASH_PATHS=(
     setup.sh
     _bash
     _helpers
-    scripts/.local/bin
-    scripts/.local/share/bash-completion/completions
+    bin
+    data/bash-completion/completions
     _dots/bin
     _dots/tests
 )
@@ -89,7 +89,7 @@ for path in root.rglob('*.json'):
 for path in root.rglob('*.toml'):
     with path.open('rb') as stream:
         tomllib.load(stream)
-python_config = root / 'qutebrowser/.config/qutebrowser/config.py'
+python_config = root / 'config/qutebrowser/config.py'
 compile(python_config.read_text(), str(python_config), 'exec')
 PY
 
@@ -97,7 +97,7 @@ if command -v luac >/dev/null 2>&1; then
     echo 'Checking Lua syntax...'
     while IFS= read -r -d '' file; do
         luac -p "$file"
-    done < <(find nvim wezterm -type f -name '*.lua' -print0)
+    done < <(find config/nvim config/wezterm -type f -name '*.lua' -print0)
 elif [[ "${REQUIRE_LINTERS:-0}" == 1 ]]; then
     echo 'error: luac is required but unavailable' >&2
     exit 1

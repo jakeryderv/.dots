@@ -1,172 +1,168 @@
 # dotfiles
 
-My personal dotfiles for Pop!_OS / bash, managed with [GNU Stow](https://www.gnu.org/software/stow/).
+My personal dotfiles for Pop!_OS / bash, deployed from a declarative
+[`manifest`](manifest) by [`_dots/bin/link.sh`](_dots/bin/link.sh) and driven
+through [`just`](https://github.com/casey/just).
 
-Each top-level directory is a **stow package** whose internal layout mirrors
-`$HOME`. Stowing a package symlinks its contents into place — e.g.
-`alacritty/.config/alacritty/alacritty.toml` → `~/.config/alacritty/alacritty.toml`.
+```bash
+just status          # what is deployed, and does it match the manifest
+just plan            # preview link changes (never mutates)
+just apply           # create or repoint symlinks
+just check           # the repository gate CI runs
+```
+
+## How it works
+
+The [`manifest`](manifest) is the single source of truth. Each row declares a
+package, a link mode, a repo-relative source, and a target:
+
+```
+PKG          MODE   SOURCE                TARGET
+nvim         link   config/nvim           $XDG_CONFIG_HOME/nvim
+scripts      tree   bin                   $HOME/.local/bin
+claude       tree   home/claude           $HOME/.claude
+```
+
+**`link`** places one symlink at the target, so new files inside the source
+appear automatically. Use it when the directory is exclusively ours.
+
+**`tree`** creates real directories and links each tracked file individually.
+Use it when the tool writes state into the same directory it reads config from
+(`~/.config/opencode` also holds `node_modules/`), or when the target is shared
+with other installers (`~/.local/bin` has 48 entries; three are ours).
+
+Nothing is inferred. Both the package name and the link shape are declared,
+because both were previously inferred and both were wrong — see
+[`docs/migration.md`](docs/migration.md).
+
+### Files are enumerated with `git ls-files`
+
+This is the load-bearing decision. `.gitignore` is the repo's **only** ignore
+list: an untracked file is never deployed, and there is no second ignore syntax
+to keep in sync.
+
+The consequence is a rule that applies to every source directory:
+
+> **A source directory contains only deployable content.**
+
+Documentation therefore lives in [`docs/`](docs/README.md) as `docs/<pkg>.md`,
+never inside a source. A `README.md` in `config/nvim/` would deploy to
+`~/.config/nvim/README.md`.
+
+## Layout
+
+| Directory | Deploys to | Contents |
+| --- | --- | --- |
+| [`config/`](config/README.md) | `$XDG_CONFIG_HOME` (`~/.config`) | Tools that respect XDG |
+| [`home/`](home/README.md) | `$HOME` | Tools that don't — stored undotted (`home/gitconfig` → `~/.gitconfig`) |
+| [`data/`](data/README.md) | `$XDG_DATA_HOME` (`~/.local/share`) | Fonts, shell completions |
+| `bin/` | `~/.local/bin` | Personal scripts (a manifest source, so no README inside — see [`docs/scripts.md`](docs/scripts.md)) |
+| [`docs/`](docs/README.md) | — | One file per package |
+
+The size of `home/` measures how much of the toolchain still ignores XDG. It
+should shrink, not grow.
+
+Directories prefixed with `_` are repo infrastructure, never deployed:
+
+| Dir | Purpose |
+| --- | --- |
+| [`_bash`](_bash/README.md) | Modular bash config, *sourced* not linked |
+| [`_dots`](_dots/README.md) | The deployer, the `dots` CLI, and their tests |
+| [`_helpers`](_helpers/README.md) | Install/update scripts and the repo checks |
+| [`_wallpapers`](_wallpapers/README.md) | Wallpaper / terminal background images |
+
+## Packages
+
+21 packages across 23 manifest rows. `just packages` lists them; each is
+documented in [`docs/`](docs/README.md).
+
+**Terminals** — [ghostty](docs/ghostty.md) (daily driver),
+[alacritty](docs/alacritty.md), [kitty](docs/kitty.md),
+[wezterm](docs/wezterm.md). All four pin the same font (0xProto Nerd Font Mono)
+and a Nightfox-family theme; a font or theme change must be mirrored in each.
+
+**Editors & shell** — [nvim](docs/nvim.md), [vim](docs/vim.md),
+[tmux](docs/tmux.md), [starship](docs/starship.md), [git](docs/git.md),
+[bat](docs/bat.md), [direnv](docs/direnv.md),
+[editorconfig](docs/editorconfig.md), [tealdeer](docs/tealdeer.md).
+
+**Coding agents** — [claude](docs/claude.md),
+[agent-skills](docs/agent-skills.md), [opencode](docs/opencode.md),
+[pi](docs/pi.md), [openspec](docs/openspec.md), plus documentation-only notes
+for [codex](docs/codex.md), [agy](docs/agy.md), and [serena](docs/serena.md).
+
+**Desktop & misc** — [qutebrowser](docs/qutebrowser.md), [fonts](docs/fonts.md),
+[scripts](docs/scripts.md).
 
 ## Conventions
 
-- **Every package is self-documenting** — each directory has its own `README.md`
-  covering what it is, where it deploys, how to activate it, and any external
-  dependencies. This root file is just an index; details live in the package
-  READMEs linked below.
-- **READMEs live at the package root** (`ghostty/README.md`, not
-  `ghostty/.config/ghostty/README.md`) and are never symlinked into `$HOME`
-  (the `README[.]md` entry in `.stowrc` catches them at any depth).
-- `_helpers/verify-readmes.sh` checks that every package/asset/tooling dir has a README.
-- **`.editorconfig` at the repo root is the indentation source of truth** —
+- **[`.editorconfig`](.editorconfig) is the indentation source of truth** —
   4-space default, 2 for lua/web/markdown, tabs for Makefiles. Neovim reads it
   natively, and so do the formatters conform runs (`stylua`, `prettierd`,
   `shfmt`), so the editor and the formatters can't drift apart. It is a
-  root-level file, not part of any package, so it is never stowed. The
-  [`editorconfig`](editorconfig/README.md) package deploys the same rules to
+  root-level file, not a manifest source, so it is never deployed. The
+  [`editorconfig`](docs/editorconfig.md) package deploys the same rules to
   `~/.editorconfig` as a fallback for projects that ship no config of their own.
-- **`.shellcheckrc` at the repo root configures ShellCheck once**, for both the
+- **[`.shellcheckrc`](.shellcheckrc) configures ShellCheck once**, for both the
   editor (via bash-language-server) and CI (`_helpers/check-repo.sh`), so
   diagnostics match what the gate enforces.
 - **Bash formatting is enforced in CI** — `check-repo.sh` runs `shfmt --diff`
   with no flags, so it reads the same `.editorconfig` as format-on-save. If it
   fails, `shfmt -w <file>` fixes it. Bulk reformats belong in their own commit,
-  listed in `.git-blame-ignore-revs`.
-
-## Packages
-
-### Terminals
-
-| Package | Deploys to | What it is |
-| --- | --- | --- |
-| [`ghostty`](ghostty/README.md) | `~/.config/ghostty/` | Ghostty terminal config (daily driver) |
-| [`alacritty`](alacritty/README.md) | `~/.config/alacritty/` | Alacritty terminal config |
-| [`kitty`](kitty/README.md) | `~/.config/kitty/` | Kitty terminal config |
-| [`wezterm`](wezterm/README.md) | `~/.config/wezterm/` | WezTerm terminal config |
-
-> ghostty is the daily driver; alacritty, kitty, and wezterm are kept as
-> configured alternates. All four pin the same font (0xProto Nerd Font Mono)
-> and Nightfox-family theme — a font or theme change must be mirrored in each
-> config.
-
-### Editors & shell
-
-| Package | Deploys to | What it is |
-| --- | --- | --- |
-| [`nvim`](nvim/README.md) | `~/.config/nvim/` | Neovim config |
-| [`vim`](vim/README.md) | `~/.vim/vimrc` | Lightweight classic Vim config |
-| [`tmux`](tmux/README.md) | `~/.tmux.conf` | tmux config |
-| [`starship`](starship/README.md) | `~/.config/starship.toml` | Starship prompt |
-| [`git`](git/README.md) | `~/.gitconfig` | Global Git behavior, aliases, and defaults |
-| [`bat`](bat/README.md) | `~/.config/bat/` | `bat` config + carbonfox `.tmTheme` (also themes `delta`; needs `bat cache --build`) |
-| [`direnv`](direnv/README.md) | `~/.config/direnv/` | Shared direnv helpers (per-directory gh account pinning) |
-| [`editorconfig`](editorconfig/README.md) | `~/.editorconfig` | Machine-wide EditorConfig fallback (indentation for editors *and* formatters) |
-| [`tealdeer`](tealdeer/README.md) | `~/.config/tealdeer/` | tldr-pages client cache policy (binary via `_helpers`) |
-
-### Coding agents
-
-| Package | Deploys to | What it is |
-| --- | --- | --- |
-| [`claude`](claude/README.md) | `~/.claude/` | Claude Code global config |
-| [`codex`](codex/README.md) | — | Codex CLI config notes (documentation only, nothing stowed) |
-| [`agy`](agy/README.md) | — | Antigravity CLI (agy) config notes (documentation only, nothing stowed) |
-| [`serena`](serena/README.md) | — | Serena MCP server (semantic code tools) notes (documentation only, nothing stowed) |
-| [`opencode`](opencode/README.md) | `~/.config/opencode/` | opencode agent config |
-| [`pi`](pi/README.md) | `~/.pi/agent/` | Pi coding-agent config |
-| [`agent-skills`](agent-skills/README.md) | `~/.agents/skills/`, `~/.claude/skills/` | Personal/forked shared skills; third-party skills via skills.sh + vendor CLIs |
-| [`openspec`](openspec/README.md) | `~/.config/openspec/` | OpenSpec CLI global config (workflow profile) |
-
-### Desktop & misc
-
-| Package | Deploys to | What it is |
-| --- | --- | --- |
-| [`qutebrowser`](qutebrowser/README.md) | `~/.config/qutebrowser/` | qutebrowser config |
-| [`fonts`](fonts/README.md) | `~/.local/share/fonts/` | Nerd Fonts |
-| [`scripts`](scripts/README.md) | `~/.local/bin/` | Personal scripts |
-
-Directories prefixed with `_` are **not** stow packages — just stored in the
-repo. The `dots` CLI excludes hidden and underscore-prefixed directories from
-package discovery:
-
-| Dir | Purpose |
-| --- | --- |
-| [`_bash`](_bash/README.md) | Modular bash config, *sourced* not stowed |
-| [`_dots`](_dots/README.md) | Repo-local dotfiles orchestration tooling |
-| [`_helpers`](_helpers/README.md) | Install/update scripts for tools |
-| [`_wallpapers`](_wallpapers/README.md) | Wallpaper / terminal background images |
-
-> **Note:** `.gitignore` does **not** affect Stow. Repository-wide ignore
-> patterns live in `.stowrc`, which GNU Stow reads when invoked from this repo.
-> Run raw Stow from `~/.dots`; the `dots` wrapper does this automatically.
+  listed in [`.git-blame-ignore-revs`](.git-blame-ignore-revs).
+- **Every package is documented** in `docs/<pkg>.md`, covering what it is, where
+  it deploys, how to activate it, and any external dependencies.
+  `_helpers/verify-readmes.sh` enforces this against the manifest.
 
 ## Setup on a new machine
 
-This repo is written for **Pop!_OS / Debian** (apt, GNU coreutils, Linux
-x86_64). Package names differ from other distros — notably `fd-find` provides
-the `fdfind` binary and `bat` provides `batcat`; the bash config accounts for
-these. Helper scripts in [`_helpers/`](_helpers/README.md) assume Linux x86_64 +
-apt/sudo.
+Written for **Pop!_OS / Debian** (apt, GNU coreutils, Linux x86_64). Package
+names differ elsewhere — notably `fd-find` provides `fdfind` and `bat` provides
+`batcat`; the bash config accounts for these. Helper scripts assume Linux
+x86_64 + apt/sudo.
 
 ```bash
-sudo apt install stow            # if not already installed
+sudo apt install just
 git clone <repo> ~/.dots
 cd ~/.dots
 
-# Install the repo-local orchestration CLI entrypoint:
-./setup.sh
+just plan            # preview every link
+just apply           # deploy
 
-# Preview, then symlink the packages you want. dots wraps GNU Stow with
-# --dir/--target fixed to this repo and $HOME.
-dots stow
-dots stow --apply
-
-# _bash is sourced, not stowed — add this to ~/.bashrc:
+# _bash is sourced, not linked — add this to ~/.bashrc:
 #   [ -f "$HOME/.dots/_bash/_init_.sh" ] && source "$HOME/.dots/_bash/_init_.sh"
 cp _bash/local.sh.example _bash/local.sh   # then edit for this machine
+cp home/gitconfig.local.example ~/.gitconfig.local
 ```
 
-Packages that need activation beyond `stow` (starship enablement, `fc-cache`
-for fonts, TPM for tmux, first-run order for nvim/pi/opencode) document it in
-their own README — follow the links in the tables above.
+`just apply` refuses to overwrite an existing real file, reporting it as a
+conflict rather than clobbering it. Back it up and remove it, then re-run.
 
-## Managing packages
-
-After `./setup.sh` links the repo-local `dots` CLI into `~/.local/bin`, use it for the common workflow:
-
-```bash
-dots status          # show missing/conflicted/non-symlinked package files
-dots doctor          # run repo health checks
-dots check           # run portable CI-safe validation
-dots stow            # dry-run all packages
-dots stow --apply    # stow all packages
-dots restow nvim     # dry-run a restow; add --apply to mutate
-dots diff starship   # compare live target files with repo sources
-```
-
-Raw Stow still works. All commands assume `--dir "$HOME/.dots" --target "$HOME"`
-(omitted below for brevity; add them, or run from `~/.dots` where `$HOME` is the
-default target).
-
-```bash
-stow -n -v <pkg>     # dry-run: preview links without touching the filesystem
-stow <pkg>           # create symlinks
-stow -R <pkg>        # restow (re-link after adding/removing files in a package)
-stow -D <pkg>        # delete this package's symlinks
-stow --adopt <pkg>   # adopt pre-existing real files into the repo, then link
-```
-
-If Stow reports a conflict ("existing target is neither a link nor a
-directory"), the target already exists as a real file. Either back it up and
-remove it, or use `--adopt` to pull it into the repo (then `git diff` to review
-what was adopted before keeping it).
+Packages needing activation beyond linking (starship enablement, `fc-cache` for
+fonts, TPM for tmux, first-run order for nvim/pi/opencode) document it in their
+own `docs/<pkg>.md`.
 
 ## Adding a package
 
-1. Create `<pkg>/` with the `$HOME`-mirroring layout inside (e.g.
-   `<pkg>/.config/<pkg>/...`).
-2. Add a `<pkg>/README.md` (see any existing package for the rough shape —
-   what it is, deploy path, activate, deps).
-3. Add a row to the matching group table above (or start a new group when a
-   few related packages accumulate).
-4. `bash _helpers/verify-readmes.sh` to confirm nothing's missing.
+1. Create the source directory under `config/`, `home/`, `data/`, or `bin/`,
+   containing **only** deployable content.
+2. Add a manifest row, choosing `link` or `tree` (see the manifest header).
+3. Write `docs/<pkg>.md`.
+4. `just plan <pkg>` to preview, then `just apply <pkg>`.
+5. `just check` to confirm the gate stays green.
+
+## Migration status
+
+Phases 1 and 2 are complete: every manifest row is in the flat XDG layout and
+`just status` reports 23 rows matching with zero drift.
+
+**Phase 3 is outstanding** — GNU Stow is no longer used, but its remnants are
+still present: [`.stowrc`](.stowrc), the stow code paths in
+[`_dots/bin/dots`](_dots/bin/dots), and the `stow` dependency in
+[CI](.github/workflows/ci.yml). Until those are removed, `dots status` reports
+nonsense (it rediscovers `config/` and `home/` as stow packages and expects them
+in `$HOME`). **`just status` is the authority.** See
+[`docs/migration.md`](docs/migration.md).
 
 ## Implement next/later
 

@@ -3,14 +3,14 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-CHEATSHEET="$REPO_ROOT/scripts/.local/bin/tmux-cheatsheet"
+CHEATSHEET="$REPO_ROOT/bin/tmux-cheatsheet"
 
 [[ -x $CHEATSHEET ]] || {
     printf 'FAIL: tmux-cheatsheet is not executable\n' >&2
     exit 1
 }
 
-# shellcheck source=../../scripts/.local/bin/tmux-cheatsheet
+# shellcheck source=../../bin/tmux-cheatsheet
 source "$CHEATSHEET"
 
 fail() {

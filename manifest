@@ -1,0 +1,65 @@
+# Deployment manifest -- the single source of truth for what gets linked where.
+#
+# Columns:  PKG  MODE  SOURCE (repo-relative)  TARGET
+# Whitespace-delimited; blank lines and #-comments ignored. No path may contain
+# a space.
+#
+# PKG is declared, not derived from the path. It is what `just status <pkg>`
+# filters on, and it lets several rows belong to one package (scripts ships both
+# binaries and completions; agent-skills deploys into two different trees).
+#
+# MODE:
+#   link  One symlink at TARGET, pointing at SOURCE (a file or a whole
+#         directory). New files inside SOURCE appear at TARGET automatically.
+#         Use when the directory is exclusively ours.
+#   tree  Real directories at TARGET, one symlink per tracked file. Use when the
+#         tool writes state or build artifacts into the same directory it reads
+#         config from, or when TARGET is shared with other installers.
+#
+# Files are enumerated with `git ls-files`, so .gitignore is the only ignore
+# list in the repo -- an untracked file is never deployed. This is why a SOURCE
+# directory must contain only deployable content; docs live in docs/<pkg>.md.
+#
+# TARGET honors $XDG_CONFIG_HOME (default ~/.config) and $XDG_DATA_HOME
+# (default ~/.local/share).
+#
+# MIGRATION: rows whose SOURCE still begins with the package name are in the old
+# stow layout and have not been migrated yet. Migrated rows point into config/,
+# home/, data/, or bin/. See docs/migration.md.
+
+# --- XDG config: directories that are exclusively ours -----------------------
+alacritty       link    config/alacritty                                    $XDG_CONFIG_HOME/alacritty
+nvim            link    config/nvim                                         $XDG_CONFIG_HOME/nvim
+ghostty         link    config/ghostty                                      $XDG_CONFIG_HOME/ghostty
+bat             link    config/bat                                          $XDG_CONFIG_HOME/bat
+kitty           link    config/kitty                                        $XDG_CONFIG_HOME/kitty
+wezterm         link    config/wezterm                                      $XDG_CONFIG_HOME/wezterm
+direnv          link    config/direnv                                       $XDG_CONFIG_HOME/direnv
+tealdeer        link    config/tealdeer                                     $XDG_CONFIG_HOME/tealdeer
+openspec        link    config/openspec                                     $XDG_CONFIG_HOME/openspec
+starship        link    config/starship.toml                                $XDG_CONFIG_HOME/starship.toml
+
+# --- XDG config: the tool writes into its own config dir ---------------------
+# opencode drops node_modules/ and bun.lock; qutebrowser writes autoconfig.yml.
+opencode        tree    config/opencode                                     $XDG_CONFIG_HOME/opencode
+qutebrowser     tree    config/qutebrowser                                  $XDG_CONFIG_HOME/qutebrowser
+
+# --- XDG data / bin: targets shared with other installers --------------------
+# ~/.local/bin holds 48 entries; only three are ours.
+fonts           tree    data/fonts                                          $XDG_DATA_HOME/fonts
+scripts         tree    data/bash-completion/completions                    $XDG_DATA_HOME/bash-completion/completions
+scripts         tree    bin                                                 $HOME/.local/bin
+
+# --- $HOME: tools that ignore XDG entirely -----------------------------------
+git             link    home/gitconfig                                      $HOME/.gitconfig
+tmux            link    home/tmux.conf                                      $HOME/.tmux.conf
+editorconfig    link    home/editorconfig                                   $HOME/.editorconfig
+vim             tree    home/vim                                            $HOME/.vim
+pi              tree    home/pi                                             $HOME/.pi
+
+# claude and agent-skills both deploy into ~/.claude/skills/. Under stow that
+# needed --no-folding on both packages to avoid a race; as two tree rows they
+# simply link their own files and never interact.
+claude          tree    home/claude                                         $HOME/.claude
+agent-skills    tree    home/agent-skills/claude                            $HOME/.claude
+agent-skills    tree    home/agent-skills/agents                            $HOME/.agents

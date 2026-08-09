@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install/update the shared Playwright CLI runtime and its Chromium browser.
 # Mutates the active Node installation's global npm packages and
-# ~/.cache/ms-playwright. The Agent Skill itself is tracked in agent-skills/.
+# ~/.cache/ms-playwright. The Agent Skill itself is tracked in home/agent-skills/.
 
 set -euo pipefail
 
