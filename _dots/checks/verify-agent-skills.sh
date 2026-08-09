@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CANONICAL_ROOT="$REPO_ROOT/home/agent-skills/agents/skills"
 CLAUDE_ROOT="$REPO_ROOT/home/agent-skills/claude/skills"
 MANIFEST="$REPO_ROOT/docs/agent-skills.md"

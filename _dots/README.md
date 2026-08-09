@@ -13,7 +13,18 @@ nothing here is ever deployed.
 | `bin/link.sh` | The deployer. Reads the manifest and creates the symlinks it declares. |
 | `bin/doctor.sh` | Live-machine health: shell wiring, deployed entrypoint, link state. |
 | `bin/deps.sh` | Reports which expected tools are installed. |
+| `checks/check-repo.sh` | The repo gate, and what CI runs. Portable: never inspects `$HOME` or live targets. |
+| `checks/verify-readmes.sh` | Every manifest package has `docs/<pkg>.md`; every non-source top-level directory has a `README.md`. |
+| `checks/verify-agent-skills.sh` | Validates the canonical shared-skill tree; `--live` also checks agent wiring. |
 | `tests/` | Behaviour tests, run by `just check`. |
+
+`checks/` validates the repository; [`tools/`](../tools/README.md) provisions
+software on the machine. They were one directory until the split, which made
+`tools/` mean two things at once.
+
+The line between `checks/` and `bin/doctor.sh` is what they are allowed to look
+at: `checks/` reads only the repo, so CI can run it on a bare checkout, while
+`doctor.sh` inspects the live machine — `$HOME`, shell wiring, deployed links.
 
 The user-facing entrypoint is the repo-root [`justfile`](../justfile). The
 `dots` command in [`bin/`](../bin) is a thin wrapper that points `just` back at

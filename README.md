@@ -69,8 +69,8 @@ mechanism:
 | Dir | Purpose |
 | --- | --- |
 | [`_bash`](_bash/README.md) | Modular bash config, *sourced* not linked |
-| [`_dots`](_dots/README.md) | The deployer, its health checks, and their tests |
-| [`tools`](tools/README.md) | Install/update scripts (`just tools`) and the repo gate |
+| [`_dots`](_dots/README.md) | The deployer, the repo gate, health checks, and tests |
+| [`tools`](tools/README.md) | Install/update scripts for third-party software (`just tools`) |
 | [`_wallpapers`](_wallpapers/README.md) | Wallpaper / terminal background images |
 
 ## Packages
@@ -106,7 +106,7 @@ for [codex](docs/codex.md), [agy](docs/agy.md), and [serena](docs/serena.md).
   [`editorconfig`](docs/editorconfig.md) package deploys the same rules to
   `~/.editorconfig` as a fallback for projects that ship no config of their own.
 - **[`.shellcheckrc`](.shellcheckrc) configures ShellCheck once**, for both the
-  editor (via bash-language-server) and CI (`tools/check-repo.sh`), so
+  editor (via bash-language-server) and CI (`_dots/checks/check-repo.sh`), so
   diagnostics match what the gate enforces.
 - **Bash formatting is enforced in CI** — `check-repo.sh` runs `shfmt --diff`
   with no flags, so it reads the same `.editorconfig` as format-on-save. If it
@@ -114,7 +114,7 @@ for [codex](docs/codex.md), [agy](docs/agy.md), and [serena](docs/serena.md).
   listed in [`.git-blame-ignore-revs`](.git-blame-ignore-revs).
 - **Every package is documented** in `docs/<pkg>.md`, covering what it is, where
   it deploys, how to activate it, and any external dependencies.
-  `tools/verify-readmes.sh` enforces this against the manifest.
+  `_dots/checks/verify-readmes.sh` enforces this against the manifest.
 
 ## Setup on a new machine
 

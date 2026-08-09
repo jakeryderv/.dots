@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 # The manifest drives deployment, so a typo in it is a silent no-op at apply
@@ -42,7 +42,7 @@ if ((manifest_errors)); then
 fi
 
 echo 'Checking package documentation...'
-bash tools/verify-readmes.sh >/dev/null
+bash _dots/checks/verify-readmes.sh >/dev/null
 
 # Relative links between docs rot silently when files move -- the stow-to-
 # manifest migration broke 29 of them in one commit. Nothing renders this repo's
@@ -68,7 +68,7 @@ sys.exit(1 if broken else 0)
 PY
 
 echo 'Checking shared agent skills...'
-bash tools/verify-agent-skills.sh
+bash _dots/checks/verify-agent-skills.sh
 
 BASH_PATHS=(
     _bash
@@ -78,6 +78,7 @@ BASH_PATHS=(
     home
     data/bash-completion/completions
     _dots/bin
+    _dots/checks
     _dots/tests
 )
 

@@ -33,7 +33,7 @@ packages:
 
 # Portable repository validation (what CI runs).
 check:
-    @bash tools/check-repo.sh
+    @bash _dots/checks/check-repo.sh
 
 # Health checks against the live filesystem and shell wiring.
 doctor:
@@ -45,7 +45,7 @@ deps:
 
 # Documentation coverage only.
 readmes:
-    @bash tools/verify-readmes.sh
+    @bash _dots/checks/verify-readmes.sh
 
 # List the installers available to `just install`.
 tools:

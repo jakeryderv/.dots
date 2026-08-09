@@ -150,7 +150,7 @@ tracked symlink points through.
   not the package. Fixed by making `PKG` an explicit manifest column. If a
   filtered command reports 0 rows in scope, check the `PKG` column first.
 - **The same path-prefix inference bug recurred** in
-  `tools/verify-readmes.sh`, which classified `config/` as a manifest source
+  `_dots/checks/verify-readmes.sh`, which classified `config/` as a manifest source
   because `config/nvim` starts with it — vacuously skipping the check it was
   supposed to perform. Compare whole paths, not leading segments.
 - **Docs cannot live inside a source directory.** `git ls-files` is the file
@@ -160,7 +160,7 @@ tracked symlink points through.
   "a README per top-level dir" to "a `docs/<pkg>.md` per manifest package, and a
   README for every directory that is not itself a source".
 - **Helpers and tests hardcode layout paths.** Six files referenced the old
-  package paths (`tools/check-repo.sh`, `verify-agent-skills.sh`,
+  package paths (`_dots/checks/check-repo.sh`, `verify-agent-skills.sh`,
   `install-delta.sh`, `install-playwright-cli.sh`, and both test scripts). Two
   of them failed *open* rather than loudly: the Lua check ran
   `find nvim wezterm` and passed while checking zero files. Grep for the old
@@ -178,7 +178,7 @@ tracked symlink points through.
   `stow` line in CI are gone.
 
 `just status` reports 23 rows matching, 0 topology drift, 0 problems, and
-`REQUIRE_LINTERS=1 tools/check-repo.sh` passes.
+`REQUIRE_LINTERS=1 _dots/checks/check-repo.sh` passes.
 
 ### What replaced what
 
@@ -202,7 +202,7 @@ script deployed by the same manifest rows as everything else in `bin/`, so
 ### Checks added along the way
 
 The migration kept surfacing gates that passed while verifying nothing, so two
-were added to `tools/check-repo.sh`:
+were added to `_dots/checks/check-repo.sh`:
 
 - **Manifest validation** — every row's mode is known, its source exists and has
   tracked files, and its target is rooted at `$HOME`, `$XDG_CONFIG_HOME`, or
