@@ -16,7 +16,10 @@
 
 set -euo pipefail
 
-API="https://api.github.com/repos/pingdotgg/t3code/releases/latest"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=tools/lib/github-release.sh
+source "$SCRIPT_DIR/lib/github-release.sh"
+
 INSTALL_DIR="$HOME/.local/opt/t3code"
 APPIMAGE="$INSTALL_DIR/T3-Code.AppImage"
 BIN_DIR="$HOME/.local/bin"
@@ -36,64 +39,20 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [ "$(uname -s)" != "Linux" ] || [ "$(uname -m)" != "x86_64" ]; then
-    echo "Error: this helper supports Linux x86_64 only"
-    exit 1
-fi
-
-for command in curl jq sha256sum; do
-    if ! command -v "$command" >/dev/null 2>&1; then
-        echo "Error: required command '$command' was not found on PATH"
-        exit 1
-    fi
-done
+gh_require_linux_x86_64
+gh_require_cmds
 
 echo "Checking the latest official T3 Code release..."
-if ! RELEASE_JSON=$(curl -fsSL --retry 3 "$API"); then
-    echo "Error: failed to query the T3 Code release API"
-    exit 1
-fi
+gh_resolve_latest pingdotgg/t3code
+VERSION="$GH_TAG" # t3code tags are not v-prefixed
 
-if ! VERSION=$(printf '%s' "$RELEASE_JSON" | jq -er '.tag_name | select(type == "string" and length > 0)'); then
-    echo "Error: the release API did not return a valid version"
-    exit 1
-fi
-
-if ! ASSET=$(printf '%s' "$RELEASE_JSON" | jq -cer '
-	[.assets[] | select(.name | endswith("-x86_64.AppImage"))]
-	| if length == 1 then .[0] else error("expected exactly one x86_64 AppImage") end
-'); then
-    echo "Error: could not identify exactly one Linux x86_64 AppImage in $VERSION"
-    exit 1
-fi
-
-ASSET_NAME=$(printf '%s' "$ASSET" | jq -er '.name')
-ASSET_URL=$(printf '%s' "$ASSET" | jq -er '.browser_download_url')
-DIGEST=$(printf '%s' "$ASSET" | jq -er '.digest')
-
-if [[ ! "$DIGEST" =~ ^sha256:([0-9a-fA-F]{64})$ ]]; then
-    echo "Error: GitHub did not provide a valid SHA-256 digest for $ASSET_NAME"
-    exit 1
-fi
-EXPECTED_SHA256="${BASH_REMATCH[1],,}"
-
+# Downloaded into the install dir (not TMPDIR) so the final mv is an atomic
+# rename on one filesystem.
 mkdir -p "$INSTALL_DIR"
 TMP_APPIMAGE=$(mktemp "$INSTALL_DIR/.T3-Code.XXXXXX.AppImage")
 
-echo "Downloading $ASSET_NAME ($VERSION)..."
-if ! curl -fL --retry 3 --progress-bar -o "$TMP_APPIMAGE" "$ASSET_URL"; then
-    echo "Error: failed to download $ASSET_NAME"
-    exit 1
-fi
-
-ACTUAL_SHA256=$(sha256sum "$TMP_APPIMAGE" | awk '{print $1}')
-if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then
-    echo "Error: SHA-256 verification failed"
-    echo "Expected: $EXPECTED_SHA256"
-    echo "Actual:   $ACTUAL_SHA256"
-    exit 1
-fi
-echo "Verified SHA-256: $ACTUAL_SHA256"
+echo "Downloading the $VERSION AppImage..."
+gh_fetch_asset_matching 'endswith("-x86_64.AppImage")' "$TMP_APPIMAGE"
 
 chmod 0755 "$TMP_APPIMAGE"
 
