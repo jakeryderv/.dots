@@ -33,7 +33,7 @@ packages:
 
 # Portable repository validation (what CI runs).
 check:
-    @bash _helpers/check-repo.sh
+    @bash tools/check-repo.sh
 
 # Health checks against the live filesystem and shell wiring.
 doctor:
@@ -45,8 +45,16 @@ deps:
 
 # Documentation coverage only.
 readmes:
-    @bash _helpers/verify-readmes.sh
+    @bash tools/verify-readmes.sh
 
-# Run an installer from _helpers, e.g. `just install delta`.
+# List the installers available to `just install`.
+tools:
+    @ls tools/install-*.sh | sed 's|tools/install-||; s|\.sh$||'
+
+# Run an installer from tools, e.g. `just install delta`.
 install TOOL:
-    @bash _helpers/install-{{ TOOL }}.sh
+    @bash tools/install-{{ TOOL }}.sh
+
+# Install the latest stable Neovim from the official release build.
+update-nvim:
+    @bash tools/update-nvim.sh
