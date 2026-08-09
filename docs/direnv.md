@@ -55,7 +55,7 @@ afterward.
 
 ```bash
 sudo apt install direnv
-dots stow --apply direnv
+just apply direnv
 ```
 
 Then, for gh multi-account use: `gh auth login` for each account (tokens go to

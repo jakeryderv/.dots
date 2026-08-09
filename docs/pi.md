@@ -1,6 +1,6 @@
 # pi
 
-Global config for the Pi coding agent, managed as a GNU Stow package.
+Global config for the Pi coding agent, managed as a the manifest deployer package.
 
 Mirrors `~/.pi/agent/`. Only **user-authored** config is tracked here; secrets
 and tool-managed state stay in the live `~/.pi/` dir and are gitignored.
@@ -33,9 +33,9 @@ binaries or secrets:
 | Dependency | Needed for | How it's resolved |
 |------------|-----------|-------------------|
 | **Node.js + npm/npx** | pi itself; installing `packages`; running local MCP servers | system install |
-| **GNU `stow`, `git`** | activating this config (symlinks) | system install |
+| **`just`, `git`** | activating this config (symlinks) | system install |
 | **Language servers** (pyright, typescript-language-server, rust-analyzer, gopls, …) | `pi-lens` LSP nav/diagnostics | install per-language as needed; pi-lens uses whatever is on `PATH`. ast-grep is bundled (no install) |
-| **Playwright CLI + Chromium** | Shared browser automation skill | Install with [`_helpers/install-playwright-cli.sh`](../_helpers/install-playwright-cli.sh); see [`agent-skills`](../agent-skills/README.md) |
+| **Playwright CLI + Chromium** | Shared browser automation skill | Install with [`_helpers/install-playwright-cli.sh`](../_helpers/install-playwright-cli.sh); see [`agent-skills`](agent-skills.md) |
 | **Provider credentials** | model access (Anthropic / OpenAI / Google) | `~/.pi/agent/auth.json` (run pi and log in; not tracked) |
 | **Exa API key** | `pi-web-access` web search | `~/.pi/web-search.json` (not tracked) |
 | **Network** | hosted Context7, first-run local MCP fetches, package installs, web search | — |
@@ -45,18 +45,19 @@ fetch, and pi-lens's bundled ast-grep.
 
 ## Activate
 
-`~/.pi/agent/` already exists once pi has run, so create it first to stop stow
-from folding the whole `~/.pi` tree (which would pull runtime state and secrets
-into the repo). Then stow links the config files back into place:
-
 ```bash
-mkdir -p ~/.pi/agent
-cd ~/.dots && stow pi
+just apply pi
 ```
 
-Fresh-machine order: install Node + git + stow → run pi once (installs
-`packages`, prompts for provider login) → `stow pi` → then add the external deps
-from the table above as you need them (language servers, Chrome, Exa key).
+This is a `tree` row, so `~/.pi/` is always a real directory holding one symlink
+per tracked file. pi's runtime state and secrets (`auth.json`, `sessions/`,
+`npm/`) stay outside the repo by construction — no need to pre-create
+directories to prevent a whole-tree symlink.
+
+Fresh-machine order: install Node + git + just → run pi once (installs
+`packages`, prompts for provider login) → `just apply pi` → then add the
+external deps from the table above as you need them (language servers, Chrome,
+Exa key).
 
 This symlinks `AGENTS.md`, `settings.json`, `mcp.json`, `extensions/`,
 `themes/`, `skills/`, and `prompts/` into `~/.pi/agent/`, leaving `auth.json`,
@@ -71,7 +72,7 @@ repo automatically
 user-authored content), whereas any other file pi writes into `~/.pi/agent/`
 stays a real local file and never enters the repo.
 
-To remove the symlinks: `cd ~/.dots && stow -D pi`.
+To remove the symlinks: `cd ~/.dots && just unlink pi`.
 
 ## Maintenance
 
@@ -86,4 +87,4 @@ third-party/community packages — add `@x.y.z` to a spec (e.g.
 Context7 uses its hosted MCP endpoint, so there is no local Context7 package
 version to bump. Portable skills, including browser automation, Cloudflare
 tooling, and Railway, come from the shared `~/.agents/skills/` tree rather than
-being copied into Pi; see [`agent-skills`](../agent-skills/README.md).
+being copied into Pi; see [`agent-skills`](agent-skills.md).

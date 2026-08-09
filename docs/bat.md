@@ -1,7 +1,7 @@
 # bat
 
 Configuration and carbonfox theme for [bat](https://github.com/sharkdp/bat).
-Stowed to `~/.config/bat/`.
+Deployed to `~/.config/bat/`.
 
 On Debian/Ubuntu the binary is **`batcat`** (the `bat` name is taken by another
 package); `_bash/aliases.sh` handles the alias. The config directory is
@@ -16,7 +16,7 @@ theme file fixes syntax highlighting in two places:
 | Consumer | Reads |
 | --- | --- |
 | `bat` / `batcat` | `--theme` in this config |
-| `delta` (git pager) | `syntax-theme` in [`git`](../git/README.md)'s `.gitconfig` |
+| `delta` (git pager) | `syntax-theme` in [`git`](git.md)'s `.gitconfig` |
 
 ## The theme file
 
@@ -35,7 +35,7 @@ the theme as `carbonfox`. Re-check them if you ever regenerate the file.
 
 ```bash
 cd ~/.dots
-dots stow --apply bat
+just apply bat
 batcat cache --build     # required: compiles themes/ into ~/.cache/bat
 ```
 
@@ -55,4 +55,4 @@ delta --show-config | grep syntax-theme
 - `~/.cache/bat` is generated state and is not tracked here.
 - The theme only affects **syntax highlighting**. bat's frame, line numbers,
   and delta's diff colours come from the terminal palette, which
-  [`ghostty`](../ghostty/README.md) supplies.
+  [`ghostty`](ghostty.md) supplies.

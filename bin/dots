@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# dots - run the dotfiles justfile from anywhere.
+#
+# `just` resolves its justfile from the working directory, so without this
+# wrapper every command would have to be run from inside the repo. This keeps
+# `dots status`, `dots apply`, `dots doctor` working from any directory.
+#
+# Deployed to ~/.local/bin by the `scripts` manifest rows. Override the repo
+# location with DOTS_REPO (used by the test suite).
+
+set -euo pipefail
+
+REPO="${DOTS_REPO:-$HOME/.dots}"
+
+if ! command -v just >/dev/null 2>&1; then
+    printf 'error: just is not installed (sudo apt install just)\n' >&2
+    exit 1
+fi
+
+if [[ ! -f "$REPO/justfile" ]]; then
+    printf 'error: no justfile at %s (set DOTS_REPO to override)\n' "$REPO" >&2
+    exit 1
+fi
+
+exec just --justfile "$REPO/justfile" --working-directory "$REPO" "$@"

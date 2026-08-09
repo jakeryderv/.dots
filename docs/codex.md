@@ -1,6 +1,6 @@
 # codex
 
-Documentation-only entry for the OpenAI Codex CLI — **nothing is stowed**.
+Documentation-only entry for the OpenAI Codex CLI — **nothing is deployed**.
 `~/.codex/config.toml` is deliberately not tracked: codex mixes user config
 with machine state in that one file (`[projects.*] trust_level` entries that
 list local project paths and churn on every newly trusted directory), and this

@@ -21,15 +21,15 @@ Stow decides two things implicitly, and both turned out to be wrong here:
 
 The manifest declares both. `PKG` and `MODE` are columns, not inferences.
 
-## Status during migration
+## Status while both tools coexisted
 
-**From the first migrated package onward, `just status` is the authority.**
+**`just status` is the authority.**
 
-`dots status` starts reporting false positives as soon as `config/` exists,
-because it discovers `config/` and `docs/` as stow packages and expects
-`~/alacritty/alacritty.toml` and `~/alacritty.md`. That noise grows with each
-package moved and disappears in phase 3 when stow is removed. It does not mean
-anything is broken — cross-check with `just status`, which reads the manifest.
+While both tools coexisted, `dots status` reported false positives as soon as
+`config/` existed: it discovered `config/` and `docs/` as stow packages and
+expected `~/alacritty/alacritty.toml` and `~/alacritty.md`. That noise grew with
+each package moved — by the end it read `0/144` — and vanished when stow was
+removed in phase 3. It never meant anything was broken.
 
 ## Per-package recipe
 
@@ -169,25 +169,50 @@ tracked symlink points through.
 
 ## Status
 
-**Phases 1 and 2 are complete.** All 23 manifest rows are in the flat layout;
-`just status` reports 23 matching, 0 topology drift, 0 problems, and
-`just check` is green.
+**Complete.** All three phases are done.
 
-**Phase 3 is outstanding.** Stow is no longer used, but its remnants remain and
-`dots status` now reports `0/144` — it rediscovers `config/`, `home/`, `data/`,
-and `bin/` as stow packages and expects them in `$HOME`. That is noise, not
-breakage; `just status` is the authority. Remaining work:
+- **Phase 1** — manifest written against the old stow layout and validated
+  against `dots status` before any file moved. Both agreed on 118 files.
+- **Phase 2** — all 23 rows moved to the flat XDG layout, one package at a time.
+- **Phase 3** — stow removed: `.stowrc`, `_dots/bin/dots`, `setup.sh`, and the
+  `stow` line in CI are gone.
 
-- Delete `.stowrc` and the stow code paths in `_dots/bin/dots` (`stow_cmd`,
-  `stow_check_cmd`, `is_ignored`, `status_cmd`, the folding flags). What is
-  worth keeping from that script is `doctor` and `deps`, which check shell
-  wiring and installed tools rather than links.
-- Drop `stow` from the CI apt line in `.github/workflows/ci.yml`.
-- Decide whether `setup.sh` still needs to link the `dots` CLI into
-  `~/.local/bin`, now that `just` is the entry point.
-- Optionally fold `_helpers/` into `tools/` behind `just install <tool>`.
-- Bulk moves go in their own commit, listed in `.git-blame-ignore-revs`, per the
-  existing convention.
+`just status` reports 23 rows matching, 0 topology drift, 0 problems, and
+`REQUIRE_LINTERS=1 _helpers/check-repo.sh` passes.
 
-Done in phase 2 rather than deferred: `_helpers/verify-readmes.sh` was rewritten
-to check the manifest, because `bin/` cannot carry a README.
+### What replaced what
+
+| Removed | Replacement |
+| --- | --- |
+| `stow` / `dots stow --apply` | `just apply` |
+| `dots status` | `just status` (reads the manifest) |
+| `dots diff` | `just diff` (reuses the deployer's pair expansion) |
+| `dots doctor` | `just doctor` → `_dots/bin/doctor.sh` |
+| `dots deps` | `just deps` → `_dots/bin/deps.sh` |
+| `.stowrc` ignore patterns | `.gitignore`, via the `git ls-files` enumerator |
+| `is_ignored()` stow-semantics shim | deleted; nothing to keep in sync |
+| `setup.sh` linking the CLI | `bin/dots`, a normal deployed script |
+| `--no-folding` flags in four docs | the manifest's `MODE` column |
+
+`bin/dots` is worth calling out: the entrypoint used to be a symlink created by
+a bootstrap script that existed only for that purpose. It is now an ordinary
+script deployed by the same manifest rows as everything else in `bin/`, so
+`setup.sh` had nothing left to do.
+
+### Checks added along the way
+
+The migration kept surfacing gates that passed while verifying nothing, so two
+were added to `_helpers/check-repo.sh`:
+
+- **Manifest validation** — every row's mode is known, its source exists and has
+  tracked files, and its target is rooted at `$HOME`, `$XDG_CONFIG_HOME`, or
+  `$XDG_DATA_HOME`. A typo in the manifest is otherwise a silent no-op at apply
+  time, since a nonexistent source simply contributes zero files.
+- **Path-list existence guard** — `BASH_PATHS` and `LUA_PATHS` are checked
+  before use. `find` reports a missing path on stderr and keeps going, and these
+  traversals feed process substitutions whose exit status is discarded, so a
+  stale entry silently shrank the lint surface. This bit twice: the Lua check
+  ran `find nvim wezterm` and passed while checking zero files, and `setup.sh`
+  lingered in `BASH_PATHS` after deletion.
+
+Both were negative-tested rather than assumed.

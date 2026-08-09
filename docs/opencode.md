@@ -1,6 +1,6 @@
 # opencode
 
-Global config for the [opencode](https://opencode.ai) coding agent, managed as a GNU Stow package.
+Global config for the [opencode](https://opencode.ai) coding agent, managed as a the manifest deployer package.
 
 Mirrors `~/.config/opencode/`. Only **user-authored** config is tracked here;
 secrets and tool-managed machinery are left in place and ignored.
@@ -21,7 +21,7 @@ contains credentials: `opencode.json` uses `{env:CONTEXT7_API_KEY}` to resolve
 the key at runtime.
 
 Portable skills are loaded from the shared `~/.agents/skills/` tree documented
-in [`agent-skills`](../agent-skills/README.md). Browser automation uses its
+in [`agent-skills`](agent-skills.md). Browser automation uses its
 Playwright CLI skill rather than a Playwright MCP server.
 
 OpenCode normally also scans `~/.claude/skills/`. The tracked Bash alias sets
@@ -30,19 +30,20 @@ links do not produce duplicate shared-skill entries.
 
 ## Activate
 
-`~/.config/opencode/` may already contain tool-managed files, so
-the live `opencode.json` will conflict on first stow. Move it into the repo,
-then stow links it back:
+`~/.config/opencode/` also holds tool-managed files (`node_modules/`,
+`bun.lock`, `package.json`), which is why this is a `tree` row — those stay put
+while only tracked files are linked. A live `opencode.json` that is not yet in
+the repo will be reported as a conflict rather than overwritten; move it in
+first:
 
 ```bash
-mkdir -p ~/.dots/opencode/.config/opencode
-mv ~/.config/opencode/opencode.json ~/.dots/opencode/.config/opencode/
-cd ~/.dots && stow opencode
+mv ~/.config/opencode/opencode.json ~/.dots/config/opencode/
+just apply opencode
 ```
 
-To remove the symlink: `cd ~/.dots && stow -D opencode`.
+To remove the symlink: `cd ~/.dots && just unlink opencode`.
 
 ## Validate
 
 Run `dots doctor` to validate the resolved config when opencode is installed,
-along with the repository and Stow health checks.
+along with the repository and deployment health checks.

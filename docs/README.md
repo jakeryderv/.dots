@@ -44,4 +44,4 @@ beyond linking, and any external dependencies.
 | [`wezterm.md`](wezterm.md) | `config/wezterm` | `~/.config/wezterm/` |
 
 [`migration.md`](migration.md) records the move off GNU Stow: the per-package
-recipe, the bugs it surfaced, and what remains in phase 3.
+recipe, the design reasoning, and the bugs the migration surfaced.

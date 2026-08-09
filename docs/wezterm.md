@@ -1,8 +1,8 @@
 # wezterm
 
-[WezTerm](https://wezterm.org) terminal config. Stowed to `~/.config/wezterm/`.
+[WezTerm](https://wezterm.org) terminal config. Deployed to `~/.config/wezterm/`.
 
-See the root [README](../README.md) for shared stow mechanics.
+See the root [README](../README.md) for shared deployment mechanics.
 
 ## Files
 
@@ -13,7 +13,7 @@ See the root [README](../README.md) for shared stow mechanics.
 ## Activate
 
 ```bash
-cd ~/.dots && stow wezterm
+just apply wezterm
 ```
 
 WezTerm live-reloads the config on save — no restart needed.
@@ -29,11 +29,11 @@ WezTerm live-reloads the config on save — no restart needed.
   NVIDIA). Right side flashes a bell icon for 3s after a bell event.
 - **Tab titles** — `<cwd-basename>: <process>`.
 - **Keybinds** — `ctrl+alt`-based tab/split/scroll/search scheme, deliberately
-  matching the [`ghostty`](../ghostty/README.md) binds and avoiding tmux
+  matching the [`ghostty`](ghostty.md) binds and avoiding tmux
   (prefix `Alt+a`) / vim-tmux-navigator (`Ctrl+hjkl`).
-- **Background image** — pulls from `~/.dots/_wallpapers/` (not stowed; see
+- **Background image** — pulls from `~/.dots/_wallpapers/` (not deployed; see
   [`_wallpapers`](../_wallpapers/README.md)); inactive panes dim via HSB.
 - **`RESIZE` decorations** — borderless but still resizable; `WebGpu` front-end
   (often faster on Wayland); bells silenced (`audible_bell = Disabled`).
 - WezTerm supports OSC 52 clipboard and the kitty/iTerm2 image protocols, which
-  the [`tmux`](../tmux/README.md) config relies on via `allow-passthrough`.
+  the [`tmux`](tmux.md) config relies on via `allow-passthrough`.

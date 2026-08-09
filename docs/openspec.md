@@ -27,7 +27,7 @@ OpenSpec touches no agent global configs.
 
 ```bash
 npm install -g @fission-ai/openspec
-dots stow --apply openspec
+just apply openspec
 ```
 
 `openspec update` in each repo after CLI upgrades to regenerate the

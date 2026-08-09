@@ -1,8 +1,8 @@
 # tmux
 
-tmux config. Stowed to `~/.tmux.conf`.
+tmux config. Deployed to `~/.tmux.conf`.
 
-See the root [README](../README.md) for shared stow mechanics.
+See the root [README](../README.md) for shared deployment mechanics.
 
 ## Files
 
@@ -11,19 +11,19 @@ See the root [README](../README.md) for shared stow mechanics.
 | `.tmux.conf` | Single-file config: prefix, display/colors, status bar, keybinds, plugins. |
 
 The generated cheatsheet command is provided by
-[`scripts`](../scripts/README.md) as `~/.local/bin/tmux-cheatsheet`.
+[`scripts`](scripts.md) as `~/.local/bin/tmux-cheatsheet`.
 
 ## Activate
 
 ```bash
-cd ~/.dots && stow tmux
+just apply tmux
 ```
 
 Reload a running server with `prefix + R` (prefix is `Alt+a`).
 
 ## External dependencies
 
-Not managed by stow — install separately:
+Not deployed from the manifest — install separately:
 
 - **TPM** (tmux plugin manager) — clone before plugins can install:
 
@@ -43,7 +43,7 @@ Not managed by stow — install separately:
 ## Links, mouse, and clipboard
 
 These behaviors are split across this config and
-[`ghostty`](../ghostty/README.md); neither half makes sense alone.
+[`ghostty`](ghostty.md); neither half makes sense alone.
 
 **Clickable links.** `terminal-features` declares `hyperlinks`, which is what
 lets tmux store OSC 8 hyperlinks and forward them to the terminal. Three ways to
@@ -72,7 +72,7 @@ by default (`clipboard-write = allow`) while prompting on reads
 copy mode copies and exits. Both routes reach the system clipboard, so no
 `xclip`/`wl-copy` dependency.
 
-Producers matter too: [`git`](../git/README.md) sets `delta.hyperlinks = true`,
+Producers matter too: [`git`](git.md) sets `delta.hyperlinks = true`,
 which is what makes file names and commit hashes in diffs clickable in the first
 place.
 
@@ -100,7 +100,7 @@ place.
   or `RESIZE`, with separate `SYNC` and `ZOOM` badges when pane synchronization
   or pane zoom is active.
 - **True color + image passthrough** — `allow-passthrough` + terminal-features
-  enable kitty/iTerm2 image protocols (used by [`nvim`](../nvim/README.md)'s
+  enable kitty/iTerm2 image protocols (used by [`nvim`](nvim.md)'s
   `image.nvim`). Sixel is intentionally dropped (see the note in `.tmux.conf`).
 - **continuum auto-restore is OFF** — sessions auto-save every 15 min but
   restore is manual (`prefix + Ctrl+r`).

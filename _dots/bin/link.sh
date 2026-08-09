@@ -7,7 +7,7 @@
 # sync, and no folding heuristic -- the manifest's MODE column states the
 # intended topology outright.
 #
-# Usage: link.sh {status|plan|apply|unlink} [PKG...]
+# Usage: link.sh {status|plan|apply|unlink|diff} [PKG...]
 
 set -euo pipefail
 
@@ -24,6 +24,8 @@ else
 fi
 
 err() { printf '%serror:%s %s\n' "$RED" "$RESET" "$*" >&2; }
+warn() { printf '%s!%s %s\n' "$YELLOW" "$RESET" "$*"; }
+ok() { printf '%s✓%s %s\n' "$GREEN" "$RESET" "$*"; }
 
 # Two paths are the same deployment if they resolve to the same inode target.
 # readlink -f yields the empty string for a path that does not exist, so an
@@ -274,6 +276,36 @@ cmd_unlink() {
     printf '\n  %d link(s) removed\n' "$removed"
 }
 
+# Show content differences for targets that are real files rather than links
+# into the repo. A correctly deployed target cannot differ from its source --
+# it *is* its source -- so anything printed here is a target that drifted.
+cmd_diff() {
+    local mode src dst s t shown=0
+    while IFS=$'\t' read -r mode src dst; do
+        while IFS=$'\t' read -r s t; do
+            if same_path "$t" "$s"; then
+                continue
+            fi
+            if [[ ! -e "$t" && ! -L "$t" ]]; then
+                warn "missing in target: $(pretty "$t")"
+                shown=1
+                continue
+            fi
+            shown=1
+            printf '\n%s== %s ==%s\n' "$BOLD" "$(pretty "$t")" "$RESET"
+            if [[ -f "$s" && -f "$t" ]] && file "$s" "$t" | grep -q 'text'; then
+                diff -u "$t" "$s" || true
+            else
+                warn "differs and is not a text file pair"
+            fi
+        done < <(pairs "$mode" "$src" "$dst")
+    done < <(rows "$@")
+
+    if ((shown == 0)); then
+        ok "no differences; every target resolves to its repo source"
+    fi
+}
+
 main() {
     if [[ ! -f "$MANIFEST" ]]; then
         err "manifest not found: $MANIFEST"
@@ -288,9 +320,10 @@ main() {
     plan) cmd_link 0 "$@" ;;
     apply) cmd_link 1 "$@" ;;
     unlink) cmd_unlink "$@" ;;
+    diff) cmd_diff "$@" ;;
     *)
         err "unknown command: $cmd"
-        printf 'usage: link.sh {status|plan|apply|unlink} [PKG...]\n' >&2
+        printf 'usage: link.sh {status|plan|apply|unlink|diff} [PKG...]\n' >&2
         exit 2
         ;;
     esac

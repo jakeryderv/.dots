@@ -1,7 +1,7 @@
 # agy
 
 Documentation-only entry for the Google Antigravity CLI (`agy`) — **nothing is
-stowed**. Same policy and reasoning as the `codex` package: agy's config files
+deployed**. Same policy and reasoning as the `codex` package: agy's config files
 mix user settings with machine state (`trustedWorkspaces` lists local project
 paths, `config/config.json` carries the machine hostname), the CLI rewrites
 them freely, and this repo is public.
