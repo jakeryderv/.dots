@@ -7,52 +7,29 @@
 
 set -euo pipefail # Exit on error, unset vars, and pipe failures
 
-REPO="dandavison/delta"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=tools/lib/github-release.sh
+source "$SCRIPT_DIR/lib/github-release.sh"
+
 PACKAGE="git-delta" # what dpkg calls it; the binary it ships is `delta`
 WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/delta-install.XXXXXX")"
 
 # Clean up the work dir on any exit (success, error, or interrupt)
 trap 'rm -rf "$WORK_DIR"' EXIT
 
-FORCE=0
-case "${1-}" in
-"") ;;
--f | --force) FORCE=1 ;;
--h | --help)
-    echo "usage: ${0##*/} [--force]"
-    echo "  --force  reinstall even when already at the latest version"
-    exit 0
-    ;;
-*)
-    echo "Error: unknown argument '$1' (try --help)" >&2
-    exit 2
-    ;;
-esac
-
-if [[ "$(uname -s)" != Linux || "$(uname -m)" != x86_64 ]]; then
-    echo "Error: this helper supports Linux x86_64 only" >&2
-    exit 1
-fi
-
-for command in curl jq sha256sum awk dpkg dpkg-query; do
-    command -v "$command" >/dev/null 2>&1 || {
-        echo "Error: required command '$command' was not found" >&2
-        exit 1
-    }
-done
+gh_parse_force_flag "$@"
+gh_require_linux_x86_64
+gh_require_cmds dpkg dpkg-query
 
 echo "Resolving latest delta release..."
-RELEASE_JSON=$(curl -fsSL --retry 3 "https://api.github.com/repos/$REPO/releases/latest")
-VERSION=$(printf '%s' "$RELEASE_JSON" | jq -er '.tag_name | ltrimstr("v")')
-echo "Latest version:    $VERSION"
+gh_resolve_latest dandavison/delta
+echo "Latest version:    $GH_VERSION"
 
 # dpkg-query exits non-zero when the package is unknown, which is not an error here.
 INSTALLED=$(dpkg-query -W -f='${Version}' "$PACKAGE" 2>/dev/null || true)
 echo "Installed version: ${INSTALLED:-none}"
 
-# dpkg does the version comparison so upstream's scheme is honored rather than
-# a string compare, which would call 0.9.0 newer than 0.19.2.
-if [[ -n "$INSTALLED" ]] && dpkg --compare-versions "$INSTALLED" ge "$VERSION"; then
+if gh_up_to_date "$INSTALLED" "$GH_VERSION"; then
     if ((FORCE == 0)); then
         echo ""
         echo "✓ delta is already up to date."
@@ -61,32 +38,10 @@ if [[ -n "$INSTALLED" ]] && dpkg --compare-versions "$INSTALLED" ge "$VERSION"; 
     echo "Reinstalling anyway (--force)..."
 fi
 
-ASSET_NAME="${PACKAGE}_${VERSION}_amd64.deb"
-ASSET=$(printf '%s' "$RELEASE_JSON" | jq -cer --arg name "$ASSET_NAME" '
-	[.assets[] | select(.name == $name)]
-	| if length == 1 then .[0] else error("expected exactly one matching asset") end
-')
-URL=$(printf '%s' "$ASSET" | jq -er '.browser_download_url')
-DIGEST=$(printf '%s' "$ASSET" | jq -er '.digest')
-[[ "$DIGEST" =~ ^sha256:([0-9a-fA-F]{64})$ ]] || {
-    echo "Error: invalid SHA-256 digest for $ASSET_NAME" >&2
-    exit 1
-}
-EXPECTED_SHA256="${BASH_REMATCH[1],,}"
-
+ASSET_NAME="${PACKAGE}_${GH_VERSION}_amd64.deb"
 DEB="$WORK_DIR/$ASSET_NAME"
-echo "Downloading delta $VERSION..."
-if ! curl -fL -o "$DEB" "$URL"; then
-    echo "Error: failed to download delta" >&2
-    exit 1
-fi
-
-ACTUAL_SHA256=$(sha256sum "$DEB" | awk '{print $1}')
-if [[ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]]; then
-    echo "Error: SHA-256 verification failed for $ASSET_NAME" >&2
-    exit 1
-fi
-echo "Verified SHA-256: $ACTUAL_SHA256"
+echo "Downloading delta $GH_VERSION..."
+gh_fetch_asset "$ASSET_NAME" "$DEB"
 
 # The existing install stays in place until dpkg swaps it, so a bad download
 # cannot leave you without a working delta.
