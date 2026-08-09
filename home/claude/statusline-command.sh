@@ -20,7 +20,15 @@ GRAY=$'\033[90m'
 
 # ---------------------------------------------------------------------------
 # Parse ALL JSON fields in a single jq call
+#
+# Declared up front because the eval below is the only assignment, and
+# ShellCheck cannot see through eval -- without these it reports SC2154 at
+# every use site. Initialising also means a failed jq leaves these empty
+# rather than inheriting whatever happened to be exported.
 # ---------------------------------------------------------------------------
+model_id='' session_name='' output_style='' cwd='' project_dir=''
+wt_name='' vim_mode='' ctx_total=0 ctx_used_pct=''
+
 eval "$(echo "$input" | jq -r '
   def esc: gsub("[\n\r]"; " ") | gsub("'\''"; "'\''\\'\'''\''");
   "model_id='\''\(.model.id // "" | esc)'\''",
@@ -58,8 +66,8 @@ make_bar() {
     ((filled > width)) && filled=$width
     local empty=$((width - filled))
     local bar=""
-    for ((i=0; i<filled; i++)); do bar+="█"; done
-    for ((i=0; i<empty; i++)); do bar+="░"; done
+    for ((i = 0; i < filled; i++)); do bar+="█"; done
+    for ((i = 0; i < empty; i++)); do bar+="░"; done
     printf '%s' "$bar"
 }
 
