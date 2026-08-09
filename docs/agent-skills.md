@@ -104,7 +104,7 @@ Install the Playwright CLI runtime separately when browser automation is
 wanted:
 
 ```bash
-bash _helpers/install-playwright-cli.sh
+bash tools/install-playwright-cli.sh
 ```
 
 ## Ownership boundaries
@@ -124,13 +124,13 @@ bash _helpers/install-playwright-cli.sh
 Validate the tracked structure in CI or before deploying:
 
 ```bash
-bash _helpers/verify-agent-skills.sh
+bash tools/verify-agent-skills.sh
 ```
 
 After deploying, also validate the live paths:
 
 ```bash
-bash _helpers/verify-agent-skills.sh --live
+bash tools/verify-agent-skills.sh --live
 ```
 
 For a Playwright smoke test:

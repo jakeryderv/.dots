@@ -37,7 +37,7 @@ Not deployed from the manifest — install separately:
 - **fzf** and **tmux-sessionizer** — the generated cheatsheet (`prefix + ?`),
   session picker (`prefix + S`), and sessionizer (`prefix + f`) need these on
   `PATH`. Install via
-  [`_helpers`](../_helpers/README.md) (`install-fzf.sh`,
+  [`tools`](../tools/README.md) (`install-fzf.sh`,
   `install-tmux-sessionizer.sh`).
 
 ## Links, mouse, and clipboard

@@ -35,7 +35,7 @@ binaries or secrets:
 | **Node.js + npm/npx** | pi itself; installing `packages`; running local MCP servers | system install |
 | **`just`, `git`** | activating this config (symlinks) | system install |
 | **Language servers** (pyright, typescript-language-server, rust-analyzer, gopls, …) | `pi-lens` LSP nav/diagnostics | install per-language as needed; pi-lens uses whatever is on `PATH`. ast-grep is bundled (no install) |
-| **Playwright CLI + Chromium** | Shared browser automation skill | Install with [`_helpers/install-playwright-cli.sh`](../_helpers/install-playwright-cli.sh); see [`agent-skills`](agent-skills.md) |
+| **Playwright CLI + Chromium** | Shared browser automation skill | Install with [`tools/install-playwright-cli.sh`](../tools/install-playwright-cli.sh); see [`agent-skills`](agent-skills.md) |
 | **Provider credentials** | model access (Anthropic / OpenAI / Google) | `~/.pi/agent/auth.json` (run pi and log in; not tracked) |
 | **Exa API key** | `pi-web-access` web search | `~/.pi/web-search.json` (not tracked) |
 | **Network** | hosted Context7, first-run local MCP fetches, package installs, web search | — |

@@ -42,7 +42,7 @@ if ((manifest_errors)); then
 fi
 
 echo 'Checking package documentation...'
-bash _helpers/verify-readmes.sh >/dev/null
+bash tools/verify-readmes.sh >/dev/null
 
 # Relative links between docs rot silently when files move -- the stow-to-
 # manifest migration broke 29 of them in one commit. Nothing renders this repo's
@@ -68,11 +68,11 @@ sys.exit(1 if broken else 0)
 PY
 
 echo 'Checking shared agent skills...'
-bash _helpers/verify-agent-skills.sh
+bash tools/verify-agent-skills.sh
 
 BASH_PATHS=(
     _bash
-    _helpers
+    tools
     bin
     config
     home

@@ -12,7 +12,7 @@ See the root [README](../README.md) for shared deployment mechanics.
 | `.config/tealdeer/config.toml` | Cache auto-update policy. Partial by design — tealdeer merges it over its built-in defaults. |
 
 The binary itself is **not** deployed. Install it with
-[`_helpers/install-tealdeer.sh`](../_helpers/README.md), which places `tldr` in
+[`tools/install-tealdeer.sh`](../tools/README.md), which places `tldr` in
 `/usr/local/bin` and its bash completion in
 `~/.local/share/bash-completion/completions/`.
 
@@ -55,4 +55,4 @@ dots status tealdeer
 Not managed by this repo:
 
 - **tealdeer** — the `tldr` binary. See
-  [`_helpers/install-tealdeer.sh`](../_helpers/README.md).
+  [`tools/install-tealdeer.sh`](../tools/README.md).

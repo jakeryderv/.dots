@@ -62,13 +62,15 @@ never inside a source. A `README.md` in `config/nvim/` would deploy to
 The size of `home/` measures how much of the toolchain still ignores XDG. It
 should shrink, not grow.
 
-Directories prefixed with `_` are repo infrastructure, never deployed:
+The rest is repo infrastructure. None of it is named in the manifest, which is
+what makes it undeployable — the `_` prefix is a readability convention, not a
+mechanism:
 
 | Dir | Purpose |
 | --- | --- |
 | [`_bash`](_bash/README.md) | Modular bash config, *sourced* not linked |
-| [`_dots`](_dots/README.md) | The deployer, the `dots` CLI, and their tests |
-| [`_helpers`](_helpers/README.md) | Install/update scripts and the repo checks |
+| [`_dots`](_dots/README.md) | The deployer, its health checks, and their tests |
+| [`tools`](tools/README.md) | Install/update scripts (`just tools`) and the repo gate |
 | [`_wallpapers`](_wallpapers/README.md) | Wallpaper / terminal background images |
 
 ## Packages
@@ -104,7 +106,7 @@ for [codex](docs/codex.md), [agy](docs/agy.md), and [serena](docs/serena.md).
   [`editorconfig`](docs/editorconfig.md) package deploys the same rules to
   `~/.editorconfig` as a fallback for projects that ship no config of their own.
 - **[`.shellcheckrc`](.shellcheckrc) configures ShellCheck once**, for both the
-  editor (via bash-language-server) and CI (`_helpers/check-repo.sh`), so
+  editor (via bash-language-server) and CI (`tools/check-repo.sh`), so
   diagnostics match what the gate enforces.
 - **Bash formatting is enforced in CI** — `check-repo.sh` runs `shfmt --diff`
   with no flags, so it reads the same `.editorconfig` as format-on-save. If it
@@ -112,7 +114,7 @@ for [codex](docs/codex.md), [agy](docs/agy.md), and [serena](docs/serena.md).
   listed in [`.git-blame-ignore-revs`](.git-blame-ignore-revs).
 - **Every package is documented** in `docs/<pkg>.md`, covering what it is, where
   it deploys, how to activate it, and any external dependencies.
-  `_helpers/verify-readmes.sh` enforces this against the manifest.
+  `tools/verify-readmes.sh` enforces this against the manifest.
 
 ## Setup on a new machine
 

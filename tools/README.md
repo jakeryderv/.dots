@@ -1,9 +1,10 @@
-# _helpers
+# tools
 
 Install/update scripts for tools that aren't deployed from the manifest.
 
-**Not a manifest package.** The `_` prefix keeps this directory out of `dots`
-package discovery. Run these scripts directly.
+**Never deployed.** This directory is not named in the [`manifest`](../manifest),
+which is the only thing that makes anything deployable. Run these scripts
+through `just`, or directly.
 
 ## Assumptions
 
@@ -29,11 +30,22 @@ to re-run to update unless their header says a pin must be bumped deliberately.
 | `install-tmux-sessionizer.sh` | [tmux-sessionizer](https://github.com/ThePrimeagen/tmux-sessionizer) | Pinned commit + checksum → `~/.local/bin`. Used by [`tmux`](../docs/tmux.md). |
 | `update-nvim.sh` | [Neovim](https://neovim.io) | Verified official `.tar.gz` stable build → `/opt`, symlinked to `/usr/local/bin`. See [`nvim`](../docs/nvim.md) (needs ≥ 0.12). |
 | `verify-agent-skills.sh` | — | Validates the canonical shared-skill tree; `--live` also checks four-agent wiring and duplicate absence. |
+| `verify-readmes.sh` | — | Checks every manifest package has `docs/<pkg>.md`, and every top-level directory that is not itself a manifest source has a `README.md`. |
 
 ## Usage
 
 ```bash
-bash _helpers/<script>.sh
+just tools               # list the installers
+just install delta       # run tools/install-delta.sh
+just update-nvim         # the one non-`install-` installer
+just check               # tools/check-repo.sh, what CI runs
+just readmes             # tools/verify-readmes.sh
+```
+
+Anything without a recipe runs directly:
+
+```bash
+bash tools/<script>.sh
 ```
 
 Read the script's header comment first — some (notably `install-fzf.sh`) mutate

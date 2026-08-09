@@ -22,7 +22,7 @@ Reload a running instance with `:config-source`.
 ## Install
 
 qutebrowser itself is installed from source (for a newer Qt/QtWebEngine than
-apt ships) via [`_helpers/install-qutebrowser.sh`](../_helpers/README.md).
+apt ships) via [`tools/install-qutebrowser.sh`](../tools/README.md).
 
 ## Notable choices
 
