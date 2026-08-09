@@ -20,69 +20,19 @@ WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/tealdeer-install.XXXXXX")"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || printf '%s\n' "${SCRIPT_DIR%/*}")"
 
+# shellcheck source=tools/lib/github-release.sh
+source "$SCRIPT_DIR/lib/github-release.sh"
+
 # Clean up the work dir on any exit (success, error, or interrupt)
 trap 'rm -rf "$WORK_DIR"' EXIT
 
-FORCE=0
-case "${1-}" in
-"") ;;
--f | --force) FORCE=1 ;;
--h | --help)
-    echo "usage: ${0##*/} [--force]"
-    echo "  --force  reinstall even when already at the latest version"
-    exit 0
-    ;;
-*)
-    echo "Error: unknown argument '$1' (try --help)" >&2
-    exit 2
-    ;;
-esac
-
-if [[ "$(uname -s)" != Linux || "$(uname -m)" != x86_64 ]]; then
-    echo "Error: this helper supports Linux x86_64 only" >&2
-    exit 1
-fi
-
-for command in curl jq sha256sum awk dpkg; do
-    command -v "$command" >/dev/null 2>&1 || {
-        echo "Error: required command '$command' was not found" >&2
-        exit 1
-    }
-done
-
-# Download an asset by name and check it against the digest GitHub publishes
-# alongside it, so a corrupted or substituted file never reaches the install.
-fetch_asset() {
-    local name="$1" dest="$2" asset url digest expected actual
-    asset=$(printf '%s' "$RELEASE_JSON" | jq -cer --arg name "$name" '
-		[.assets[] | select(.name == $name)]
-		| if length == 1 then .[0] else error("expected exactly one matching asset") end
-	')
-    url=$(printf '%s' "$asset" | jq -er '.browser_download_url')
-    digest=$(printf '%s' "$asset" | jq -er '.digest')
-    [[ "$digest" =~ ^sha256:([0-9a-fA-F]{64})$ ]] || {
-        echo "Error: invalid SHA-256 digest for $name" >&2
-        exit 1
-    }
-    expected="${BASH_REMATCH[1],,}"
-
-    if ! curl -fL --retry 3 -o "$dest" "$url"; then
-        echo "Error: failed to download $name" >&2
-        exit 1
-    fi
-
-    actual=$(sha256sum "$dest" | awk '{print $1}')
-    if [[ "$actual" != "$expected" ]]; then
-        echo "Error: SHA-256 verification failed for $name" >&2
-        exit 1
-    fi
-    echo "Verified SHA-256: $actual ($name)"
-}
+gh_parse_force_flag "$@"
+gh_require_linux_x86_64
+gh_require_cmds dpkg
 
 echo "Resolving latest tealdeer release..."
-RELEASE_JSON=$(curl -fsSL --retry 3 "https://api.github.com/repos/$REPO/releases/latest")
-VERSION=$(printf '%s' "$RELEASE_JSON" | jq -er '.tag_name | ltrimstr("v")')
-echo "Latest version:    $VERSION"
+gh_resolve_latest "$REPO"
+echo "Latest version:    $GH_VERSION"
 
 # `tldr` is a generic command name with several implementations, so only trust
 # the version string when the binary actually identifies itself as tealdeer.
@@ -98,10 +48,8 @@ if command -v "$BINARY" >/dev/null 2>&1; then
 fi
 echo "Installed version: ${INSTALLED:-none}"
 
-# dpkg does the version comparison so upstream's scheme is honored rather than
-# a string compare, which would call 1.9.0 older than 1.10.0.
 NEED_BINARY=1
-if [[ -n "$INSTALLED" ]] && dpkg --compare-versions "$INSTALLED" ge "$VERSION"; then
+if gh_up_to_date "$INSTALLED" "$GH_VERSION"; then
     NEED_BINARY=0
 fi
 
@@ -143,8 +91,8 @@ fi
 
 if ((NEED_BINARY)); then
     # Downloaded under the final command name so the install step needs no rename.
-    echo "Downloading tealdeer $VERSION..."
-    fetch_asset "$ASSET_NAME" "$WORK_DIR/$BINARY"
+    echo "Downloading tealdeer $GH_VERSION..."
+    gh_fetch_asset "$ASSET_NAME" "$WORK_DIR/$BINARY"
     chmod +x "$WORK_DIR/$BINARY"
 
     echo "Testing binary..."
@@ -165,7 +113,7 @@ if ((NEED_COMPLETION)); then
     # bash-completion loads on demand from the XDG data dir, so the file only
     # has to be named after the command. No shell rc changes are needed.
     echo "Installing bash completion to $COMPLETION_DIR..."
-    fetch_asset "$COMPLETION_ASSET" "$WORK_DIR/completion"
+    gh_fetch_asset "$COMPLETION_ASSET" "$WORK_DIR/completion"
     mkdir -p "$COMPLETION_DIR"
     install -m 0644 "$WORK_DIR/completion" "$COMPLETION_DIR/$BINARY"
 fi
