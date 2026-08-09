@@ -56,18 +56,30 @@ gh_require_cmds() {
     done
 }
 
-# Resolve the latest release of owner/repo. Sets, for the caller:
+# Both resolvers set, for the caller:
 #   RELEASE_JSON  the release object, for further jq queries
 #   GH_TAG        the tag exactly as published (not every repo v-prefixes)
 #   GH_VERSION    the tag with any leading "v" stripped
 # shellcheck disable=SC2034 # set for the sourcing installer
-gh_resolve_latest() {
-    local repo="$1"
-    RELEASE_JSON=$(curl -fsSL --retry 3 "https://api.github.com/repos/$repo/releases/latest") ||
+_gh_resolve() {
+    local url="$1" repo="$2"
+    RELEASE_JSON=$(curl -fsSL --retry 3 "$url") ||
         _gh_die "failed to query the release API for $repo"
     GH_TAG=$(printf '%s' "$RELEASE_JSON" | jq -er '.tag_name | select(type == "string" and length > 0)') ||
         _gh_die "the release API for $repo did not return a valid tag"
     GH_VERSION="${GH_TAG#v}"
+}
+
+# Resolve the latest release of owner/repo.
+gh_resolve_latest() {
+    _gh_resolve "https://api.github.com/repos/$1/releases/latest" "$1"
+}
+
+# Resolve the release published under a specific tag of owner/repo -- for
+# repos whose latest release may be a pre-release (neovim's `stable` is a
+# moving tag that always points at the current stable build).
+gh_resolve_tag() {
+    _gh_resolve "https://api.github.com/repos/$1/releases/tags/$2" "$1"
 }
 
 # Select exactly one asset whose .name satisfies the jq predicate, download it

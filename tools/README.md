@@ -22,7 +22,8 @@ to re-run to update unless their header says a pin must be bumped deliberately.
 ## Shared library
 
 The installers that download GitHub release assets (`delta`, `lazygit`,
-`tealdeer`, `t3code`) source [`lib/github-release.sh`](lib/github-release.sh)
+`tealdeer`, `t3code`, `update-nvim`) source
+[`lib/github-release.sh`](lib/github-release.sh)
 for the parts that must not drift between them: platform and dependency
 preflight, latest-release resolution, asset selection, and the SHA-256 digest
 verification on every download. Each script keeps only what is genuinely its

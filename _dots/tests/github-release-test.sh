@@ -80,6 +80,11 @@ gh_resolve_latest example/tool
 [[ "$GH_TAG" == 'v1.2.3' ]] || fail "GH_TAG should be the raw tag (got $GH_TAG)"
 [[ "$GH_VERSION" == '1.2.3' ]] || fail "GH_VERSION should be v-stripped (got $GH_VERSION)"
 
+GH_TAG='' GH_VERSION=''
+gh_resolve_tag example/tool stable
+[[ "$GH_TAG" == 'v1.2.3' ]] || fail "gh_resolve_tag should set GH_TAG (got $GH_TAG)"
+[[ "$GH_VERSION" == '1.2.3' ]] || fail "gh_resolve_tag should set GH_VERSION (got $GH_VERSION)"
+
 # --- asset selection, download, and digest verification ----------------------
 gh_fetch_asset 'tool_1.2.3_amd64.deb' "$TEST_ROOT/out.deb" >/dev/null
 diff -q "$TEST_ROOT/payload" "$TEST_ROOT/out.deb" >/dev/null ||

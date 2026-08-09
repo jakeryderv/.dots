@@ -5,7 +5,10 @@
 
 set -euo pipefail # Exit on error, unset vars, and pipe failures
 
-API="https://api.github.com/repos/neovim/neovim/releases/tags/stable"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=tools/lib/github-release.sh
+source "$SCRIPT_DIR/lib/github-release.sh"
+
 ASSET_NAME="nvim-linux-x86_64.tar.gz"
 WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/nvim-install.XXXXXX")"
 TARBALL="$WORK_DIR/$ASSET_NAME"
@@ -16,47 +19,19 @@ SYMLINK="/usr/local/bin/nvim"     # what ends up on your PATH
 # Clean up temp download + staging dir on any exit (success, error, or interrupt)
 trap 'rm -rf "$WORK_DIR"' EXIT
 
-if [[ "$(uname -s)" != Linux || "$(uname -m)" != x86_64 ]]; then
-    echo "Error: this helper supports Linux x86_64 only" >&2
-    exit 1
-fi
+gh_require_linux_x86_64
+gh_require_cmds tar
 
-for command in curl jq sha256sum tar; do
-    command -v "$command" >/dev/null 2>&1 || {
-        echo "Error: required command '$command' was not found" >&2
-        exit 1
-    }
-done
-
+# Resolved by tag, not `latest`: Neovim's latest release can be a nightly
+# pre-release, while `stable` is a moving tag that always points at the
+# current stable build.
 echo "Resolving the stable Neovim release..."
-RELEASE_JSON=$(curl -fsSL --retry 3 "$API")
-ASSET=$(printf '%s' "$RELEASE_JSON" | jq -cer --arg name "$ASSET_NAME" '
-	[.assets[] | select(.name == $name)]
-	| if length == 1 then .[0] else error("expected exactly one matching asset") end
-')
-URL=$(printf '%s' "$ASSET" | jq -er '.browser_download_url')
-DIGEST=$(printf '%s' "$ASSET" | jq -er '.digest')
-[[ "$DIGEST" =~ ^sha256:([0-9a-fA-F]{64})$ ]] || {
-    echo "Error: invalid SHA-256 digest for $ASSET_NAME" >&2
-    exit 1
-}
-EXPECTED_SHA256="${BASH_REMATCH[1],,}"
+gh_resolve_tag neovim/neovim stable
 
 echo "Downloading latest Neovim tarball..."
-if ! curl -fL -o "$TARBALL" "$URL"; then
-    echo "Error: Failed to download Neovim tarball"
-    exit 1
-fi
-
-ACTUAL_SHA256=$(sha256sum "$TARBALL" | awk '{print $1}')
-if [[ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]]; then
-    echo "Error: SHA-256 verification failed for $ASSET_NAME" >&2
-    exit 1
-fi
-echo "Verified SHA-256: $ACTUAL_SHA256"
+gh_fetch_asset "$ASSET_NAME" "$TARBALL"
 
 echo "Extracting..."
-rm -rf "$EXTRACT_DIR"
 mkdir -p "$EXTRACT_DIR"
 if ! tar -C "$EXTRACT_DIR" -xzf "$TARBALL"; then
     echo "Error: Failed to extract tarball"
