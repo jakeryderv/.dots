@@ -23,9 +23,8 @@
 # TARGET honors $XDG_CONFIG_HOME (default ~/.config) and $XDG_DATA_HOME
 # (default ~/.local/share).
 #
-# MIGRATION: rows whose SOURCE still begins with the package name are in the old
-# stow layout and have not been migrated yet. Migrated rows point into config/,
-# home/, data/, or bin/. See docs/migration.md.
+# Every SOURCE points into config/, home/, data/, or bin/. See docs/migration.md
+# for why the layout and the two explicit columns look the way they do.
 
 # --- XDG config: directories that are exclusively ours -----------------------
 alacritty       link    config/alacritty                                    $XDG_CONFIG_HOME/alacritty

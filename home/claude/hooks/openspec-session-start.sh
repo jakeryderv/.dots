@@ -8,8 +8,8 @@
 #
 # Workspace detection is delegated to the CLI, not to a `[ -d openspec ]` test:
 #   - `openspec list` exits 0 everywhere, so exit status is not a usable guard.
-#   - a bare directory test false-positives in ~/.dots, whose stow package is
-#     literally named `openspec`, and false-negatives when a session starts in a
+#   - a bare directory test false-positives in ~/.dots, which has a source
+#     directory literally named `openspec`, and false-negatives when a
 #     subdirectory of a real workspace.
 # `root.source` is "nearest" only when the CLI resolved an actual workspace by
 # walking up from the cwd, and "implicit" when it fell back to the cwd.

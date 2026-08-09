@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Validate the tracked shared-skill tree. Pass --live after stowing to also
+# Validate the tracked shared-skill tree. Pass --live after deploying to also
 # verify the four agents resolve canonical copies without local duplicates.
 
 set -euo pipefail

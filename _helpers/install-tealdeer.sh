@@ -106,21 +106,22 @@ if [[ -n "$INSTALLED" ]] && dpkg --compare-versions "$INSTALLED" ge "$VERSION"; 
 fi
 
 # Tracked separately from the binary: the completion can go missing on its own
-# (a restow, a manual cleanup) while the binary is perfectly current, and that
+# (a re-apply, a manual cleanup) while the binary is perfectly current, and that
 # case should self-heal instead of requiring --force.
 NEED_COMPLETION=1
 [[ -f "$COMPLETION_DIR/$BINARY" ]] && NEED_COMPLETION=0
 
-# Stow folds package directories by default, which can make the XDG completion
-# directory a symlink into a dotfiles repo. Installing through that fold writes
-# a third-party file into version control, so refuse and name the fix instead.
+# The completions directory is a `tree` row in the manifest precisely so it
+# stays a real directory that third-party installers can write into. If it is
+# ever a symlink into the repo, installing through it would commit tealdeer's
+# completion as a tracked file -- so refuse and name the fix instead.
 COMPLETION_TARGET="$(readlink -f "$COMPLETION_DIR")"
 if [[ "$COMPLETION_TARGET" == "$REPO_ROOT"/* ]]; then
     echo ""
     echo "Warning: $COMPLETION_DIR resolves into the dotfiles repo:"
     echo "         $COMPLETION_TARGET"
     echo "         Installing there would commit tealdeer's completion as a tracked file."
-    echo "         Unfold the owning package first, e.g.:  dots restow --no-folding --apply scripts"
+    echo "         The scripts rows must be MODE=tree in the manifest; check with:  dots status scripts"
     echo "         Skipping the completion for now."
     NEED_COMPLETION=0
     SKIPPED_COMPLETION=1
@@ -191,6 +192,6 @@ echo "The page cache starts empty. Populate it before first use:"
 echo ""
 echo "    tldr --update"
 echo ""
-echo "Optional: the tealdeer stow package tracks ~/.config/tealdeer/config.toml,"
+echo "Optional: the tealdeer package tracks ~/.config/tealdeer/config.toml,"
 echo "which enables background cache refresh. Styles are left to tealdeer's"
 echo "named-color defaults so output follows the terminal palette (carbonfox)."
