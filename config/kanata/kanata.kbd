@@ -107,6 +107,6 @@
 ;; cross-hand, since `;` is held by the right pinky.
 (deflayer mods
   esc caps
-  lctl lmet lalt
+  lctl lalt lmet
   _
 )

@@ -28,7 +28,7 @@ keyboard, built-in or USB, with one config.
 | `caps` | escape | — |
 | `esc` | caps lock | — |
 | `;` | `;` | activates the mods layer |
-| `s` `d` `f` | themselves | ctrl, super, alt — **only while `;` is held** |
+| `s` `d` `f` | themselves | ctrl, alt, super — **only while `;` is held** |
 
 Four remapped keys, and only `;` has any timing behaviour. caps and escape are a
 straight swap. On the base layer `s`, `d`, and `f` are ordinary letters that emit
