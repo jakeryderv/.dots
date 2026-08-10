@@ -70,6 +70,26 @@ else
     warn "opencode unavailable; skipping resolved config validation"
 fi
 
+# kanata is only useful when all three of these line up: the binary exists, the
+# user can reach the input devices, and the service is actually running. Each
+# fails independently and none of them are visible from the config alone.
+if command -v kanata >/dev/null 2>&1; then
+    if id -nG | tr ' ' '\n' | grep -qx input; then
+        ok "user is in the input group"
+    else
+        warn "user is not in the input group; see docs/kanata.md (needs re-login)"
+        fail=1
+    fi
+    if systemctl --user is-active --quiet kanata.service; then
+        ok "kanata.service is running"
+    else
+        warn "kanata.service is not running; start it: systemctl --user start kanata.service"
+        fail=1
+    fi
+else
+    warn "kanata unavailable; skipping keyboard remapper checks"
+fi
+
 check_log="$(mktemp)"
 status_log="$(mktemp)"
 trap 'rm -f "$check_log" "$status_log"' EXIT

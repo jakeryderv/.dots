@@ -190,6 +190,21 @@ else
     echo 'Skipping Lua syntax check (luac not installed).'
 fi
 
+# A kanata config that does not parse leaves the keyboard unmapped, and the
+# failure only shows up when the service restarts -- by which point typing may
+# be how you would fix it. `--check` parses and exits without touching any
+# device, so it is safe to run anywhere.
+#
+# Unlike the linters above this is never escalated by REQUIRE_LINTERS: kanata is
+# package-specific software rather than a repo-wide tool, and CI runs with
+# REQUIRE_LINTERS=1 on a runner that has no reason to install it.
+if command -v kanata >/dev/null 2>&1; then
+    echo 'Checking kanata configuration...'
+    kanata --cfg config/kanata/kanata.kbd --check >/dev/null
+else
+    echo 'Skipping kanata config check (kanata not installed).'
+fi
+
 echo 'Running behavior tests...'
 bash _dots/tests/run.sh
 

@@ -1,8 +1,20 @@
-;; kanata.kbd -- caps lock as escape/control, plus time-based home row mods.
+;; kanata.kbd -- caps/escape swapped, plus two layers held with `;`.
 ;;
-;; This path is also kanata's own default when it is started without --cfg
-;; ($XDG_CONFIG_HOME/kanata/kanata.kbd), so the symlink is all that is needed
-;; for a foreground `kanata` to pick it up.
+;; Design note: `;` is the only key in this config with any timing behaviour.
+;; Home row mods were tried first -- every one of s/d/f/j/k/l was a tap-hold --
+;; and the cost was input lag: a tap-hold key cannot emit its letter on press,
+;; because it does not yet know whether it is a letter or a modifier, so the
+;; letter lands on release and everything typed meanwhile queues behind it.
+;; Fast typing overlaps keystrokes, so the queue filled and flushed in bursts.
+;;
+;; Moving everything onto layers removes the ambiguity entirely: on the base
+;; layer those keys are plain letters that emit immediately, and they only take
+;; on their alternate meaning while `;` is held, where there is nothing to guess.
+;;
+;; An arrow layer on `:` (shift+`;`, selected with `fork`) was tried and taken
+;; back out to keep this simple. It worked -- debug logs confirmed both layers
+;; activating -- but it needed `unshift` on every arrow to stop shift turning
+;; movements into selections, which is a lot of machinery for one layer.
 ;;
 ;; Validate every edit before restarting the service -- a config that does not
 ;; parse leaves the keyboard unmapped, and one that parses but is wrong can
@@ -18,58 +30,83 @@
 ;; Full reference: https://github.com/jtroo/kanata/blob/main/docs/config.adoc
 
 (defcfg
-  ;; tap-hold-press (used by caps) resolves its hold as soon as another key
-  ;; goes down, which only works for keys kanata observes.
+  ;; Keeps output ordered while `;` is still deciding tap vs hold. Nothing here
+  ;; strictly requires it now that the layer count is down to one.
   process-unmapped-keys yes
 
   ;; kanata exits by default when it finds no input devices. The user service
   ;; starts with the session and can beat a USB keyboard's enumeration, so
   ;; prefer waiting over a crash-restart loop.
   linux-continue-if-no-devs-found yes
+
+  ;; Left to itself kanata grabs every device that looks vaguely keyboard-like,
+  ;; including a monitor and the media-key endpoints. Excluding is safer than
+  ;; including here: a new keyboard still works by default, and only these
+  ;; known non-typing devices are handed back to the kernel untouched.
+  ;;
+  ;; Names must match in full -- no partial matches, no regex. They come from
+  ;; the "registering /dev/input/eventX" lines kanata logs at startup:
+  ;;     journalctl --user -u kanata.service | grep registering
+  ;;
+  ;; The Logitech entry is the G Pro Wireless *mouse*: its receiver exposes a
+  ;; `kbd` handler next to `mouse3`, so kanata claims it as a keyboard. Note
+  ;; the trailing space -- that is genuinely part of the device name.
+  linux-dev-names-exclude (
+    "DP-2"
+    "Ideapad extra buttons"
+    "Keychron Keychron K3 Pro Consumer Control"
+    "Keychron Keychron K3 Pro System Control"
+    "Logitech G Pro "
+  )
 )
 
-;; Only the keys listed here are remapped. Everything else passes through
-;; untouched -- kanata still routes it, but as itself.
+;; s/d/f appear here only so the mods layer can redefine them. On the base layer
+;; they are plain letters with no special behaviour at all.
 (defsrc
-  caps a s d f j k l ;
+  caps esc
+  s d f
+  ;
 )
 
 (defvar
-  ;; The only thing that decides letter vs modifier: hold a home row key at
-  ;; least this long and it becomes its modifier; release sooner and it types
-  ;; its letter. Raise it if modifiers fire while you are typing; lower it if
-  ;; deliberate modifiers feel sluggish.
+  ;; Applies to `;` alone. Hold it at least this long to enter a layer; release
+  ;; sooner and it types a literal `;`. Lower it for snappier layers, raise it
+  ;; if `;` starts turning into a layer while typing -- worth watching in code,
+  ;; where `;` is far more common than in prose.
   hold-time 200
 
-  ;; Tap a key, then press it again within this window and keep holding: the
-  ;; letter repeats instead of the modifier engaging. This is what keeps
-  ;; held-down repeats like `jjjj` working.
+  ;; Tap `;`, then press it again within this window and keep holding: the
+  ;; semicolon repeats instead of the layer engaging, so `;;;;` still works.
   repress-time 200
 )
 
 (defalias
-  ;; Caps stays tap-hold-press -- it resolves on the next key press rather than
-  ;; on elapsed time, so ctrl+c via caps is immediate. Caps is not part of
-  ;; normal typing, so early resolution costs nothing here.
-  escctrl (tap-hold-press 200 200 esc lctl)
-
-  ;; Home row mods, GACS order: meta, alt, ctrl, shift inward from each pinky,
-  ;; putting shift on the strongest finger. Mirrored across both hands.
-  ;;
-  ;; Plain tap-hold is purely time-based: it waits the full hold-time and is
-  ;; not influenced by which other keys get pressed. Same-hand combos work the
-  ;; same as cross-hand ones.
-  a (tap-hold $repress-time $hold-time a lmet)
-  s (tap-hold $repress-time $hold-time s lalt)
-  d (tap-hold $repress-time $hold-time d lctl)
-  f (tap-hold $repress-time $hold-time f lsft)
-  j (tap-hold $repress-time $hold-time j rsft)
-  k (tap-hold $repress-time $hold-time k rctl)
-  l (tap-hold $repress-time $hold-time l ralt)
-  ; (tap-hold $repress-time $hold-time ; rmet)
+  ;; The one tap-hold in the config: tap for a literal `;`, hold for the
+  ;; modifier layer.
+  modkey (tap-hold $repress-time $hold-time ; (layer-while-held mods))
 )
 
-;; The first deflayer is the default layer. Its length must match defsrc.
+;; The first deflayer is the default layer. Every deflayer must have exactly as
+;; many entries as defsrc, in the same order.
+;;
+;; caps and esc are a straight swap -- each simply outputs the other, with no
+;; tap-hold behaviour and nothing to time.
 (deflayer base
-  @escctrl @a @s @d @f @j @k @l @;
+  esc caps
+  s d f
+  @modkey
+)
+
+;; Held with `;`. These are real modifier keys -- down for exactly as long as
+;; the physical key is held, with no timing involved. `;`+s+c is ctrl+c.
+;;
+;; Left hand only. j/k/l were mirrored here at one point so either hand could
+;; hold a modifier, but they never took effect -- debug logs confirmed the layer
+;; was active and the modifier was being emitted, so the cause is downstream of
+;; kanata and was not worth chasing. The left-hand set also makes every chord
+;; cross-hand, since `;` is held by the right pinky.
+(deflayer mods
+  esc caps
+  lctl lmet lalt
+  _
 )

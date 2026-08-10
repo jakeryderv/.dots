@@ -18,30 +18,59 @@ keyboard, built-in or USB, with one config.
 
 | File | Role |
 |------|------|
-| `kanata.kbd` | The remap itself: caps lock as escape/control, plus home row mods. |
+| `kanata.kbd` | The remap itself. |
 | `systemd/user/kanata.service` | Runs `kanata` for the login user, restarting on failure. |
 
 ## The mapping
 
 | Key | Tap | Hold |
 |-----|-----|------|
-| `caps` | escape | left control |
-| `a` `s` `d` `f` | themselves | meta, alt, ctrl, shift |
-| `j` `k` `l` `;` | themselves | shift, ctrl, alt, meta |
+| `caps` | escape | — |
+| `esc` | caps lock | — |
+| `;` | `;` | activates the mods layer |
+| `s` `d` `f` | themselves | ctrl, super, alt — **only while `;` is held** |
 
-Home row mods are GACS order — meta, alt, ctrl, shift moving inward from each
-pinky, which puts shift on the strongest finger. Every other key is untouched.
+Four remapped keys, and only `;` has any timing behaviour. caps and escape are a
+straight swap. On the base layer `s`, `d`, and `f` are ordinary letters that emit
+the instant they are pressed.
 
-The home row is **purely time-based**. Release a key in under `hold-time`
-(200 ms) and it types its letter; hold it longer and it becomes its modifier.
-Nothing else influences the decision, so same-hand combos like `d`+`c` for
-ctrl+c behave exactly like cross-hand ones.
+Since `;` is held by the right pinky and the modifiers are left-hand, every chord
+is cross-hand: `;`+`s`+`c` is ctrl+c.
 
-`hold-time` and `repress-time` are `defvar`s at the top of the config. Raise
-`hold-time` if modifiers fire while typing; lower it if they feel sluggish.
-`repress-time` is what keeps held-key repeats working: tap a key, press it again
-within the window and keep holding, and the letter repeats instead of the
-modifier engaging — `jjjj` in vim rather than shift.
+`hold-time` and `repress-time` are `defvar`s at the top of the config, and now
+apply to `;` alone. Lower `hold-time` for a snappier layer; raise it if `;` turns
+into a layer while typing — worth watching in code, where `;` is far more common
+than in prose. `repress-time` is why tapping `;` and immediately pressing it
+again repeats the semicolon instead of engaging the layer.
+
+## Why a layer instead of home row mods
+
+Home row mods were built first — `a`/`s`/`d`/`f` and `j`/`k`/`l`/`;` each a
+tap-hold — and backed out. Two findings worth keeping:
+
+**Timing-based tap-hold has unavoidable input lag.** A tap-hold key cannot emit
+its letter on press, because it does not yet know whether the key is a letter or
+a modifier. The letter lands on *release*, and anything typed meanwhile queues
+behind it to preserve order. Fast typing overlaps keystrokes, so the queue fills
+and flushes in bursts — typing feels rubber-banded, worst in words with several
+home row letters in a row. This is inherent to home row mods; QMK and ZMK share
+it. Putting the modifiers on a layer removes the ambiguity entirely rather than
+tuning around it.
+
+**`tap-hold-opposite-hand` is not the fix it appears to be.** It resolves the
+hold when the next key is on the other hand, which sounds ideal but made typing
+unusable here: hand alternation is constant in English, so a burst starting on a
+home row key (`sl` typed fast) fired a modifier and swallowed the keystroke. Its
+`(timeout tap)` default also means a bare hold resolves as a *tap* and then
+autorepeats, so a held key never becomes a modifier at all, and same-hand combos
+silently type letters.
+
+Mirrored modifiers on `j`/`k`/`l` were also tried on the layer and removed: they
+never took effect, in either right-side (`rctl`/`rmet`/`ralt`) or left-side
+form. Debug logging confirmed the layer *was* active and kanata *was* emitting
+the modifier, so the cause is downstream of kanata. Not chased further. If it
+comes up again, the decisive test is watching output keycodes with `evtest` on
+kanata's virtual device while holding `;`+`j`.
 
 ## Panic button
 
@@ -50,11 +79,28 @@ keyboard back. The chord refers to `defsrc` input — the physical keys, before
 remapping. It exits 0, so systemd treats it as a clean stop and does not restart
 the service.
 
-This is the escape hatch if a config change makes the keyboard unusable. Worth
-committing to memory before editing the home row.
+This is the escape hatch if a config change makes the keyboard unusable.
 
 `~/.config/kanata/kanata.kbd` is also kanata's own default config path, so a
 foreground `kanata` with no arguments picks up the same file the service uses.
+
+## Which devices get grabbed
+
+Left alone, kanata claims every device exposing a `kbd` handler — which on this
+machine included a monitor (`DP-2`), the laptop's extra buttons, the Keychron's
+media-key endpoints, and a Logitech G Pro Wireless *mouse*, whose receiver
+presents a keyboard interface alongside `mouse3`.
+
+`linux-dev-names-exclude` in the config lists those by name. Excluding rather
+than including means a newly plugged keyboard still works by default — but a new
+mouse-like device could get grabbed the same way.
+
+Names must match **in full** — no partial matches, no regex, and trailing spaces
+count (the Logitech entry has one). Get them from the startup log:
+
+```bash
+journalctl --user -u kanata.service | grep registering
+```
 
 ## Permissions
 
@@ -98,7 +144,18 @@ systemctl --user enable --now kanata.service
 To remove the symlinks: `cd ~/.dots && just unlink kanata`. Disable the service
 first, or systemd keeps running the last-loaded unit until it is stopped.
 
+The service starts at login, not at boot, so caps and escape are unswapped at
+the display manager's password prompt. `sudo loginctl enable-linger "$USER"`
+changes that if it matters.
+
 ## Verify
+
+`just check` parses the config with `kanata --check` whenever kanata is
+installed, and `just doctor` reports whether the service is running and the
+`input` group took. Neither is escalated by `REQUIRE_LINTERS`, since CI runs on
+a machine with no reason to install kanata.
+
+By hand:
 
 ```bash
 kanata --cfg ~/.config/kanata/kanata.kbd --check   # config parses
@@ -106,9 +163,8 @@ systemctl --user status kanata.service
 dots status kanata
 ```
 
-Then tap caps lock (expect escape), hold it while pressing `c` (expect ctrl+c),
-type `asdf` and `sl` at speed (expect the letters, no modifiers), hold `d` while
-pressing `c` (expect ctrl+c), and tap-then-hold `j` (expect `jjjj`).
+Then tap caps (expect escape), type `sdf` at speed (expect the letters), and
+hold `;` while tapping `c` with `s` held (expect ctrl+c).
 
 ## Editing the config
 
@@ -121,49 +177,28 @@ kanata --cfg ~/.config/kanata/kanata.kbd --check
 systemctl --user restart kanata.service
 ```
 
-If a bad config does lock you out, `systemctl --user stop kanata.service` from a
-TTY or over SSH restores the raw keyboard.
+If a bad config does lock you out, use the panic button above, or
+`systemctl --user stop kanata.service` from a TTY or over SSH.
+
+To debug behaviour rather than syntax, stop the service and run kanata directly
+with `-d --log-layer-changes`; it logs every layer entry and the keycodes it
+emits, which distinguishes "kanata is not sending it" from "something ignores
+it":
+
+```bash
+systemctl --user stop kanata.service
+kanata -d --no-wait --log-layer-changes --cfg ~/.config/kanata/kanata.kbd
+```
 
 The [config guide](https://github.com/jtroo/kanata/blob/main/docs/config.adoc)
 is the reference for layers, aliases, and the tap-hold variants.
 
 ## Notable choices
 
-- **Plain `tap-hold` for the home row** — purely time-based, and chosen after
-  trying the alternative. `tap-hold-opposite-hand` resolves the hold when the
-  next key is on the other hand, which sounds better but made ordinary typing
-  unusable here: hand alternation is constant in English, so a burst starting on
-  a home row key (`sl` typed fast) fired a modifier and swallowed the keystroke.
-  Its `(timeout tap)` default also means a bare hold resolves as a *tap* and
-  then autorepeats, so a held key never becomes a modifier at all, and same-hand
-  combos like `d`+`c` silently type letters instead of ctrl+c.
-- **No `require-prior-idle`** — the "was a key pressed in the last N ms?" guard
-  suppresses the hold during fast typing. Deliberately omitted to keep the model
-  purely time-based: with it, a key held long enough would sometimes still
-  refuse to activate. It is the first thing to add if mid-typing misfires become
-  the main annoyance; it is supported on all tap-hold variants.
-- **`tap-hold-press` for caps** — caps resolves on the next key press rather
-  than on elapsed time, making caps+`c` ctrl+c immediately. Caps is not part of
-  normal typing, so early resolution costs nothing there.
-- **No `f24` workaround** — many home row configs wrap each `tap-hold` in
-  `(multi f24 ...)` for a Linux key-repeat bug
-  ([discussion #422](https://github.com/jtroo/kanata/discussions/422)): kanata
-  emits nothing while deciding tap vs hold, so the desktop never learns a new
-  key went down and keeps autorepeating the previous one — `type` comes out
-  `typee`. Left out to keep the config simple, since the bug may not show up in
-  practice. If doubled letters appear, that is the fix. Note that several
-  `f24`-wrapped keys pressed in sequence also need a `(release-key f24)` virtual
-  key, which most configs found in the wild are missing:
-
-  ```lisp
-  (defvirtualkeys relf24 (release-key f24))
-  (defalias
-    d (multi f24 (tap-hold $repress-time $hold-time d lctl)
-        (macro 5 (on-press tap-vkey relf24))))
-  ```
-
-- **`process-unmapped-keys yes`** — required by `tap-hold-press` on caps, which
-  can only decide based on the next key if it observes that key.
+- **`process-unmapped-keys yes`** — keeps output ordered while `;` is still
+  deciding tap vs hold. Nothing strictly requires it at the current layer count;
+  it was mandatory when an `unshift`-based arrow layer existed, since shift is
+  not in `defsrc` and its state has to be tracked.
 - **`linux-continue-if-no-devs-found yes`** — kanata exits by default when it
   finds no input devices, and the user service can start before a USB keyboard
   enumerates.
@@ -173,21 +208,15 @@ is the reference for layers, aliases, and the tap-hold variants.
 - **Non-`cmd` build** — the release zip ships two binaries; the installer takes
   the one compiled without the `cmd` action, so a config can never execute shell
   commands from a process that sees every keystroke.
-
-## Adapting
-
-Home row mods take one to two weeks of adjustment, and misfires land hardest in
-terminals and vim. Tune `hold-time` first — it is the only thing deciding letter
-vs modifier.
-
-To back out the home row entirely while keeping caps→escape/control, drop the
-home row aliases and cut `defsrc`/`deflayer` down to `caps` alone. Check the file
-history for that version:
-
-```bash
-cd ~/.dots && git log --oneline -- config/kanata/kanata.kbd
-systemctl --user restart kanata.service   # after editing
-```
+- **No `f24` workaround** — many tap-hold configs wrap each action in
+  `(multi f24 ...)` for a Linux key-repeat bug
+  ([discussion #422](https://github.com/jtroo/kanata/discussions/422)): kanata
+  emits nothing while deciding tap vs hold, so the desktop never learns a new
+  key went down and keeps autorepeating the previous one — `type` comes out
+  `typee`. With only `;` doing tap-hold this is unlikely to bite. If doubled
+  letters appear, that is the fix; note that several `f24`-wrapped keys pressed
+  in sequence also need a `(release-key f24)` virtual key, which most configs
+  found in the wild are missing.
 
 ## External dependencies
 
