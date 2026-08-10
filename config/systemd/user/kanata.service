@@ -1,0 +1,20 @@
+[Unit]
+Description=kanata keyboard remapper
+Documentation=https://github.com/jtroo/kanata
+# Not a graphical unit on purpose: kanata works at the evdev/uinput layer, so it
+# is independent of the display server and can outlive a session restart.
+
+[Service]
+Type=simple
+# --cfg is redundant with kanata's own default, but it makes the unit readable
+# and keeps it correct if the default ever moves.
+#
+# --no-wait is load-bearing under systemd: without it kanata stops at a "Press
+# enter to exit" prompt on failure instead of exiting, so the process never dies
+# and Restart=on-failure never fires.
+ExecStart=/usr/local/bin/kanata --no-wait --cfg %h/.config/kanata/kanata.kbd
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

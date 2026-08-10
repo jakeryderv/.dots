@@ -1,0 +1,75 @@
+;; kanata.kbd -- caps lock as escape/control, plus time-based home row mods.
+;;
+;; This path is also kanata's own default when it is started without --cfg
+;; ($XDG_CONFIG_HOME/kanata/kanata.kbd), so the symlink is all that is needed
+;; for a foreground `kanata` to pick it up.
+;;
+;; Validate every edit before restarting the service -- a config that does not
+;; parse leaves the keyboard unmapped, and one that parses but is wrong can
+;; leave it unusable:
+;;
+;;     kanata --cfg ~/.config/kanata/kanata.kbd --check
+;;
+;; Panic button, should a change make the keyboard unusable:
+;; LCtrl+Space+Escape triggers kanata's emergency exit and hands the raw
+;; keyboard back. It exits 0, so systemd treats it as a clean stop and will
+;; not restart the service.
+;;
+;; Full reference: https://github.com/jtroo/kanata/blob/main/docs/config.adoc
+
+(defcfg
+  ;; tap-hold-press (used by caps) resolves its hold as soon as another key
+  ;; goes down, which only works for keys kanata observes.
+  process-unmapped-keys yes
+
+  ;; kanata exits by default when it finds no input devices. The user service
+  ;; starts with the session and can beat a USB keyboard's enumeration, so
+  ;; prefer waiting over a crash-restart loop.
+  linux-continue-if-no-devs-found yes
+)
+
+;; Only the keys listed here are remapped. Everything else passes through
+;; untouched -- kanata still routes it, but as itself.
+(defsrc
+  caps a s d f j k l ;
+)
+
+(defvar
+  ;; The only thing that decides letter vs modifier: hold a home row key at
+  ;; least this long and it becomes its modifier; release sooner and it types
+  ;; its letter. Raise it if modifiers fire while you are typing; lower it if
+  ;; deliberate modifiers feel sluggish.
+  hold-time 200
+
+  ;; Tap a key, then press it again within this window and keep holding: the
+  ;; letter repeats instead of the modifier engaging. This is what keeps
+  ;; held-down repeats like `jjjj` working.
+  repress-time 200
+)
+
+(defalias
+  ;; Caps stays tap-hold-press -- it resolves on the next key press rather than
+  ;; on elapsed time, so ctrl+c via caps is immediate. Caps is not part of
+  ;; normal typing, so early resolution costs nothing here.
+  escctrl (tap-hold-press 200 200 esc lctl)
+
+  ;; Home row mods, GACS order: meta, alt, ctrl, shift inward from each pinky,
+  ;; putting shift on the strongest finger. Mirrored across both hands.
+  ;;
+  ;; Plain tap-hold is purely time-based: it waits the full hold-time and is
+  ;; not influenced by which other keys get pressed. Same-hand combos work the
+  ;; same as cross-hand ones.
+  a (tap-hold $repress-time $hold-time a lmet)
+  s (tap-hold $repress-time $hold-time s lalt)
+  d (tap-hold $repress-time $hold-time d lctl)
+  f (tap-hold $repress-time $hold-time f lsft)
+  j (tap-hold $repress-time $hold-time j rsft)
+  k (tap-hold $repress-time $hold-time k rctl)
+  l (tap-hold $repress-time $hold-time l ralt)
+  ; (tap-hold $repress-time $hold-time ; rmet)
+)
+
+;; The first deflayer is the default layer. Its length must match defsrc.
+(deflayer base
+  @escctrl @a @s @d @f @j @k @l @;
+)

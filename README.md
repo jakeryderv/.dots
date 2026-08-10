@@ -75,7 +75,7 @@ mechanism:
 
 ## Packages
 
-21 packages across 23 manifest rows. `just packages` lists them; each is
+22 packages across 25 manifest rows. `just packages` lists them; each is
 documented in [`docs/`](docs/README.md).
 
 **Terminals** — [ghostty](docs/ghostty.md) (daily driver),
@@ -94,7 +94,7 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 for [codex](docs/codex.md), [agy](docs/agy.md), and [serena](docs/serena.md).
 
 **Desktop & misc** — [qutebrowser](docs/qutebrowser.md), [fonts](docs/fonts.md),
-[scripts](docs/scripts.md).
+[scripts](docs/scripts.md), [kanata](docs/kanata.md) (keyboard remapping).
 
 ## Conventions
 

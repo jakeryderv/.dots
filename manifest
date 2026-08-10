@@ -36,6 +36,7 @@ wezterm         link    config/wezterm                                      $XDG
 direnv          link    config/direnv                                       $XDG_CONFIG_HOME/direnv
 tealdeer        link    config/tealdeer                                     $XDG_CONFIG_HOME/tealdeer
 openspec        link    config/openspec                                     $XDG_CONFIG_HOME/openspec
+kanata          link    config/kanata                                       $XDG_CONFIG_HOME/kanata
 starship        link    config/starship.toml                                $XDG_CONFIG_HOME/starship.toml
 
 # --- XDG config: the tool writes into its own config dir ---------------------
@@ -43,8 +44,10 @@ starship        link    config/starship.toml                                $XDG
 opencode        tree    config/opencode                                     $XDG_CONFIG_HOME/opencode
 qutebrowser     tree    config/qutebrowser                                  $XDG_CONFIG_HOME/qutebrowser
 
-# --- XDG data / bin: targets shared with other installers --------------------
-# ~/.local/bin holds 48 entries; only three are ours.
+# --- Shared targets: directories other installers also write into ------------
+# ~/.local/bin holds 48 entries; only three are ours. ~/.config/systemd/user is
+# systemd's own tree, so kanata links its unit file, not the directory.
+kanata          tree    config/systemd/user                                 $XDG_CONFIG_HOME/systemd/user
 fonts           tree    data/fonts                                          $XDG_DATA_HOME/fonts
 scripts         tree    data/bash-completion/completions                    $XDG_DATA_HOME/bash-completion/completions
 scripts         tree    bin                                                 $HOME/.local/bin

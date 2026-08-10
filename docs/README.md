@@ -29,6 +29,7 @@ beyond linking, and any external dependencies.
 | [`fonts.md`](fonts.md) | `data/fonts` | `~/.local/share/fonts/` |
 | [`ghostty.md`](ghostty.md) | `config/ghostty` | `~/.config/ghostty/` |
 | [`git.md`](git.md) | `home/gitconfig` | `~/.gitconfig` |
+| [`kanata.md`](kanata.md) | `config/kanata`, `config/systemd/user` | `~/.config/kanata/`, `~/.config/systemd/user/` |
 | [`kitty.md`](kitty.md) | `config/kitty` | `~/.config/kitty/` |
 | [`nvim.md`](nvim.md) | `config/nvim` | `~/.config/nvim/` |
 | [`opencode.md`](opencode.md) | `config/opencode` | `~/.config/opencode/` |

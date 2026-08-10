@@ -20,7 +20,7 @@ required=(bash git just python3 find sed awk grep diff readlink file)
 optional=(
     shellcheck shfmt luac fc-cache
     starship vim nvim tmux fzf bat batcat rg fd fdfind delta lazygit glow llm
-    qutebrowser pi opencode claude openspec agy
+    qutebrowser kanata pi opencode claude openspec agy
 )
 
 missing=0
