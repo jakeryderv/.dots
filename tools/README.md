@@ -22,7 +22,7 @@ to re-run to update unless their header says a pin must be bumped deliberately.
 ## Shared library
 
 The installers that download GitHub release assets (`delta`, `lazygit`,
-`tealdeer`, `t3code`, `nvim`, `kanata`) source
+`tealdeer`, `t3code`, `nvim`, `kanata`, `ast-grep`, `freecad`) source
 [`lib/github-release.sh`](lib/github-release.sh)
 for the parts that must not drift between them: platform and dependency
 preflight, latest-release resolution, asset selection, and the SHA-256 digest
@@ -37,7 +37,9 @@ source builds) and stay self-contained.
 
 | Script | Installs | Notes |
 |--------|----------|-------|
+| `install-ast-grep.sh` | [ast-grep](https://github.com/ast-grep/ast-grep) | Verified release zip → `/usr/local/bin`, plus a bash completion the binary generates. Skips the download when already current; `--force` reinstalls. The zip's deprecated `sg` alias is **not** installed — `/usr/bin/sg` is already the `login` package's. |
 | `install-delta.sh` | [delta](https://github.com/dandavison/delta) | Verified official `.deb` via `dpkg`. Skips the download when already current; `--force` reinstalls. Wire it into [`git`](../docs/git.md) yourself — see the script's closing note. |
+| `install-freecad.sh` | [FreeCAD](https://github.com/FreeCAD/FreeCAD) | Verified official AppImage (~820 MB) → `~/.local/opt/freecad`, symlinked to `~/.local/bin`; also installs launcher entry + icons. No sudo. Tracks the **stable** release, not the `weekly-*` prereleases; skips the download when already current. Needs `libfuse2t64`. |
 | `install-fzf.sh` | [fzf](https://github.com/junegunn/fzf) | Cloned to `~/.fzf`. `--all` **edits your shell rc files** to add keybindings/completion. |
 | `install-glow.sh` | [glow](https://github.com/charmbracelet/glow) | Charm apt repo. Markdown renderer used by [`shell`](../shell/README.md)'s `llm.sh`. |
 | `install-kanata.sh` | [kanata](https://github.com/jtroo/kanata) | Verified GitHub release binary → `/usr/local/bin`, the build compiled *without* `cmd` support. Binary only: `/dev/input` + `/dev/uinput` access is a deliberate manual step. See [`kanata`](../docs/kanata.md). |

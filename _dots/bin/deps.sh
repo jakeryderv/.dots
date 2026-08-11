@@ -19,8 +19,8 @@ warn() { printf '%s!%s %s\n' "$YELLOW" "$RESET" "$*"; }
 required=(bash git just python3 find sed awk grep diff readlink file)
 optional=(
     shellcheck shfmt luac fc-cache
-    starship vim nvim tmux fzf bat batcat rg fd fdfind delta lazygit glow llm
-    qutebrowser kanata pi opencode claude openspec agy
+    starship vim nvim tmux fzf bat batcat rg fd fdfind ast-grep delta lazygit glow llm
+    qutebrowser kanata pi opencode claude openspec agy freecad
 )
 
 missing=0
