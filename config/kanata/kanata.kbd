@@ -42,12 +42,18 @@
   ;; Only remap the laptop's internal keyboard. This replaced an exclude list
   ;; of known non-keyboards (monitor, media-key endpoints, a mouse receiver
   ;; that fakes a kbd handler): external keyboards should type through
-  ;; untouched, so an allowlist of one is both safer and shorter.
+  ;; untouched, so an allowlist is both safer and shorter.
+  ;;
+  ;; The ITE device is the real one: on this Ideapad the internal keyboard is
+  ;; wired through the ITE embedded controller, and an evdev capture confirmed
+  ;; all typing arrives there. The AT device is the legacy PS/2 endpoint --
+  ;; mostly idle, but kept in case some keys still route through it.
   ;;
   ;; Names must match in full -- no partial matches, no regex. They come from
   ;; the "registering /dev/input/eventX" lines kanata logs at startup:
   ;;     journalctl --user -u kanata.service | grep registering
   linux-dev-names-include (
+    "ITE Tech. Inc. ITE Device(8258) Keyboard"
     "AT Translated Set 2 keyboard"
   )
 )

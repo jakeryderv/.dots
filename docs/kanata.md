@@ -92,10 +92,15 @@ media-key endpoints, and a Logitech G Pro Wireless *mouse*, whose receiver
 presents a keyboard interface alongside `mouse3`.
 
 `linux-dev-names-include` in the config allowlists the laptop's internal
-keyboard (`AT Translated Set 2 keyboard`) and nothing else. External keyboards
-and everything mouse-shaped pass through to the kernel untouched. This replaced
-an exclude list of known non-keyboards: an allowlist of one can't be surprised
-by a new device.
+keyboard and nothing else. External keyboards and everything mouse-shaped pass
+through to the kernel untouched. This replaced an exclude list of known
+non-keyboards: an allowlist can't be surprised by a new device.
+
+The internal keyboard is two devices: typing actually arrives on
+`ITE Tech. Inc. ITE Device(8258) Keyboard` (the keyboard is wired through the
+ITE embedded controller — confirmed by capturing evdev events while typing),
+while `AT Translated Set 2 keyboard` is the legacy PS/2 endpoint, mostly idle
+but included in case some keys still route through it.
 
 Names must match **in full** — no partial matches, no regex, and trailing
 spaces count. Get them from the startup log:
