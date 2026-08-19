@@ -39,24 +39,16 @@
   ;; prefer waiting over a crash-restart loop.
   linux-continue-if-no-devs-found yes
 
-  ;; Left to itself kanata grabs every device that looks vaguely keyboard-like,
-  ;; including a monitor and the media-key endpoints. Excluding is safer than
-  ;; including here: a new keyboard still works by default, and only these
-  ;; known non-typing devices are handed back to the kernel untouched.
+  ;; Only remap the laptop's internal keyboard. This replaced an exclude list
+  ;; of known non-keyboards (monitor, media-key endpoints, a mouse receiver
+  ;; that fakes a kbd handler): external keyboards should type through
+  ;; untouched, so an allowlist of one is both safer and shorter.
   ;;
   ;; Names must match in full -- no partial matches, no regex. They come from
   ;; the "registering /dev/input/eventX" lines kanata logs at startup:
   ;;     journalctl --user -u kanata.service | grep registering
-  ;;
-  ;; The Logitech entry is the G Pro Wireless *mouse*: its receiver exposes a
-  ;; `kbd` handler next to `mouse3`, so kanata claims it as a keyboard. Note
-  ;; the trailing space -- that is genuinely part of the device name.
-  linux-dev-names-exclude (
-    "DP-2"
-    "Ideapad extra buttons"
-    "Keychron Keychron K3 Pro Consumer Control"
-    "Keychron Keychron K3 Pro System Control"
-    "Logitech G Pro "
+  linux-dev-names-include (
+    "AT Translated Set 2 keyboard"
   )
 )
 

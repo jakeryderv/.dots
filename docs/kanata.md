@@ -91,12 +91,14 @@ machine included a monitor (`DP-2`), the laptop's extra buttons, the Keychron's
 media-key endpoints, and a Logitech G Pro Wireless *mouse*, whose receiver
 presents a keyboard interface alongside `mouse3`.
 
-`linux-dev-names-exclude` in the config lists those by name. Excluding rather
-than including means a newly plugged keyboard still works by default — but a new
-mouse-like device could get grabbed the same way.
+`linux-dev-names-include` in the config allowlists the laptop's internal
+keyboard (`AT Translated Set 2 keyboard`) and nothing else. External keyboards
+and everything mouse-shaped pass through to the kernel untouched. This replaced
+an exclude list of known non-keyboards: an allowlist of one can't be surprised
+by a new device.
 
-Names must match **in full** — no partial matches, no regex, and trailing spaces
-count (the Logitech entry has one). Get them from the startup log:
+Names must match **in full** — no partial matches, no regex, and trailing
+spaces count. Get them from the startup log:
 
 ```bash
 journalctl --user -u kanata.service | grep registering
