@@ -99,7 +99,8 @@
     "claude-code-setup@claude-plugins-official": true,
     "codex@openai-codex": true,
     "agy@jakeryderv": true,
-    "cloudflare@cloudflare": true
+    "cloudflare@cloudflare": true,
+    "runpod@runpod": true
   },
   "extraKnownMarketplaces": {
     "openai-codex": {
@@ -120,6 +121,12 @@
       "source": {
         "source": "github",
         "repo": "cloudflare/skills"
+      }
+    },
+    "runpod": {
+      "source": {
+        "source": "github",
+        "repo": "runpod/runpod-plugins-official"
       }
     }
   },
