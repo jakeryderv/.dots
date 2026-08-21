@@ -23,6 +23,11 @@ fi
 # OPENSPEC_TELEMETRY === '0' (and the cross-tool DO_NOT_TRACK === '1').
 export OPENSPEC_TELEMETRY=0
 
+# Pi agent performance defaults. Keep provider prompt caches warm across
+# sessions, and avoid indexing the entire home directory when Pi starts there.
+export PI_CACHE_RETENTION=long
+export FFF_ENABLE_HOME_SCAN=0
+
 # man stuff
 if command -v nvim >/dev/null 2>&1; then
     export MANPAGER='nvim +Man!'
