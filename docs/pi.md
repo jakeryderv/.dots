@@ -6,11 +6,11 @@ Mirrors `~/.pi/agent/`. Only **user-authored** config is tracked here; secrets
 and tool-managed state stay in the live `~/.pi/` dir and are gitignored.
 
 | Tracked | Tool-managed / secret (NOT tracked) |
-|---------|-------------------------------------|
+| --- | --- |
 | `AGENTS.md` — global agent instructions | `auth.json` — credentials |
 | `settings.json` — provider/model defaults, scoped model cycling, installed `packages` | `npm/`, `git/` — Pi's package installations, regenerated from `settings.json` |
 | `mcp.json` — MCP servers (`context7` hosted remote) | `sessions/`, `mcp-cache.json`, `models-store.json`, `run-history.jsonl`, `intercom/`, `trust.json` — runtime state |
-| `extensions/` — custom TS extensions (`dump-system-prompt.ts`) | `fff/`, `pi-hermes-memory/`, `projects-memory/`, `missions/`, `tmp/` — extension state |
+| `extensions/` — custom TS extensions and their development lockfile | `fff/`, `pi-hermes-memory/`, `projects-memory/`, `missions/`, `tmp/` — extension state |
 | `themes/` — custom TUI theme (`carbonfox.json`; selected in `settings.json`) | `~/.pi/artifacts/`, `workflows/`, `web-search-cache/`, `rules/` — generated state |
 | `skills/` — reserved for tracked Pi-only skills; shared skills come from `~/.agents/skills/` | `~/.pi/web-search.json` (provider keys), `exa-usage.json`, `playwright-profile/` — machine-local state |
 | `prompts/` — tracked prompt templates | |
@@ -36,7 +36,8 @@ binaries or secrets:
 | --- | --- | --- |
 | **Node.js + npm/npx** | Pi itself; installing `packages`; running local MCP servers | system install |
 | **Pi CLI** | Coding-agent runtime | `bash tools/install-pi.sh` (tracks the latest release) |
-| **`just`, `git`** | activating this config (symlinks) | system install |
+| **`just`, `git`** | activating this config (symlinks) and dashboard repository status | system install |
+| **GitHub CLI (`gh`)** | dashboard pull-request status and `/pr` | system install; the dashboard otherwise continues with local Git status only |
 | **Language servers** (pyright, typescript-language-server, rust-analyzer, gopls, …) | `pi-lens` LSP nav/diagnostics | install per-language as needed; pi-lens uses whatever is on `PATH`. ast-grep is bundled (no install) |
 | **Playwright CLI + Chromium** | Shared browser automation skill | Install with [`tools/install-playwright-cli.sh`](../tools/install-playwright-cli.sh); see [`agent-skills`](agent-skills.md) |
 | **Provider credentials** | model access (Anthropic / OpenAI / Google) | `~/.pi/agent/auth.json` (run pi and log in; not tracked) |
@@ -44,7 +45,28 @@ binaries or secrets:
 | **Network** | hosted Context7, first-run local MCP fetches, package installs, web search | — |
 
 Self-contained (no extra setup): `pi-subagents`, `pi-intercom`, `pi-web-access`
-fetch, and pi-lens's bundled ast-grep.
+fetch, pi-lens's bundled ast-grep, and the tracked custom extensions. Their
+runtime imports are supplied by Pi; `extensions/package-lock.json` exists only
+to make local type-checking and tests reproducible.
+
+## Custom extensions
+
+| Extension | Behavior |
+| --- | --- |
+| `dashboard.ts` | Two-line footer with cwd, provider/model/reasoning, context use, session cost, token speed, Git branch/change count, PR number, and other extension statuses. `/pr` forces a refresh. |
+| `background-terminals.ts` | Managed long-running processes through `bg_start`, `bg_status`, `bg_list`, and `bg_kill`; `/ps` provides an interactive inspector. Processes are stopped on session shutdown. |
+| `ask-user.ts` | `ask_user` tool for one focused 2–5 choice question, including a free-form answer path. |
+| `run-recaps.ts` | Adds a TUI-only recap card after each settled run. It stays on the active provider (using `gpt-5.6-luna` only for `openai-codex`) and falls back to a local extract. The request includes user/assistant text but deliberately omits tool arguments and raw tool results. `/recaps` toggles it for the session; each generated recap is an additional model request. |
+| `copy-all.ts` | `/copy-all` copies user and assistant text from the active conversation branch. |
+| `dump-system-prompt.ts` | `/dump-system-prompt` displays the current effective system prompt. |
+
+For extension development:
+
+```bash
+npm --prefix home/pi/agent/extensions ci --ignore-scripts
+npm --prefix home/pi/agent/extensions run check
+npm --prefix home/pi/agent/extensions test
+```
 
 ## Activate
 

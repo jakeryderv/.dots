@@ -29,6 +29,8 @@ while read -r pkg mode src dst _; do
         echo "error: manifest source has no tracked files: $src (package '$pkg')" >&2
         manifest_errors=1
     fi
+    # These are literal manifest prefixes, not shell variables.
+    # shellcheck disable=SC2016
     case "$dst" in
     '$HOME'/* | '$XDG_CONFIG_HOME'/* | '$XDG_DATA_HOME'/*) ;;
     *)
@@ -49,12 +51,14 @@ bash _dots/checks/verify-readmes.sh >/dev/null
 # markdown, so a broken link is invisible until someone follows it.
 echo 'Checking documentation links...'
 python3 - <<'PY'
-import pathlib, re, sys
+import pathlib, re, subprocess, sys
 
 broken = []
-for path in pathlib.Path('.').rglob('*.md'):
-    if '.git/' in str(path):
-        continue
+tracked_markdown = subprocess.check_output(
+    ['git', 'ls-files', '-z', '--', '*.md'], text=True
+).split('\0')
+for tracked_path in filter(None, tracked_markdown):
+    path = pathlib.Path(tracked_path)
     for match in re.finditer(r'\[[^\]]*\]\(([^)#][^)]*)\)', path.read_text()):
         target = match.group(1)
         if target.startswith(('http://', 'https://', 'mailto:')):
@@ -116,7 +120,7 @@ while IFS= read -r -d '' file; do
     if is_bash_file "$file"; then
         bash -n "$file"
     fi
-done < <(find "${BASH_PATHS[@]}" -type f ! -name local.sh -print0)
+done < <(find "${BASH_PATHS[@]}" -path '*/node_modules' -prune -o -type f ! -name local.sh -print0)
 
 if command -v shellcheck >/dev/null 2>&1; then
     echo 'Running ShellCheck...'
@@ -124,7 +128,7 @@ if command -v shellcheck >/dev/null 2>&1; then
         if is_bash_file "$file"; then
             shellcheck -x -S warning "$file"
         fi
-    done < <(find "${BASH_PATHS[@]}" -type f ! -name local.sh -print0)
+    done < <(find "${BASH_PATHS[@]}" -path '*/node_modules' -prune -o -type f ! -name local.sh -print0)
 elif [[ "${REQUIRE_LINTERS:-0}" == 1 ]]; then
     echo 'error: shellcheck is required but unavailable' >&2
     exit 1
@@ -149,7 +153,7 @@ if command -v shfmt >/dev/null 2>&1; then
         if ! shfmt --diff "$file"; then
             unformatted=$((unformatted + 1))
         fi
-    done < <(find "${BASH_PATHS[@]}" -type f ! -name local.sh -print0)
+    done < <(find "${BASH_PATHS[@]}" -path '*/node_modules' -prune -o -type f ! -name local.sh -print0)
     if ((unformatted > 0)); then
         echo "error: $unformatted file(s) are not shfmt-formatted; run: shfmt -w <file>" >&2
         exit 1
@@ -182,7 +186,7 @@ if command -v luac >/dev/null 2>&1; then
     echo 'Checking Lua syntax...'
     while IFS= read -r -d '' file; do
         luac -p "$file"
-    done < <(find "${LUA_PATHS[@]}" -type f -name '*.lua' -print0)
+    done < <(find "${LUA_PATHS[@]}" -path '*/node_modules' -prune -o -type f -name '*.lua' -print0)
 elif [[ "${REQUIRE_LINTERS:-0}" == 1 ]]; then
     echo 'error: luac is required but unavailable' >&2
     exit 1
