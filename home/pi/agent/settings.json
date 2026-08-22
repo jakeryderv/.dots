@@ -30,5 +30,7 @@
     "google/gemini-3.7-flash:high",
     "google/gemini-3.1-pro-preview:high"
   ],
-  "hideThinkingBlock": true
+  "hideThinkingBlock": true,
+  "tuiMode": "fullscreen",
+  "fullscreenScrollbar": "always"
 }
