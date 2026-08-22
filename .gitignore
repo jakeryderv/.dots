@@ -8,35 +8,6 @@
 # remaining cases: state copied in by hand, or a row switched to `link` mode
 # without thinking through what the tool writes.
 
-# Pi — track user-authored agent config; ignore secrets + tool-managed state.
-home/pi/agent/auth.json
-home/pi/agent/trust.json
-home/pi/agent/npm/
-home/pi/agent/extensions/node_modules/
-home/pi/agent/git/
-home/pi/agent/sessions/
-home/pi/agent/bin/
-home/pi/agent/intercom/
-home/pi/agent/fff/
-home/pi/agent/pi-hermes-memory/
-home/pi/agent/projects-memory/
-home/pi/agent/missions/
-home/pi/agent/tmp/
-home/pi/agent/mcp-cache.json
-home/pi/agent/mcp-npx-cache.json
-home/pi/agent/models-store.json
-home/pi/agent/prompt-template-model.json
-home/pi/agent/run-history.jsonl
-home/pi/agent/.pi-hermes-locks.sqlite*
-home/pi/agent/settings.json.bak
-home/pi/artifacts/
-home/pi/web-search.json
-home/pi/exa-usage.json
-home/pi/web-search-cache/
-home/pi/workflows/
-home/pi/playwright-profile/
-home/pi/rules/
-
 # Bash — machine-specific config (use local.sh.example as template)
 shell/local.sh
 
@@ -75,8 +46,7 @@ config/opencode/package*.json
 config/opencode/bun.lock
 
 # Installer-managed skills live under ~/.agents/skills and must never be copied
-# into an agent-specific tracked source. Pi-only skills under home/pi/agent/skills
-# remain intentionally trackable.
+# into an agent-specific tracked source.
 config/opencode/skills/use-railway/
 
 # Python build cruft (e.g. qutebrowser config.py)

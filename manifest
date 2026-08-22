@@ -57,7 +57,6 @@ git             link    home/gitconfig                                      $HOM
 tmux            link    home/tmux.conf                                      $HOME/.tmux.conf
 editorconfig    link    home/editorconfig                                   $HOME/.editorconfig
 vim             tree    home/vim                                            $HOME/.vim
-pi              tree    home/pi                                             $HOME/.pi
 
 # claude and agent-skills both deploy into ~/.claude/skills/. Under stow that
 # needed --no-folding on both packages to avoid a race; as two tree rows they

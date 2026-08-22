@@ -34,7 +34,6 @@ beyond linking, and any external dependencies.
 | [`nvim.md`](nvim.md) | `config/nvim` | `~/.config/nvim/` |
 | [`opencode.md`](opencode.md) | `config/opencode` | `~/.config/opencode/` |
 | [`openspec.md`](openspec.md) | `config/openspec` | `~/.config/openspec/` |
-| [`pi.md`](pi.md) | `home/pi` | `~/.pi/` |
 | [`qutebrowser.md`](qutebrowser.md) | `config/qutebrowser` | `~/.config/qutebrowser/` |
 | [`scripts.md`](scripts.md) | `bin`, `data/bash-completion/completions` | `~/.local/bin/`, completions |
 | [`serena.md`](serena.md) | — | documentation only |
