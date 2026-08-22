@@ -33,7 +33,7 @@ Copying this config is **not** enough on its own. Some features need system
 binaries or secrets:
 
 | Dependency | Needed for | How it's resolved |
-|------------|-----------|-------------------|
+| --- | --- | --- |
 | **Node.js + npm/npx** | Pi itself; installing `packages`; running local MCP servers | system install |
 | **Pi CLI** | Coding-agent runtime | `bash tools/install-pi.sh` (tracks the latest release) |
 | **`just`, `git`** | activating this config (symlinks) | system install |

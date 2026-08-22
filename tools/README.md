@@ -36,7 +36,7 @@ source builds) and stay self-contained.
 ## Scripts
 
 | Script | Installs | Notes |
-|--------|----------|-------|
+| --- | --- | --- |
 | `install-ast-grep.sh` | [ast-grep](https://github.com/ast-grep/ast-grep) | Verified release zip → `/usr/local/bin`, plus a bash completion the binary generates. Skips the download when already current; `--force` reinstalls. The zip's deprecated `sg` alias is **not** installed — `/usr/bin/sg` is already the `login` package's. |
 | `install-delta.sh` | [delta](https://github.com/dandavison/delta) | Verified official `.deb` via `dpkg`. Skips the download when already current; `--force` reinstalls. Wire it into [`git`](../docs/git.md) yourself — see the script's closing note. |
 | `install-freecad.sh` | [FreeCAD](https://github.com/FreeCAD/FreeCAD) | Verified official AppImage (~820 MB) → `~/.local/opt/freecad`, symlinked to `~/.local/bin`; also installs launcher entry + icons. No sudo. Tracks the **stable** release, not the `weekly-*` prereleases; skips the download when already current. Needs `libfuse2t64`. |
