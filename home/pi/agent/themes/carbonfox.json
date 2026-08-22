@@ -11,17 +11,10 @@
     "dim": "#6e6f70",
     "borderMuted": "#535353",
     "red": "#ee5396",
-    "redBright": "#f16da6",
     "green": "#25be6a",
-    "greenBright": "#46c880",
-    "yellow": "#08bdba",
-    "yellowBright": "#2dc7c4",
     "blue": "#78a9ff",
-    "blueBright": "#8cb6ff",
     "magenta": "#be95ff",
-    "magentaBright": "#c8a5ff",
     "cyan": "#33b1ff",
-    "cyanBright": "#52bdff",
     "teal": "#3ddbd9",
     "pink": "#ff7eb6",
     "orange": "#f9a826"
@@ -82,6 +75,7 @@
     "thinkingMedium": "teal",
     "thinkingHigh": "magenta",
     "thinkingXhigh": "red",
+    "thinkingMax": "pink",
 
     "bashMode": "orange"
   },

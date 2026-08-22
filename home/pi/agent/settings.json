@@ -16,13 +16,19 @@
     "npm:pi-intercom",
     "npm:@ff-labs/pi-fff",
     "npm:pi-hermes-memory",
-    "npm:@quintinshaw/pi-dynamic-workflows",
-    "npm:pi-prompt-template-model"
+    "npm:@quintinshaw/pi-dynamic-workflows"
   ],
-  "extensions": [],
   "defaultProjectTrust": "ask",
   "enableInstallTelemetry": false,
-  "enabledModels": [],
-  "hideThinkingBlock": true,
-  "showHardwareCursor": false
+  "enabledModels": [
+    "openai-codex/gpt-5.6-sol:high",
+    "openai-codex/gpt-5.6-terra:high",
+    "openai-codex/gpt-5.6-luna:high",
+    "anthropic/claude-opus-5:high",
+    "anthropic/claude-sonnet-5:high",
+    "anthropic/claude-fable-5:high",
+    "google/gemini-3.7-flash:high",
+    "google/gemini-3.1-pro-preview:high"
+  ],
+  "hideThinkingBlock": true
 }
