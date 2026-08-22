@@ -22,6 +22,31 @@ fail() {
     exit 1
 }
 
+same_path() {
+    local left right
+    left="$(readlink -f "$1" 2>/dev/null || true)"
+    right="$(readlink -f "$2" 2>/dev/null || true)"
+    [[ -n "$left" && "$left" == "$right" ]]
+}
+
+verify_live_tree_skill() {
+    local skill_dir="$1" skill_name="$2"
+    local source_rel="${skill_dir#"$REPO_ROOT"/}"
+    local live_dir="$HOME/.agents/skills/$skill_name"
+    local tracked rel live_file
+
+    [[ -d "$live_dir" && ! -L "$live_dir" ]] ||
+        fail "$live_dir must be a real tree-deployment directory"
+
+    while IFS= read -r tracked; do
+        rel="${tracked#"$source_rel"/}"
+        live_file="$live_dir/$rel"
+        [[ -e "$live_file" || -L "$live_file" ]] || fail "missing live skill file: $live_file"
+        same_path "$live_file" "$REPO_ROOT/$tracked" ||
+            fail "$live_file does not resolve to the canonical source"
+    done < <(git -C "$REPO_ROOT" ls-files -- "$source_rel")
+}
+
 [[ -d "$CANONICAL_ROOT" ]] || fail "missing canonical skill root: $CANONICAL_ROOT"
 [[ -d "$CLAUDE_ROOT" ]] || fail "missing Claude compatibility root: $CLAUDE_ROOT"
 
@@ -54,11 +79,11 @@ for skill_dir in "${skill_dirs[@]}"; do
         fail "OpenCode still has a redundant local copy of $skill_name"
 
     if ((CHECK_LIVE)); then
-        expected="$(readlink -f "$skill_dir")"
-        for live_path in "$HOME/.agents/skills/$skill_name" "$HOME/.claude/skills/$skill_name"; do
-            [[ -e "$live_path" ]] || fail "missing live skill: $live_path"
-            [[ "$(readlink -f "$live_path")" == "$expected" ]] || fail "$live_path does not resolve to the canonical skill"
-        done
+        verify_live_tree_skill "$skill_dir" "$skill_name"
+
+        live_path="$HOME/.claude/skills/$skill_name"
+        [[ -e "$live_path" ]] || fail "missing live skill: $live_path"
+        same_path "$live_path" "$skill_dir" || fail "$live_path does not resolve to the canonical skill"
 
         for duplicate_path in \
             "$HOME/.codex/skills/$skill_name" \
@@ -72,5 +97,15 @@ done
 while IFS= read -r entry; do
     [[ -n "${seen_names[$entry]:-}" ]] || fail "orphaned Claude skill link: $entry"
 done < <(find "$CLAUDE_ROOT" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort)
+
+if ((CHECK_LIVE)); then
+    agent_root="$HOME/.pi/agent/skills"
+    if [[ -d "$agent_root" ]]; then
+        while IFS= read -r entry; do
+            [[ -e "$HOME/.agents/skills/$entry" || -L "$HOME/.agents/skills/$entry" ]] || continue
+            fail "redundant shared skill in agent-specific directory: $agent_root/$entry"
+        done < <(find "$agent_root" -mindepth 1 -maxdepth 1 ! -name '.gitkeep' -printf '%f\n' | sort)
+    fi
+fi
 
 printf 'Shared agent skills valid (%d canonical skills).\n' "${#skill_dirs[@]}"

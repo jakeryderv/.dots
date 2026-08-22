@@ -35,6 +35,9 @@ npx skills add -g cloudflare/skills --skill '*' -y
 # Playwright browser automation (repo also ships an internal 'dev'
 # maintenance skill — excluded)
 npx skills add -g microsoft/playwright-cli --skill playwright-cli -y
+# Pi reads ~/.agents/skills directly; remove the redundant compatibility link
+# while keeping the canonical installation and every other agent integration.
+npx skills remove -g -a pi -s playwright-cli -y
 
 # Railway (installs via its own CLI, not skills.sh; also handles MCP setup
 # via `railway setup agent`)
