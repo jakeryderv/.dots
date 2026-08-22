@@ -42,6 +42,7 @@ alias activate="source .venv/bin/activate"
 # concurrently. An explicitly supplied session name still wins.
 alias codex='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-codex}" codex'
 alias claude='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-claude}" claude'
+alias claude-danger='claude --dangerously-skip-permissions'
 alias pi='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-pi}" pi'
 # OpenCode discovers both ~/.agents/skills and ~/.claude/skills by default.
 # Ignore the Claude compatibility mirror so each shared skill is loaded once.
