@@ -100,7 +100,8 @@
     "codex@openai-codex": true,
     "agy@jakeryderv": true,
     "cloudflare@cloudflare": true,
-    "runpod@runpod": true
+    "runpod@runpod": true,
+    "plannotator@plannotator": true
   },
   "extraKnownMarketplaces": {
     "openai-codex": {
@@ -127,6 +128,12 @@
       "source": {
         "source": "github",
         "repo": "runpod/runpod-plugins-official"
+      }
+    },
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
       }
     }
   },
