@@ -47,10 +47,9 @@ prefix = "ctrl+b"
 #   split_vertical   = vertical divider   = panes side by side
 #                                           (`pane split --direction right`)
 #   split_horizontal = horizontal divider = panes stacked (`--direction down`)
-# tmux's `-h` means the opposite, so ignore the word and match the glyph. The
-# default already puts stacked on minus; this puts side-by-side on backslash so
-# `-` and `\` mean the same thing here, in Ghostty, and in tmux.
-split_vertical = "prefix+backslash"
+# tmux's `-h` means the opposite, so ignore the word and match the glyph. Both
+# glyphs are now exactly tmux's: `|` beside, `-` stacked.
+split_vertical = "prefix+|"
 split_horizontal = "prefix+minus"
 
 # --- Workspaces --------------------------------------------------------------
@@ -75,9 +74,20 @@ previous_agent = "prefix+shift+a"
 focus_agent = "prefix+alt+1..9"
 
 # --- Tabs --------------------------------------------------------------------
-# Reordering, mirroring Ghostty's ctrl+alt+shift+n/p move_tab bindings.
 move_tab_previous = "prefix+shift+left"
 move_tab_next = "prefix+shift+right"
+
+# --- tmux parity -------------------------------------------------------------
+# herdr and tmux run side by side in two Ghostty tabs, so every verb they share
+# should be the same key in both. These four were the only gaps left worth
+# closing; see docs/herdr.md for the three that deliberately stay different.
+#
+#   ,  rename    tmux binds `,` to rename-window; herdr's default was shift+t
+#   d  detach    tmux binds `d`;                   herdr's default was q
+#   ;  last pane tmux binds `;`;                   unbound upstream
+rename_tab = "prefix+comma"
+detach = "prefix+d"
+last_pane = "prefix+;"
 
 # --- Resize ------------------------------------------------------------------
 # Direct resize without entering resize mode, in the space config.ghostty gave

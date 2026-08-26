@@ -108,10 +108,34 @@ What `config.toml` changes or adds:
 | `prefix + Shift+←` / `→` | Move tab | — |
 | `` prefix + ` `` | Floating terminal popup | Mirrors tmux's `Alt+`` ` `` toggle-popup, same 80%×80% |
 | `prefix + Alt+g` | lazygit popup | Same dimensions |
+| `prefix + ,` | Rename tab | tmux's rename-window key; default was `shift+t` |
+| `prefix + d` | Detach | tmux's detach key; default was `q` |
+| `prefix + ;` | Last pane | tmux's last-pane key; unbound upstream |
 
 `Ctrl+h/j/k/l` is left unbound here on purpose: herdr forwards it to the focused
 pane, so nvim inside a herdr pane keeps its own window navigation. Pane
 movement is on the prefix instead.
+
+### Parity with tmux, and its limits
+
+Both tools run side by side in two Ghostty tabs, so every verb they share is the
+same key in both:
+
+```
+c  new tab       x  close pane      n/p  next/prev tab
+|  split beside  z  zoom            1-9  jump to tab
+-  split stacked r  resize mode     ?    help
+,  rename        d  detach          ;    last pane
+```
+
+Three deliberately stay different, because matching them would cost more than
+the muscle memory is worth:
+
+| Verb | tmux | herdr | Why not |
+|------|------|-------|---------|
+| Focus pane | `Ctrl+hjkl`, no prefix | `prefix+hjkl` | vim-tmux-navigator inspects the pane process and hands the key to Vim when Vim is running. herdr has no such bridge, so binding `ctrl+hjkl` there would take those keys from nvim inside herdr panes permanently. Binding `prefix+hjkl` in tmux instead would clobber `prefix+l` (last window). |
+| Scrollback | `v` — copy mode | `e` — opens in nvim | Different mechanisms, not different keys for one thing. herdr has no copy mode. |
+| `prefix+a` | Toggle synchronized panes | Next agent | The same chord means different verbs. Harmless in practice — neither action exists in the other tool — but it is a real mismatch, not an oversight. |
 
 **Split naming is inverted from tmux.** Herdr names a split after the divider's
 orientation; tmux names it after the flag:
@@ -121,9 +145,9 @@ orientation; tmux names it after the flag:
 | `split_vertical` | vertical | side by side | `split-window -h` |
 | `split_horizontal` | horizontal | stacked | `split-window -v` |
 
-Ignore the word and match the glyph — `\` is side by side and `-` is stacked in
-all three of herdr, Ghostty, and tmux. The CLI is unambiguous where the config
-is not: `herdr pane split --direction right|down`.
+Ignore the word and match the glyph — `|` is side by side and `-` is stacked in
+both tools, which is the point of binding them this way. The CLI is unambiguous
+where the config is not: `herdr pane split --direction right|down`.
 
 ## Theme
 
