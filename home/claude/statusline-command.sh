@@ -187,12 +187,22 @@ if [ -n "$cwd" ]; then
     [ -z "$dir_display" ] && dir_display="/"
 fi
 
+# i-have-adhd always-on flag. The plugin's SessionStart hook injects its ruleset
+# only while this file exists, and resolves the config dir the same way — so the
+# indicator tracks the hook rather than guessing. Says nothing about a per-session
+# /i-have-adhd or "stop adhd mode": neither leaves any on-disk state to read.
+adhd_flag=""
+if [ -f "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.i-have-adhd-always" ]; then
+    adhd_flag="${MAGENTA}adhd${RESET}"
+fi
+
 line1_left="${BOLD}${short_model}${RESET}"
 [ -n "$git_info" ] && line1_left="${line1_left}${SEP}${git_info}"
 [ -n "$dir_display" ] && line1_left="${line1_left}${SEP}${dir_display}"
 [ -n "$wt_name" ] && line1_left="${line1_left}${SEP}wt:${wt_name}"
 [ -n "$session_name" ] && line1_left="${line1_left}${SEP}${session_name}"
 [ -n "$output_style" ] && [ "$output_style" != "default" ] && line1_left="${line1_left}${SEP}${output_style}"
+[ -n "$adhd_flag" ] && line1_left="${line1_left}${SEP}${adhd_flag}"
 
 # ---------------------------------------------------------------------------
 # LINE 2 — LEFT  (context bar)
