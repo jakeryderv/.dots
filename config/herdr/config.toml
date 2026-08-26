@@ -1,0 +1,176 @@
+# herdr - terminal workspace manager for AI coding agents.
+# Full annotated defaults: `herdr --default-config`. Only keys that differ from
+# upstream live here, so future default changes are inherited rather than pinned.
+# Validate after editing with `herdr config check` -- it rejects unknown keys,
+# unparseable bindings, and out-of-range enum values.
+#
+# Key namespaces already spoken for on this machine (see docs/herdr.md):
+#   Alt+a           tmux prefix
+#   Ctrl+h/j/k/l    vim-tmux-navigator, root level
+#   Ctrl+Alt+*      Ghostty tabs/splits, consumed before herdr ever sees it
+#   Alt+`           tmux floating terminal
+# Ctrl+b is free -- tmux.conf unbinds it -- so herdr keeps it.
+
+onboarding = false
+
+# ============================================
+# Theme
+# ============================================
+
+[theme]
+# Inherit the host terminal palette instead of a built-in. Ghostty already
+# renders carbonfox (config/ghostty/carbonfox.ghostty), so the palette is
+# defined once and herdr borrows it -- including over SSH, where the remote
+# herdr picks up whatever the local terminal is using.
+name = "terminal"
+
+[theme.custom]
+# Let Ghostty's wallpaper show through pane backgrounds. "reset" emits no
+# background color at all rather than painting one over it.
+panel_bg = "reset"
+
+# carbonfox blue -- the same accent tmux uses for the active pane border and
+# the current window in the status bar.
+accent = "#78a9ff"
+
+# ============================================
+# Keys
+# ============================================
+
+[keys]
+# Explicit, though it is also the default: this is only safe because tmux.conf
+# unbinds C-b. If tmux ever reclaims it, both layers grab the same chord.
+prefix = "ctrl+b"
+
+# --- Splits ------------------------------------------------------------------
+# herdr names splits after the divider's orientation, not tmux's flags:
+#   split_vertical   = vertical divider   = panes side by side
+#                                           (`pane split --direction right`)
+#   split_horizontal = horizontal divider = panes stacked (`--direction down`)
+# tmux's `-h` means the opposite, so ignore the word and match the glyph. The
+# default already puts stacked on minus; this puts side-by-side on backslash so
+# `-` and `\` mean the same thing here, in Ghostty, and in tmux.
+split_vertical = "prefix+backslash"
+split_horizontal = "prefix+minus"
+
+# --- Workspaces --------------------------------------------------------------
+# Workspaces stack vertically in the sidebar, so up/down cycles them. Both
+# unbound upstream.
+previous_workspace = "prefix+up"
+next_workspace = "prefix+down"
+switch_workspace = "prefix+shift+1..9"
+
+# --- Agents ------------------------------------------------------------------
+# Jump between agent panes without going through the sidebar. Unbound upstream,
+# and the reason this tool exists. `a` is free because herdr has no
+# synchronize-panes for it to mean what it means in tmux.
+next_agent = "prefix+a"
+previous_agent = "prefix+shift+a"
+
+# --- Tabs --------------------------------------------------------------------
+# Reordering, mirroring Ghostty's ctrl+alt+shift+n/p move_tab bindings.
+move_tab_previous = "prefix+shift+left"
+move_tab_next = "prefix+shift+right"
+
+# --- Popups ------------------------------------------------------------------
+# A floating terminal on the prefix, the way tmux binds Alt+` to toggle-popup.
+# 80%x80% matches the tmux popup dimensions. `popup` is session-modal and leaves
+# the tab layout alone; it closes when the command exits.
+[[keys.command]]
+key = "prefix+backtick"
+type = "popup"
+command = "bash"
+width = "80%"
+height = "80%"
+
+[[keys.command]]
+key = "prefix+alt+g"
+type = "popup"
+command = "lazygit"
+width = "80%"
+height = "80%"
+
+# ============================================
+# UI
+# ============================================
+
+[ui]
+# Attention queue rather than sidebar order: with desktop notifications on, the
+# agent that needs input should be the one at the top. Use "spaces" to group by
+# workspace instead.
+agent_panel_sort = "priority"
+
+# Distinct glyphs per state (blocked/working/done/idle/unknown) instead of
+# colored dots. The terminal font is a Nerd Font, and state is worth reading
+# without decoding hue.
+status_indicators = "symbols"
+
+# tmux-style splitters: no frame around the pane area, no gaps between panes.
+pane_outer_borders = false
+pane_gaps = false
+
+# The analogue of tmux's `pane-border-status top` carrying the pane index and
+# current command -- here the border carries the detected agent instead.
+show_agent_labels_on_pane_borders = true
+
+# tmux creates windows immediately (`bind c new-window`) and lets processes
+# rename them. Do the same rather than prompting for a name first.
+prompt_new_tab_name = false
+
+# tmux.conf kills panes and windows without confirmation. Match it.
+confirm_close = false
+
+# tmux overrides the wheel to a smooth 1-line scroll; Ghostty's discrete:3
+# applies to the outer terminal, not to the panes herdr draws itself.
+mouse_scroll_lines = 1
+
+# Window managers show this. {hostname} is noise on a machine that only runs
+# herdr locally; the workspace is the part that changes.
+window_title = "herdr: {workspace}"
+
+# The tmux status-right analogue. tmux carries window count, pane count, date,
+# and time; herdr has no count entries, so this is the zoom badge plus the same
+# date and clock. Separator matches the dim `|` tmux draws between fields.
+tab_bar_right_separator = " │ "
+tab_bar_right = [
+    { type = "zoom" },
+    { type = "datetime", format = "%Y-%m-%d" },
+    { type = "datetime", format = "%H:%M" },
+]
+
+# Left at defaults, noted because tmux configures the equivalent explicitly:
+#   mouse_capture = true   herdr handles clicks, so Ghostty's ctrl+click URL
+#                          opening and tmux's C-MouseDown1Pane hyperlink bind do
+#                          not reach a pane. Set false to hand clicks back to
+#                          the terminal, or set right_click_passthrough_modifier
+#                          to forward just right-drag to pane apps.
+#   copy_on_select = true  matches copy-mode-vi MouseDragEnd1Pane copying on
+#                          drag release.
+
+# Show what Claude Code is currently doing. Claude Code writes its status into
+# the terminal title, and terminal_title_stripped is that title with its
+# decoration removed -- the sidebar equivalent of reading the tab bar. Other
+# agents keep the default two rows.
+[ui.sidebar.agents.rows_by_agent]
+claude = [
+    ["state_icon", "workspace", "tab"],
+    ["terminal_title_stripped"],
+    ["agent"],
+]
+
+[ui.toast]
+# Desktop notification when a background agent finishes or blocks. A deliberate
+# exception to the no-bells policy in config.ghostty (bell-features =
+# no-system,no-audio,no-attention,...): a bell is the terminal being noisy, this
+# is an agent asking for input.
+delivery = "system"
+delay_seconds = 1
+
+# ============================================
+# Behavior
+# ============================================
+
+[experimental]
+# Keep pane scrollback across a full server restart. Agent transcripts are the
+# reason to scroll back at all, and re-running the agent does not reproduce them.
+pane_history = true

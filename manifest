@@ -40,9 +40,11 @@ kanata          link    config/kanata                                       $XDG
 starship        link    config/starship.toml                                $XDG_CONFIG_HOME/starship.toml
 
 # --- XDG config: the tool writes into its own config dir ---------------------
-# opencode drops node_modules/ and bun.lock; qutebrowser writes autoconfig.yml.
+# opencode drops node_modules/ and bun.lock; qutebrowser writes autoconfig.yml;
+# herdr keeps its sockets, logs, and session.json beside config.toml.
 opencode        tree    config/opencode                                     $XDG_CONFIG_HOME/opencode
 qutebrowser     tree    config/qutebrowser                                  $XDG_CONFIG_HOME/qutebrowser
+herdr           tree    config/herdr                                        $XDG_CONFIG_HOME/herdr
 
 # --- Shared targets: directories other installers also write into ------------
 # ~/.local/bin holds 48 entries; only three are ours. ~/.config/systemd/user is

@@ -43,6 +43,14 @@ home/claude/downloads/
 home/claude/chrome/
 home/claude/statsig/
 
+# herdr — track config.toml; ignore the sockets, logs, and session state it
+# keeps in the same directory.
+config/herdr/*.sock
+config/herdr/*.log
+config/herdr/session.json
+config/herdr/.plugins.lock
+config/herdr/config.toml.bak*
+
 # opencode — track user-authored config; ignore plugin machinery
 config/opencode/node_modules/
 config/opencode/package*.json
