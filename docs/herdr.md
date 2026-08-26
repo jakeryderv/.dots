@@ -79,17 +79,27 @@ layer's mouse, scrollback, and prefix intact. The arrangement upstream actually
 warns against is the reverse: a tmux session *inside* a herdr pane disables
 agent state detection, so agents run directly in herdr panes.
 
-`Ctrl+b` is free because `.tmux.conf` unbinds it (`unbind C-b`, prefix moved to
-`Alt+a`). The two prefixes never collide, which is the problem most people
-combining these tools have to solve first and this setup never had.
+Both tools use the **same prefix**, `Alt+a`. They never nest, so there is no
+chord to contend over, and with the keymaps matched the prefix was the last
+difference left between one set of muscle memory and two.
+
+It also stops herdr undoing a trade `.tmux.conf` already made: `unbind C-b` gave
+`Ctrl+b` back to readline, where it is `backward-char`, and herdr's default
+prefix was quietly taking it again in every agent pane. Readline does not bind
+`M-a`.
+
+herdr's docs rank `alt+...` below `ctrl+letter` for reliability, but that caveat
+is about terminal and tmux setups. Here Ghostty talks to herdr directly, and
+Ghostty demonstrably delivers `alt+a` — tmux has been consuming it in the next
+tab all along.
 
 ## Keys
 
 | Namespace | Owner |
 |-----------|-------|
-| `Alt+a` | tmux prefix |
 | `Ctrl+h/j/k/l`, `Ctrl+\` | vim-tmux-navigator, in the tmux tab |
-| `Ctrl+b` | **herdr** |
+| `Ctrl+b` | nothing — returned to readline (`backward-char`) |
+| `Alt+a` | **both** — tmux in tab 1, herdr in tab 2 |
 | `ctrl+alt+*`, `alt+1..9` | released by Ghostty for herdr's use |
 | `Ctrl+Shift+*` | Ghostty — tabs, clipboard, command palette |
 
@@ -128,14 +138,16 @@ c  new tab       x  close pane      n/p  next/prev tab
 ,  rename        d  detach          ;    last pane
 ```
 
-Three deliberately stay different, because matching them would cost more than
-the muscle memory is worth:
+Two deliberately stay different, because matching them would cost more than the
+muscle memory is worth:
 
 | Verb | tmux | herdr | Why not |
 |------|------|-------|---------|
 | Focus pane | `Ctrl+hjkl`, no prefix | `prefix+hjkl` | vim-tmux-navigator inspects the pane process and hands the key to Vim when Vim is running. herdr has no such bridge, so binding `ctrl+hjkl` there would take those keys from nvim inside herdr panes permanently. Binding `prefix+hjkl` in tmux instead would clobber `prefix+l` (last window). |
 | Scrollback | `v` — copy mode | `e` — opens in nvim | Different mechanisms, not different keys for one thing. herdr has no copy mode. |
-| `prefix+a` | Toggle synchronized panes | Next agent | The same chord means different verbs. Harmless in practice — neither action exists in the other tool — but it is a real mismatch, not an oversight. |
+Only two, since the shared prefix made the third worth fixing: tmux's
+synchronize-panes moved off `a` to `*`, so `prefix+a` means "agent" everywhere
+it means anything.
 
 **Split naming is inverted from tmux.** Herdr names a split after the divider's
 orientation; tmux names it after the flag:

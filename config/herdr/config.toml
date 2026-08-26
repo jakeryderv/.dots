@@ -38,9 +38,20 @@ accent = "#78a9ff"
 # ============================================
 
 [keys]
-# Explicit, though it is also the default: this is only safe because tmux.conf
-# unbinds C-b. If tmux ever reclaims it, both layers grab the same chord.
-prefix = "ctrl+b"
+# Same prefix as tmux, on purpose. The two run in separate Ghostty tabs and
+# never nest, so there is no chord to contend over -- and with the keymaps
+# already matched, the prefix was the last thing standing between one set of
+# muscle memory and two.
+#
+# It also stops herdr undoing a trade tmux.conf already made. `unbind C-b` gave
+# Ctrl+b back to readline (it is backward-char); herdr's default prefix was
+# quietly taking it again in every agent pane. Readline does not bind M-a.
+#
+# herdr's docs rank alt+... below ctrl+letter for reliability, but that caveat
+# is about terminal and tmux setups. Here Ghostty talks to herdr directly, and
+# Ghostty demonstrably delivers alt+a -- tmux has been eating it in the next tab
+# all along.
+prefix = "alt+a"
 
 # --- Splits ------------------------------------------------------------------
 # herdr names splits after the divider's orientation, not tmux's flags:

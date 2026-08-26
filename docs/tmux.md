@@ -79,8 +79,13 @@ place.
 ## Notable choices
 
 - **Prefix `Alt+a`** — chosen so root `Ctrl+hjkl` stays free for
-  vim-tmux-navigator. It also leaves `Ctrl+b` free, which is what lets
-  [`herdr`](herdr.md) keep its default prefix with no clash.
+  vim-tmux-navigator, and so `Ctrl+b` stays with readline (`backward-char`).
+  [`herdr`](herdr.md) now uses the same prefix: the two never nest, so there is
+  nothing to contend over, and one prefix plus one keymap means one set of
+  muscle memory.
+- **Synchronize-panes on `*`, not `a`** — herdr shares this prefix and binds `a`
+  to next-agent. Leaving sync on `a` would make one gesture mean two different
+  verbs with only the tab title to tell them apart.
 - **Generated keybinding cheatsheet** — `prefix + ?` opens a searchable popup
   built from tmux's live effective bindings, including defaults, overrides,
   custom modes, and plugin bindings. Type to filter, `Ctrl+U` to clear the
