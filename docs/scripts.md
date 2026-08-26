@@ -93,3 +93,36 @@ Highlights:
   `--preset NAME` presets from `${XDG_CONFIG_HOME:-~/.config}/bs/config`.
 
 Run `bs -h` for the full option list and a sample preset config.
+
+### `ai`
+
+llm helpers for the terminal: each subcommand gathers context — a man page,
+`--help` output, grep hits, a file, stdin — hands it to
+[`llm`](https://llm.datasette.io), and renders the markdown that comes back
+through [glow](../tools/README.md).
+
+```bash
+ai man tar -- extract a single file    # explain a man page
+ai help just -- what is --dry-run      # explain a command's --help output
+make 2>&1 | ai why                     # explain an error
+ai how convert webm to mp4             # intent → command
+git log --oneline -50 | ai sum         # summarize stdin
+ai grep TODO notes.md what is left     # grep, then ask about the hits
+ai chunk big.log why did it fail       # map/reduce over a file too big to send
+ai ask "..."                           # general question, stdin optional
+ai ml "..."                            # local model, ML system prompt
+ai code python retry decorator         # one fenced code block, nothing else
+```
+
+`-m MODEL` passes a model through to `llm`; `--renderer glow|bat|cat` overrides
+the renderer for one call (`cat` when piping the output somewhere else).
+`AI_RENDERER` sets the default — `local.sh` is the place for it. `ai -h` lists
+the remaining environment knobs (`AI_GREP_CONTEXT`, `AI_CHUNK_SIZE`,
+`AI_ML_MODEL`, and the prompt-wrapper overrides).
+
+These used to be bash functions in [`shell/llm.sh`](../shell/README.md); as a
+script they also work from nvim (`:%!ai sum`), tmux, cron, and other scripts.
+`shell/llm.sh` still defines the short names — `manai`, `howto`, `summarize`,
+`why`, `ask`, and friends. `helpai` remains a function on purpose: only the
+shell that defines a function, alias, or builtin can capture its `--help`
+output, so it captures the text and pipes it to `ai help -`.

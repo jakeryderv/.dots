@@ -43,7 +43,7 @@ exports → options → completions → functions → aliases → keybinds → l
 | `functions.sh`     | shell functions                      | ✅      |
 | `aliases.sh`       | aliases, isolated Playwright sessions, and OpenCode skill discovery guard | ✅      |
 | `keybinds.sh`      | keybindings (may reference functions)| ✅      |
-| `llm.sh`           | llm helper functions                 | ✅      |
+| `llm.sh`           | short names for `ai` (see [docs/scripts.md](../docs/scripts.md)) | ✅      |
 | `local.sh`         | machine-specific config              | ❌ git-ignored |
 | `local.sh.example` | template for `local.sh`              | ✅      |
 

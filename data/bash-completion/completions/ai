@@ -1,0 +1,83 @@
+# shellcheck shell=bash
+# Completion for ai (bin/ai).
+#
+# Autoloaded by bash-completion on first Tab, so it costs nothing at shell
+# startup and is only read if the script is actually installed.
+
+_ai() {
+    # _init_completion assigns all four names; declare them local so nothing
+    # leaks into the global namespace.
+    # shellcheck disable=SC2034 # prev is for _init_completion's benefit
+    local cur prev words cword i command='' pos=0
+
+    if declare -F _init_completion >/dev/null; then
+        # -n = keeps "--model=gpt-4o" as a single word despite COMP_WORDBREAKS
+        _init_completion -n = || return
+    else
+        cur=${COMP_WORDS[COMP_CWORD]}
+        words=("${COMP_WORDS[@]}")
+        cword=$COMP_CWORD
+    fi
+
+    # A question follows `--` and is free text, so stop completing there.
+    for ((i = 1; i < cword; i++)); do
+        [[ ${words[i]} == -- ]] && return
+    done
+
+    if [[ $cur == -* ]]; then
+        mapfile -t COMPREPLY < <(compgen -W \
+            '-m --model --renderer -h --help -V --version' -- "$cur")
+        return
+    fi
+
+    # Options take a value, so skip both words when locating the command and
+    # counting its arguments.
+    for ((i = 1; i < cword; i++)); do
+        case ${words[i]} in
+        -m | --model | --renderer)
+            ((i++))
+            continue
+            ;;
+        -*) continue ;;
+        esac
+        ((pos == 0)) && command=${words[i]}
+        ((pos++))
+    done
+
+    case ${words[cword - 1]} in
+    -m | --model)
+        COMPREPLY=()
+        return
+        ;;
+    --renderer)
+        mapfile -t COMPREPLY < <(compgen -W 'glow bat cat' -- "$cur")
+        return
+        ;;
+    esac
+
+    if ((pos == 0)); then
+        mapfile -t COMPREPLY < <(compgen -W \
+            'man help why how sum grep ask chunk ml code' -- "$cur")
+        return
+    fi
+
+    # Argument slots that have something better than filenames to offer.
+    case $command in
+    man)
+        ((pos == 1)) && mapfile -t COMPREPLY < <(compgen -c -- "$cur")
+        ;;
+    help)
+        # Every word before `--` is part of the command being explained, so a
+        # subcommand completes as loosely as the command itself.
+        mapfile -t COMPREPLY < <(compgen -c -- "$cur")
+        ;;
+    grep)
+        # <pattern> <file> <question>: only the file slot is completable.
+        ((pos == 2)) && declare -F _filedir >/dev/null && _filedir
+        ;;
+    chunk)
+        ((pos == 1)) && declare -F _filedir >/dev/null && _filedir
+        ;;
+    esac
+}
+complete -F _ai ai
