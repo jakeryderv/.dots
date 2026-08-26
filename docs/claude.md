@@ -15,7 +15,10 @@ untracked, with `.gitignore` guards in the repo root as a safety net.
 | `.claude/skills/project-status/` | Claude-specific skill: summarize a project's `.claude/` setup |
 | `.claude/skills/suggest-optimization/` | Claude-specific skill: propose setup/workflow optimizations |
 
-The two skills above are the only tracked ones. Everything else under
+The two skills above are the only Claude-specific tracked ones. Skills shared
+across agents are tracked in the `agent-skills` package (see
+[agent-skills.md](agent-skills.md)) and linked into `.claude/skills/` from
+there. Everything else under
 `~/.claude/skills/` is third-party and untracked — managed by skills.sh or a
 vendor CLI, and reproducible from `~/.agents/.skill-lock.json`. Portable
 skills live in the shared `~/.agents/skills/` tree; Claude Code does not read

@@ -61,3 +61,10 @@ editorconfig    link    home/editorconfig                                   $HOM
 vim             tree    home/vim                                            $HOME/.vim
 
 claude          tree    home/claude                                         $HOME/.claude
+
+# Skills shared by every coding agent. ~/.agents/skills is also written by
+# skill installers, so each skill is linked individually rather than the dir.
+# Claude Code reads ~/.claude/skills; the second row mirrors the installer's
+# own per-skill symlinks there.
+agent-skills    link    home/agents/skills/project-practices                $HOME/.agents/skills/project-practices
+agent-skills    link    home/agents/skills/project-practices                $HOME/.claude/skills/project-practices
