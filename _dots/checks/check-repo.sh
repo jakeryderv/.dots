@@ -71,9 +71,6 @@ for entry in broken:
 sys.exit(1 if broken else 0)
 PY
 
-echo 'Checking shared agent skills...'
-bash _dots/checks/verify-agent-skills.sh
-
 BASH_PATHS=(
     shell
     tools
@@ -86,14 +83,6 @@ BASH_PATHS=(
     _dots/tests
 )
 
-# Vendored content: tracked here but authored upstream. Linted like everything
-# else, but never reformatted -- rewriting it would widen the diff against the
-# source it was forked from and make the next re-sync harder. See
-# docs/agent-skills.md for provenance.
-NO_REFORMAT=(
-    home/agent-skills
-)
-
 LUA_PATHS=(
     config/nvim
     config/wezterm
@@ -102,7 +91,7 @@ LUA_PATHS=(
 # `find` reports a missing path on stderr and keeps going, and these traversals
 # feed process substitutions whose exit status is discarded -- so a stale entry
 # here would silently shrink the lint surface instead of failing. Check first.
-for path in "${BASH_PATHS[@]}" "${LUA_PATHS[@]}" "${NO_REFORMAT[@]}"; do
+for path in "${BASH_PATHS[@]}" "${LUA_PATHS[@]}"; do
     if [[ ! -e "$path" ]]; then
         echo "error: path list entry does not exist: $path" >&2
         exit 1
@@ -145,11 +134,6 @@ if command -v shfmt >/dev/null 2>&1; then
     unformatted=0
     while IFS= read -r -d '' file; do
         is_bash_file "$file" || continue
-        skip=0
-        for vendored in "${NO_REFORMAT[@]}"; do
-            [[ "$file" == "$vendored"/* ]] && skip=1
-        done
-        ((skip)) && continue
         if ! shfmt --diff "$file"; then
             unformatted=$((unformatted + 1))
         fi

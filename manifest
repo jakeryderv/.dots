@@ -6,7 +6,7 @@
 #
 # PKG is declared, not derived from the path. It is what `just status <pkg>`
 # filters on, and it lets several rows belong to one package (scripts ships both
-# binaries and completions; agent-skills deploys into two different trees).
+# binaries and completions).
 #
 # MODE:
 #   link  One symlink at TARGET, pointing at SOURCE (a file or a whole
@@ -58,9 +58,4 @@ tmux            link    home/tmux.conf                                      $HOM
 editorconfig    link    home/editorconfig                                   $HOME/.editorconfig
 vim             tree    home/vim                                            $HOME/.vim
 
-# claude and agent-skills both deploy into ~/.claude/skills/. Under stow that
-# needed --no-folding on both packages to avoid a race; as two tree rows they
-# simply link their own files and never interact.
 claude          tree    home/claude                                         $HOME/.claude
-agent-skills    tree    home/agent-skills/claude                            $HOME/.claude
-agent-skills    tree    home/agent-skills/agents                            $HOME/.agents

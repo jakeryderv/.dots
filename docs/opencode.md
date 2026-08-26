@@ -20,8 +20,8 @@ lives in the user-only `~/.config/context7/env` file. Nothing tracked here
 contains credentials: `opencode.json` uses `{env:CONTEXT7_API_KEY}` to resolve
 the key at runtime.
 
-Portable skills are loaded from the shared `~/.agents/skills/` tree documented
-in [`agent-skills`](agent-skills.md). Browser automation uses its
+Portable skills are loaded from the shared `~/.agents/skills/` tree, which is
+untracked and managed by skills.sh / vendor CLIs. Browser automation uses its
 Playwright CLI skill rather than a Playwright MCP server.
 
 OpenCode normally also scans `~/.claude/skills/`. The tracked Bash alias sets

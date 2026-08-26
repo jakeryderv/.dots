@@ -15,7 +15,6 @@ nothing here is ever deployed.
 | `bin/deps.sh` | Reports which expected tools are installed. |
 | `checks/check-repo.sh` | The repo gate, and what CI runs. Portable: never inspects `$HOME` or live targets. |
 | `checks/verify-readmes.sh` | Every manifest package has `docs/<pkg>.md`; every non-source top-level directory has a `README.md`. |
-| `checks/verify-agent-skills.sh` | Validates the canonical shared-skill tree; `--live` also checks agent wiring. |
 | `tests/` | Behaviour tests, run by `just check`. |
 
 `checks/` validates the repository; [`tools/`](../tools/README.md) provisions

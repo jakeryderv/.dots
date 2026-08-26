@@ -92,8 +92,7 @@ fi
 
 check_log="$(mktemp)"
 status_log="$(mktemp)"
-skills_log="$(mktemp)"
-trap 'rm -f "$check_log" "$status_log" "$skills_log"' EXIT
+trap 'rm -f "$check_log" "$status_log"' EXIT
 
 if bash "$REPO_ROOT/_dots/checks/check-repo.sh" >"$check_log" 2>&1; then
     ok "portable repository checks pass"
@@ -108,14 +107,6 @@ if bash "$REPO_ROOT/_dots/bin/link.sh" status >"$status_log" 2>&1; then
 else
     warn "manifest rows report missing or conflicting targets"
     cat "$status_log"
-    fail=1
-fi
-
-if bash "$REPO_ROOT/_dots/checks/verify-agent-skills.sh" --live >"$skills_log" 2>&1; then
-    ok "shared agent skills resolve through live tree deployment"
-else
-    warn "shared agent skill wiring is invalid"
-    cat "$skills_log"
     fail=1
 fi
 

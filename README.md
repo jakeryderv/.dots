@@ -89,7 +89,7 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 [editorconfig](docs/editorconfig.md), [tealdeer](docs/tealdeer.md).
 
 **Coding agents** — [claude](docs/claude.md),
-[agent-skills](docs/agent-skills.md), [opencode](docs/opencode.md),
+[opencode](docs/opencode.md),
 [openspec](docs/openspec.md), plus documentation-only notes
 for [codex](docs/codex.md), [agy](docs/agy.md), and [serena](docs/serena.md).
 

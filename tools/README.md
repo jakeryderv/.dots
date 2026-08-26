@@ -7,7 +7,7 @@ but does not ship.
 which is the only thing that makes anything deployable.
 
 Everything here provisions software on the machine. The repo's own validation
-scripts — `check-repo.sh`, `verify-readmes.sh`, `verify-agent-skills.sh` — live
+scripts — `check-repo.sh`, `verify-readmes.sh` — live
 in [`_dots/checks/`](../_dots/README.md) alongside the deployer they validate,
 so this directory has exactly one job.
 
@@ -45,7 +45,7 @@ source builds) and stay self-contained.
 | `install-kanata.sh` | [kanata](https://github.com/jtroo/kanata) | Verified GitHub release binary → `/usr/local/bin`, the build compiled *without* `cmd` support. Binary only: `/dev/input` + `/dev/uinput` access is a deliberate manual step. See [`kanata`](../docs/kanata.md). |
 | `install-lazygit.sh` | [lazygit](https://github.com/jesseduffield/lazygit) | Verified GitHub release binary → `/usr/local/bin`. Skips the download when already current; `--force` reinstalls. |
 | `install-pi.sh` | [Pi coding agent](https://pi.dev) | Latest global npm release, installed with lifecycle scripts disabled. Pi config lives in the separate [pi-config](https://github.com/jakeryderv/pi-config) repo (`~/dev/projects/pi-config`). |
-| `install-playwright-cli.sh` | [Playwright CLI](https://playwright.dev/agent-cli/installation) | Global npm CLI + its Chromium build. Shared Agent Skill is tracked in [`agent-skills`](../docs/agent-skills.md). |
+| `install-playwright-cli.sh` | [Playwright CLI](https://playwright.dev/agent-cli/installation) | Global npm CLI + its Chromium build. The Agent Skill itself is untracked, managed by skills.sh. |
 | `install-qutebrowser.sh` | [qutebrowser](https://qutebrowser.org) | From source via `uv` + `mkvenv.py` (newer Qt than apt). `--keep` reuses the venv for a fast update. Also installs the `.desktop` entry + icons. See [`qutebrowser`](../docs/qutebrowser.md). |
 | `install-t3code.sh` | [T3 Code](https://t3.codes) | Verified official x86_64 AppImage → `~/.local/opt/t3code`, symlinked to `~/.local/bin`; also installs launcher entry + icon. The app handles routine updates itself. |
 | `install-tealdeer.sh` | [tealdeer](https://github.com/tealdeer-rs/tealdeer) | Verified static release binary → `/usr/local/bin/tldr`, plus its bash completion. Skips the download when already current; `--force` reinstalls. Newer than apt's `tealdeer`. Run `tldr --update` once to seed the page cache. |

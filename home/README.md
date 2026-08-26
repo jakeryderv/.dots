@@ -24,13 +24,3 @@ Files that are templates rather than deployments — `gitconfig.local.example`,
 for instance — sit at this level rather than inside a source directory, so they
 are never enumerated and never deployed.
 
-## Note on the agent trees
-
-`home/claude/` and `home/agent-skills/claude/` both deploy into `~/.claude/`.
-They are separate manifest rows in `tree` mode, so each links only its own files
-and the two never interact. Under stow this arrangement required `--no-folding`
-on both packages to avoid a race.
-
-`home/agent-skills/claude/skills/` holds relative symlinks into
-`home/agent-skills/agents/skills/`, so the canonical skill content exists once
-and is shared by both agent trees.

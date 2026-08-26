@@ -37,8 +37,8 @@ carry.
   [jakeryderv/agy-plugin-cc](https://github.com/jakeryderv/agy-plugin-cc) and
   is pulled `git-subdir` from `plugins/agy` at a pinned tag. Its job/session
   state lives in `~/.agy-plugin/` (untracked state).
-- Skills: agy reads `~/.agents/skills/` directly — managed per the
-  `agent-skills` package (skills.sh + vendor CLIs).
+- Skills: agy reads `~/.agents/skills/` directly — untracked, managed by
+  skills.sh + vendor CLIs.
 - History note (2026-07-23): deleted `~/.gemini/GEMINI.md` — the twin of
   codex's stale "lean-ctx" instructions (mandated `ctx_*` tools from a
   since-removed MCP server) — and `~/.gemini/skills/`, 11 stale pre-

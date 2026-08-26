@@ -15,15 +15,11 @@ untracked, with `.gitignore` guards in the repo root as a safety net.
 | `.claude/skills/project-status/` | Claude-specific skill: summarize a project's `.claude/` setup |
 | `.claude/skills/suggest-optimization/` | Claude-specific skill: propose setup/workflow optimizations |
 
-All other skills under `~/.claude/skills/` are owned by the separate
-`agent-skills` package (shared across agents via `~/.agents/skills/`); the two
-packages both link items into the real `~/.claude/skills/` directory.
-Claude-specific skills belong here; agent-portable ones belong in
-`agent-skills`. Both are `tree` rows in the manifest, so each links only its
-own files into the real `~/.claude/skills/` directory and the two never
-interact. Third-party skills (cloudflare, playwright, railway)
-are not tracked at all — they're managed by skills.sh / vendor CLIs; see the
-`agent-skills` README.
+The two skills above are the only tracked ones. Everything else under
+`~/.claude/skills/` is third-party and untracked — managed by skills.sh or a
+vendor CLI, and reproducible from `~/.agents/.skill-lock.json`. Portable
+skills live in the shared `~/.agents/skills/` tree; Claude Code does not read
+that tree natively, so they appear here as relative symlinks into it.
 
 ## Deliberately not tracked
 
@@ -63,7 +59,8 @@ records the superpowers-era configuration, and the migration is documented by
 the commits that follow.
 
 Migration executed 2026-07-23: superpowers removed (its systematic-debugging
-and verification-before-completion skills salvaged into `agent-skills`);
+and verification-before-completion skills salvaged into `agent-skills`, itself
+since deleted — both proved redundant and superpowers remains installable);
 OpenSpec 1.6.0 installed globally (custom profile: core workflows + verify,
 onboard, bulk-archive) with per-repo adoption via `openspec init`; a
 SessionStart hook in `settings.json` injects active-change state in
