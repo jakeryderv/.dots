@@ -66,16 +66,23 @@
       "Bash(cargo test:*)",
       "Bash(cargo build:*)",
       "Bash(cargo clippy:*)",
-      "Bash(for:*)",
-      "Bash(do:*)",
-      "Bash(done:*)",
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(mv:*)",
-      "Bash(touch:*)",
-      "Bash(cd:*)"
+      "Bash(touch:*)"
     ],
-    "deny": [],
+    "deny": [
+      "Bash(git checkout --:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Read(//home/jake/.ssh/**)",
+      "Read(//home/jake/.aws/credentials)",
+      "Read(//home/jake/.claude/.credentials.json)",
+      "Read(//**/.env)",
+      "Read(//**/.env.*)"
+    ],
     "defaultMode": "auto"
   },
   "model": "opus",
@@ -84,7 +91,6 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "claude-code-setup@claude-plugins-official": true,
     "codex@openai-codex": true,
     "agy@jakeryderv": true,
     "cloudflare@cloudflare": true,
