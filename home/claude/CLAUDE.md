@@ -30,20 +30,5 @@
 - Keep formatting simple and scannable.
 - Format responses as valid Markdown; use headings, bullets, tables, and code fences when they improve clarity, but avoid gratuitous formatting.
 
-## Specs and Source of Truth (OpenSpec)
-
-- In repos with an `openspec/` directory, `openspec/specs/` is the source of
-  truth for system behavior and decisions. If code and spec disagree, flag it —
-  don't silently follow either.
-- Before non-trivial work, check `openspec/changes/` for an active change
-  covering it. Active changes override archived ones; archived changes are
-  history, not instructions.
-- Never treat loose design docs, old plans, or chat history as current
-  decisions. If it's not in specs or an active change, verify or ask.
-- For non-trivial changes, write or update the failing test before the
-  implementation. Small fixes don't need ceremony.
-- Before claiming done: run the tests/linters and show the output. No "should
-  work".
-
 ## Commit conventions
 - Never add "Co-Authored-By" lines to commits. Do not include Claude attribution in commit messages.
