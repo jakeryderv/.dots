@@ -123,38 +123,47 @@ bell-features = no-system,no-audio,no-attention,no-title,no-border
 # false = always separate.)
 gtk-single-instance = detect
 
-# --- Keybinds: tabs & splits (ctrl+alt scheme) ---
-# These add to Ghostty's defaults except for tab creation/closing, whose
-# ctrl+shift defaults are replaced below. The ctrl+alt namespace avoids tmux
-# (prefix Alt+a) and vim-tmux-navigator's root Ctrl+hjkl bindings.
+# --- Keybinds: yield the ctrl+alt namespace ---
+# Ghostty's own tabs and splits go unused: tmux owns the layout, and herdr runs
+# inside it. Ghostty keeps only the window-level chords (font size, clipboard,
+# fullscreen, the ctrl+shift+p command palette), and hands everything else down.
+#
+# This is deliberate, not neglect. ctrl+alt+* is the most reliable direct-chord
+# space to send through Ghostty -> tmux -> herdr, so it is worth more to herdr
+# as free space than it was here as split bindings. See docs/herdr.md.
 
-# Tabs: create/close, cycle, and move. C/X mirror tmux's new/kill-window keys;
-# Shift+X closes the larger tab container while unshifted X closes one split.
+# Tab creation/closing stays unbound; the command palette covers it.
 keybind = ctrl+shift+t=unbind
 keybind = ctrl+shift+w=unbind
-keybind = ctrl+alt+c=new_tab
-keybind = ctrl+alt+shift+x=close_tab:this
-keybind = ctrl+alt+n=next_tab
-keybind = ctrl+alt+p=previous_tab
-keybind = ctrl+alt+shift+n=move_tab:1
-keybind = ctrl+alt+shift+p=move_tab:-1
 
-# Splits: create (\ = side-by-side, - = stacked)
-keybind = ctrl+alt+\=new_split:right
-keybind = ctrl+alt+-=new_split:down
+# Release ctrl+alt+arrows (Ghostty default: goto_split) so nothing in the
+# ctrl+alt space is claimed before an inner layer sees it.
+keybind = ctrl+alt+arrow_up=unbind
+keybind = ctrl+alt+arrow_down=unbind
+keybind = ctrl+alt+arrow_left=unbind
+keybind = ctrl+alt+arrow_right=unbind
 
-# Splits: close & zoom the active pane
-keybind = ctrl+alt+x=close_surface
-keybind = ctrl+alt+z=toggle_split_zoom
-
-# Splits: navigate (vim h/j/k/l; the default ctrl+alt+arrows still work too)
-keybind = ctrl+alt+h=goto_split:left
-keybind = ctrl+alt+j=goto_split:down
-keybind = ctrl+alt+k=goto_split:up
-keybind = ctrl+alt+l=goto_split:right
-
-# Splits: resize by 5 cells (arrow keys, per your request)
-keybind = ctrl+alt+shift+arrow_left=resize_split:left,5
-keybind = ctrl+alt+shift+arrow_down=resize_split:down,5
-keybind = ctrl+alt+shift+arrow_up=resize_split:up,5
-keybind = ctrl+alt+shift+arrow_right=resize_split:right,5
+# Release alt+1..9 (Ghostty default: goto_tab / last_tab). This is what makes
+# herdr's indexed agent focus reachable -- it binds prefix+alt+1..9, which
+# Ghostty would otherwise swallow before herdr ever saw it.
+# Both forms must go: Ghostty binds these twice, once by logical key (alt+1)
+# and once by physical position (alt+digit_1). Unbinding only the logical form
+# leaves the physical one live, and alt+1 still switches tabs.
+keybind = alt+one=unbind
+keybind = alt+two=unbind
+keybind = alt+three=unbind
+keybind = alt+four=unbind
+keybind = alt+five=unbind
+keybind = alt+six=unbind
+keybind = alt+seven=unbind
+keybind = alt+eight=unbind
+keybind = alt+nine=unbind
+keybind = alt+digit_1=unbind
+keybind = alt+digit_2=unbind
+keybind = alt+digit_3=unbind
+keybind = alt+digit_4=unbind
+keybind = alt+digit_5=unbind
+keybind = alt+digit_6=unbind
+keybind = alt+digit_7=unbind
+keybind = alt+digit_8=unbind
+keybind = alt+digit_9=unbind
