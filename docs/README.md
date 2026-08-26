@@ -18,7 +18,6 @@ beyond linking, and any external dependencies.
 
 | Doc | Source | Deploys to |
 | --- | --- | --- |
-| [`agent-skills.md`](agent-skills.md) | `home/agents/skill-lock.json` | `~/.agents/` |
 | [`agy.md`](agy.md) | — | documentation only |
 | [`alacritty.md`](alacritty.md) | `config/alacritty` | `~/.config/alacritty/` |
 | [`bat.md`](bat.md) | `config/bat` | `~/.config/bat/` |
