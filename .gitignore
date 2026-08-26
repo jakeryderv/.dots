@@ -10,6 +10,9 @@
 
 # Bash — machine-specific config (use local.sh.example as template)
 shell/local.sh
+# ...and any hand-made backup of it. Deliberately not `shell/local.sh*`, which
+# would also swallow the tracked local.sh.example.
+shell/local.sh.bak*
 
 # Git — machine-specific identity, credentials, and overrides
 home/gitconfig.local
@@ -52,3 +55,11 @@ config/opencode/skills/use-railway/
 # Python build cruft (e.g. qutebrowser config.py)
 **/__pycache__/
 **/.ruff_cache/
+
+# Editor/tool backups and merge leftovers. Nothing tracked here has ever used
+# these suffixes; they exist only as pre-edit copies, and a copy of an ignored
+# file must not become visible just because a suffix was appended to its name.
+*.bak
+*.bak-*
+*.orig
+*.rej
