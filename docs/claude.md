@@ -39,6 +39,23 @@ that tree natively, so they appear here as relative symlinks into it.
 - Plugin installs — declared in `settings.json` (`enabledPlugins` +
   `extraKnownMarketplaces`); Claude Code materializes the plugin cache itself.
 
+## Cloudflare toolchain
+
+The `cloudflare@cloudflare` plugin in `settings.json` is only one of three
+independent layers that reach the same Cloudflare account, each with its own
+credential store:
+
+| Layer | Installed by | Credential |
+| --- | --- | --- |
+| 11 skills + 2 commands | `settings.json` (plugin cache) | none — documentation only |
+| 5 remote MCP servers | the plugin's `.mcp.json` | Claude Code's own OAuth store |
+| `cf` and `wrangler` CLIs | [`install-cloudflare.sh`](../tools/install-cloudflare.sh) | `~/.config/cloudflare/`, `~/.config/.wrangler/` |
+
+Three OAuth grants means three things to re-authenticate on a new machine and
+three to revoke. The MCP servers and the `cf` CLI overlap heavily — `cf tools`
+emits the same tool definitions locally that the remote servers expose — so
+the MCP set is a convenience, not a dependency.
+
 ## Caveats
 
 - **Fresh machine:** no special ordering is needed. This is a `tree` row, so
