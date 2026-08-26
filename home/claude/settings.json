@@ -69,7 +69,10 @@
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(mv:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(npm list:*)",
+      "Bash(npm info:*)",
+      "WebFetch(domain:api.github.com)"
     ],
     "deny": [
       "Bash(git checkout --:*)",
@@ -144,6 +147,5 @@
   "skipWorkflowUsageWarning": true,
   "verbose": false,
   "remoteControlAtStartup": false,
-  "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true
+  "skipAutoPermissionPrompt": true
 }
