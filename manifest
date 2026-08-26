@@ -59,3 +59,4 @@ editorconfig    link    home/editorconfig                                   $HOM
 vim             tree    home/vim                                            $HOME/.vim
 
 claude          tree    home/claude                                         $HOME/.claude
+agent-skills    link    home/agents/skill-lock.json                         $HOME/.agents/.skill-lock.json
