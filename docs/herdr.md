@@ -55,35 +55,60 @@ Agent-detection manifests, which Herdr refreshes from herdr.dev when
 `update.manifest_check` is true, live outside the config dir in
 `~/.local/state/herdr/agent-detection/` and are cache — not tracked.
 
-## Keys
+## Running inside tmux
 
-Herdr runs **alongside** [`tmux`](tmux.md), not inside it: tmux keeps its
-sessions, herdr drives agent work. That is what makes the prefix safe.
+Herdr runs **inside** [`tmux`](tmux.md), in a window of its own: tmux keeps the
+sessions, herdr drives agent work within one of them. Upstream treats tmux as a
+supported host ("runs inside your existing terminal — ghostty, alacritty, kitty,
+wezterm, even inside tmux"). The arrangement upstream warns against is the
+reverse — a tmux session *inside* a herdr pane disables agent state detection,
+so agents run directly in herdr panes.
+
+```
+Ghostty ─ tmux (Alt+a) ─ window "herdr" ─ herdr (Ctrl+b) ─ agent panes
+```
+
+Three things make this work rather than merely run. All three live in the other
+two configs:
+
+| Where | What | Why |
+|-------|------|-----|
+| [`tmux`](tmux.md) | `herdr` added to the vim-tmux-navigator pattern | Otherwise `Ctrl+hjkl` navigates *away* from the herdr window instead of into it |
+| [`tmux`](tmux.md) | `prefix + H` opens a dedicated `herdr` window | No sibling panes, so a stray `select-pane` is a no-op |
+| [`ghostty`](ghostty.md) | `ctrl+alt+*` and `alt+1..9` released | Ghostty consumed them before any inner layer could see them |
+
+`Ctrl+b` is free only because `.tmux.conf` unbinds it (`unbind C-b`, prefix moved
+to `Alt+a`). The two prefixes never collide, which is the problem most people
+combining these tools have to solve first and this setup never had.
+
+## Keys
 
 | Namespace | Owner |
 |-----------|-------|
 | `Alt+a` | tmux prefix |
-| `Ctrl+h/j/k/l`, `Ctrl+\` | vim-tmux-navigator, root level |
-| `Ctrl+Alt+*` | [`ghostty`](ghostty.md) tabs and splits |
-| `Alt+`` ` `` | tmux floating terminal |
+| `Ctrl+h/j/k/l`, `Ctrl+\` | vim-tmux-navigator — passed through to herdr, which forwards to the focused pane |
 | `Ctrl+b` | **herdr** |
-
-`Ctrl+b` is free only because `.tmux.conf` unbinds it (`unbind C-b`, prefix
-moved to `Alt+a`). If tmux ever reclaims it, both layers grab the same chord.
+| `ctrl+alt+*`, `alt+1..9` | released by Ghostty for herdr's use |
+| `Ctrl+Shift+*` | Ghostty (window chords + command palette) |
 
 Herdr's defaults are already tmux-shaped, so most of the keymap is inherited.
 What `config.toml` changes or adds:
 
 | Key | Action | Why |
 |-----|--------|-----|
-| `prefix + \` | Split side by side | Matches Ghostty's `ctrl+alt+\` and tmux's `\|` |
-| `prefix + -` | Split stacked | Default; already matches both |
+| `prefix + \` | Split side by side | Matches tmux's `\|` |
+| `prefix + -` | Split stacked | Default; already matches |
 | `prefix + ↑` / `↓` | Previous / next workspace | Unbound upstream; sidebar stacks vertically |
 | `prefix + Shift+1..9` | Switch workspace | Unbound upstream |
 | `prefix + a` / `Shift+a` | Next / previous agent | Unbound upstream, and the point of the tool |
-| `prefix + Shift+←` / `→` | Move tab | Mirrors Ghostty's `ctrl+alt+shift+n/p` |
+| `prefix + Alt+1..9` | Focus agent by index | Upstream's own example — unreachable until Ghostty released `alt+1..9` |
+| `Ctrl+Shift+Alt+←↓↑→` | Resize pane directly | The chords Ghostty used for `resize_split` |
+| `prefix + Shift+←` / `→` | Move tab | — |
 | `` prefix + ` `` | Floating terminal popup | Mirrors tmux's `Alt+`` ` `` toggle-popup, same 80%×80% |
 | `prefix + Alt+g` | lazygit popup | Same dimensions |
+
+Do **not** bind `alt+1..9` in tmux. It would intercept the chord at the middle
+layer and take indexed agent focus back out of herdr's reach.
 
 **Split naming is inverted from tmux.** Herdr names a split after the divider's
 orientation; tmux names it after the flag:

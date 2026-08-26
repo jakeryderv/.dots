@@ -79,7 +79,8 @@ place.
 ## Notable choices
 
 - **Prefix `Alt+a`** — chosen so root `Ctrl+hjkl` stays free for
-  vim-tmux-navigator, and to avoid the terminals' `ctrl+alt` tab/split keybinds.
+  vim-tmux-navigator. It also leaves `Ctrl+b` free, which is what lets
+  [`herdr`](herdr.md) keep its default prefix with no clash.
 - **Generated keybinding cheatsheet** — `prefix + ?` opens a searchable popup
   built from tmux's live effective bindings, including defaults, overrides,
   custom modes, and plugin bindings. Type to filter, `Ctrl+U` to clear the
@@ -93,6 +94,11 @@ place.
   pane so tmux's built-in session tree and preview use the entire window.
 - **vim-tmux-navigator** — seamless `Ctrl+hjkl` pane/split navigation across
   tmux and Neovim (no plugin needed on the tmux side; the config detects vim).
+  `herdr` is in the same detection pattern, for the same reason: it handles
+  those keys itself, so tmux must send them through rather than navigate away
+  from it. See [`herdr`](herdr.md).
+- **herdr window** — `prefix + H` opens or focuses a dedicated `herdr` window,
+  and tmux's status bar hides while a herdr pane has focus.
 - **Resize mode** — `prefix + r` enters a sticky mode where `hjkl`/`HJKL` resize
   panes until Escape/Enter/q.
 - **Carbonfox-matched** status bar and pane borders.

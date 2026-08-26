@@ -67,10 +67,26 @@ switch_workspace = "prefix+shift+1..9"
 next_agent = "prefix+a"
 previous_agent = "prefix+shift+a"
 
+# Indexed agent focus -- herdr's own documented example, and unreachable until
+# config.ghostty released alt+1..9 (it bound them twice, logically and
+# physically, and consumed them before any inner layer saw them). tmux does not
+# bind alt+digits at root, so the chord now passes Ghostty -> tmux -> herdr.
+# Binding alt+1..9 in tmux would take it back; don't.
+focus_agent = "prefix+alt+1..9"
+
 # --- Tabs --------------------------------------------------------------------
 # Reordering, mirroring Ghostty's ctrl+alt+shift+n/p move_tab bindings.
 move_tab_previous = "prefix+shift+left"
 move_tab_next = "prefix+shift+right"
+
+# --- Resize ------------------------------------------------------------------
+# Direct resize without entering resize mode, in the space config.ghostty gave
+# up (it used these exact chords for resize_split). prefix+r still opens the
+# sticky resize mode, which is the tmux-shaped path.
+resize_pane_left = "ctrl+shift+alt+left"
+resize_pane_down = "ctrl+shift+alt+down"
+resize_pane_up = "ctrl+shift+alt+up"
+resize_pane_right = "ctrl+shift+alt+right"
 
 # --- Popups ------------------------------------------------------------------
 # A floating terminal on the prefix, the way tmux binds Alt+` to toggle-popup.

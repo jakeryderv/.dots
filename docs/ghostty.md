@@ -60,9 +60,21 @@ mentions them.
 - **Background image** — pulls from `~/.dots/_wallpapers/` (not deployed; see
   [`_wallpapers`](../_wallpapers/README.md)).
 - **No window decorations** + zero padding, matching the kitty/alacritty setups.
-- **Keybinds** — `ctrl+alt`-based tab/split scheme chosen to avoid clashing with
-  tmux (prefix `Alt+a`) and vim-tmux-navigator (`Ctrl+hjkl`). New/close tab use
-  `Ctrl+Alt+C`/`Ctrl+Alt+Shift+X`, replacing Ghostty's default
-  `Ctrl+Shift+T`/`Ctrl+Shift+W` bindings.
+- **Keybinds — deliberately minimal.** Ghostty's tabs and splits go unused;
+  tmux owns the layout and [`herdr`](herdr.md) runs inside it. The window-level
+  chords stay (font size, clipboard, fullscreen, `Ctrl+Shift+P` command
+  palette) and the layout namespaces are released:
+
+  | Released | Was |
+  |----------|-----|
+  | `ctrl+alt+*` | the old tab/split scheme, plus Ghostty's `ctrl+alt+arrow` splits |
+  | `alt+1`–`alt+9` | `goto_tab` / `last_tab` |
+  | `ctrl+shift+t`, `ctrl+shift+w` | default tab create/close |
+
+  The digits must be unbound **twice** — Ghostty binds them by logical key
+  (`alt+1`) and by physical position (`alt+digit_1`), and releasing only the
+  logical form leaves the other live. `ctrl+alt` is the most reliable
+  direct-chord space to send through Ghostty → tmux → herdr, so it is worth
+  more to herdr as free space than it was here; see [`herdr`](herdr.md).
 - **Shell integration** — `ssh-env`/`ssh-terminfo` enabled so colors/keys work
   over SSH; `no-cursor` lets the block cursor apply at the prompt.
