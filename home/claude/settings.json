@@ -147,5 +147,6 @@
   "skipWorkflowUsageWarning": true,
   "verbose": false,
   "remoteControlAtStartup": false,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "hooks": {"SessionStart":[{"matcher":"*","hooks":[{"type":"command","command":"bash '/home/jake/.claude/hooks/herdr-agent-state.sh' session","timeout":10}]}]}
 }
