@@ -55,30 +55,32 @@ Agent-detection manifests, which Herdr refreshes from herdr.dev when
 `update.manifest_check` is true, live outside the config dir in
 `~/.local/state/herdr/agent-detection/` and are cache — not tracked.
 
-## Running inside tmux
+## Running alongside tmux
 
-Herdr runs **inside** [`tmux`](tmux.md), in a window of its own: tmux keeps the
-sessions, herdr drives agent work within one of them. Upstream treats tmux as a
-supported host ("runs inside your existing terminal — ghostty, alacritty, kitty,
-wezterm, even inside tmux"). The arrangement upstream warns against is the
-reverse — a tmux session *inside* a herdr pane disables agent state detection,
-so agents run directly in herdr panes.
+Herdr and [`tmux`](tmux.md) are siblings, each in its own Ghostty tab, never
+nested. tmux keeps the sessions and the layout; herdr drives agent work.
 
 ```
-Ghostty ─ tmux (Alt+a) ─ window "herdr" ─ herdr (Ctrl+b) ─ agent panes
+Ghostty ─┬─ tab 1 ─ tmux  (prefix Alt+a)
+         └─ tab 2 ─ herdr (prefix Ctrl+b)
 ```
 
-Three things make this work rather than merely run. All three live in the other
-two configs:
+`Ctrl+tab` switches between them; each tab names itself, so they are tellable
+apart at a glance. Two tabs is the entire Ghostty layout — splits and panes
+belong to the layer inside each tab, which is why
+[`ghostty`](ghostty.md) gave up its split bindings and the `ctrl+alt` and
+`alt+digit` namespaces.
 
-| Where | What | Why |
-|-------|------|-----|
-| [`tmux`](tmux.md) | `herdr` added to the vim-tmux-navigator pattern | Otherwise `Ctrl+hjkl` navigates *away* from the herdr window instead of into it |
-| [`tmux`](tmux.md) | `prefix + H` opens a dedicated `herdr` window | No sibling panes, so a stray `select-pane` is a no-op |
-| [`ghostty`](ghostty.md) | `ctrl+alt+*` and `alt+1..9` released | Ghostty consumed them before any inner layer could see them |
+Nesting was tried and reverted. It works — upstream supports tmux as a host
+("runs inside your existing terminal ... even inside tmux") — but it costs a
+doubled status bar, a doubled render, and tmux copy mode capturing herdr's
+rendered frame instead of the pane's scrollback. Separate tabs keep each
+layer's mouse, scrollback, and prefix intact. The arrangement upstream actually
+warns against is the reverse: a tmux session *inside* a herdr pane disables
+agent state detection, so agents run directly in herdr panes.
 
-`Ctrl+b` is free only because `.tmux.conf` unbinds it (`unbind C-b`, prefix moved
-to `Alt+a`). The two prefixes never collide, which is the problem most people
+`Ctrl+b` is free because `.tmux.conf` unbinds it (`unbind C-b`, prefix moved to
+`Alt+a`). The two prefixes never collide, which is the problem most people
 combining these tools have to solve first and this setup never had.
 
 ## Keys
@@ -86,10 +88,10 @@ combining these tools have to solve first and this setup never had.
 | Namespace | Owner |
 |-----------|-------|
 | `Alt+a` | tmux prefix |
-| `Ctrl+h/j/k/l`, `Ctrl+\` | vim-tmux-navigator — passed through to herdr, which forwards to the focused pane |
+| `Ctrl+h/j/k/l`, `Ctrl+\` | vim-tmux-navigator, in the tmux tab |
 | `Ctrl+b` | **herdr** |
 | `ctrl+alt+*`, `alt+1..9` | released by Ghostty for herdr's use |
-| `Ctrl+Shift+*` | Ghostty (window chords + command palette) |
+| `Ctrl+Shift+*` | Ghostty — tabs, clipboard, command palette |
 
 Herdr's defaults are already tmux-shaped, so most of the keymap is inherited.
 What `config.toml` changes or adds:
@@ -107,8 +109,9 @@ What `config.toml` changes or adds:
 | `` prefix + ` `` | Floating terminal popup | Mirrors tmux's `Alt+`` ` `` toggle-popup, same 80%×80% |
 | `prefix + Alt+g` | lazygit popup | Same dimensions |
 
-Do **not** bind `alt+1..9` in tmux. It would intercept the chord at the middle
-layer and take indexed agent focus back out of herdr's reach.
+`Ctrl+h/j/k/l` is left unbound here on purpose: herdr forwards it to the focused
+pane, so nvim inside a herdr pane keeps its own window navigation. Pane
+movement is on the prefix instead.
 
 **Split naming is inverted from tmux.** Herdr names a split after the divider's
 orientation; tmux names it after the flag:

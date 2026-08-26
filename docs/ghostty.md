@@ -60,21 +60,21 @@ mentions them.
 - **Background image** — pulls from `~/.dots/_wallpapers/` (not deployed; see
   [`_wallpapers`](../_wallpapers/README.md)).
 - **No window decorations** + zero padding, matching the kitty/alacritty setups.
-- **Keybinds — deliberately minimal.** Ghostty's tabs and splits go unused;
-  tmux owns the layout and [`herdr`](herdr.md) runs inside it. The window-level
-  chords stay (font size, clipboard, fullscreen, `Ctrl+Shift+P` command
-  palette) and the layout namespaces are released:
+- **Keybinds — tabs yes, splits no.** Ghostty runs exactly two tabs, one for
+  [`tmux`](tmux.md) and one for [`herdr`](herdr.md). That separation is the whole
+  layout: splits and panes belong to the layer inside each tab, so Ghostty's own
+  split bindings and the `ctrl+alt` scheme built on them were removed.
 
-  | Released | Was |
-  |----------|-----|
-  | `ctrl+alt+*` | the old tab/split scheme, plus Ghostty's `ctrl+alt+arrow` splits |
-  | `alt+1`–`alt+9` | `goto_tab` / `last_tab` |
-  | `ctrl+shift+t`, `ctrl+shift+w` | default tab create/close |
+  | Kept | Released |
+  |------|----------|
+  | `ctrl+shift+t` / `ctrl+shift+w` — tab create/close (Ghostty defaults) | `ctrl+alt+*` — the old tab/split scheme and Ghostty's `ctrl+alt+arrow` splits |
+  | `ctrl+tab` / `ctrl+shift+tab` — switch between the two tabs | `alt+1`–`alt+9` — `goto_tab` / `last_tab` |
+  | `ctrl+shift+p` — command palette | |
 
-  The digits must be unbound **twice** — Ghostty binds them by logical key
-  (`alt+1`) and by physical position (`alt+digit_1`), and releasing only the
-  logical form leaves the other live. `ctrl+alt` is the most reliable
-  direct-chord space to send through Ghostty → tmux → herdr, so it is worth
-  more to herdr as free space than it was here; see [`herdr`](herdr.md).
+  With only two tabs there is nothing for `alt+1..9` to do, which is what lets
+  herdr keep them for indexed agent focus. Releasing them took **two** unbinds
+  each: Ghostty binds the digits by logical key (`alt+1`) *and* by physical
+  position (`alt+digit_1`), and releasing only the logical form leaves the other
+  live.
 - **Shell integration** — `ssh-env`/`ssh-terminfo` enabled so colors/keys work
   over SSH; `no-cursor` lets the block cursor apply at the prompt.

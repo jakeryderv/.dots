@@ -94,11 +94,14 @@ place.
   pane so tmux's built-in session tree and preview use the entire window.
 - **vim-tmux-navigator** — seamless `Ctrl+hjkl` pane/split navigation across
   tmux and Neovim (no plugin needed on the tmux side; the config detects vim).
-  `herdr` is in the same detection pattern, for the same reason: it handles
-  those keys itself, so tmux must send them through rather than navigate away
-  from it. See [`herdr`](herdr.md).
-- **herdr window** — `prefix + H` opens or focuses a dedicated `herdr` window,
-  and tmux's status bar hides while a herdr pane has focus.
+  `herdr` is in the same detection pattern as a guard: it normally runs in its
+  own Ghostty tab rather than a tmux pane, but if one is ever launched in a pane
+  anyway, tmux sends those keys through instead of navigating away from it. See
+  [`herdr`](herdr.md).
+- **Terminal title** — `set-titles on` with `set-titles-string 'tmux: #S'`, so
+  Ghostty's tab shows the session name. tmux leaves the title alone by default,
+  which left this tab labelled with whatever the shell last set while the herdr
+  tab labelled itself.
 - **Resize mode** — `prefix + r` enters a sticky mode where `hjkl`/`HJKL` resize
   panes until Escape/Enter/q.
 - **Carbonfox-matched** status bar and pane borders.

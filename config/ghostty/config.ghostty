@@ -123,18 +123,14 @@ bell-features = no-system,no-audio,no-attention,no-title,no-border
 # false = always separate.)
 gtk-single-instance = detect
 
-# --- Keybinds: yield the ctrl+alt namespace ---
-# Ghostty's own tabs and splits go unused: tmux owns the layout, and herdr runs
-# inside it. Ghostty keeps only the window-level chords (font size, clipboard,
-# fullscreen, the ctrl+shift+p command palette), and hands everything else down.
+# --- Keybinds: tabs yes, splits no ---
+# Ghostty runs exactly two tabs: one for tmux, one for herdr. That separation is
+# the whole layout -- splits and panes belong to the layer inside each tab, so
+# Ghostty's own split bindings and the ctrl+alt scheme built on them are gone.
 #
-# This is deliberate, not neglect. ctrl+alt+* is the most reliable direct-chord
-# space to send through Ghostty -> tmux -> herdr, so it is worth more to herdr
-# as free space than it was here as split bindings. See docs/herdr.md.
-
-# Tab creation/closing stays unbound; the command palette covers it.
-keybind = ctrl+shift+t=unbind
-keybind = ctrl+shift+w=unbind
+# Tab create/close keep Ghostty's ctrl+shift defaults; ctrl+tab and
+# ctrl+shift+tab switch between the two. With only two tabs there is nothing for
+# alt+1..9 to do, which is what lets herdr keep them -- see docs/herdr.md.
 
 # Release ctrl+alt+arrows (Ghostty default: goto_split) so nothing in the
 # ctrl+alt space is claimed before an inner layer sees it.
