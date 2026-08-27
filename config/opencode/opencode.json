@@ -38,13 +38,30 @@
     },
     "sequential-thinking": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking@2026.7.4"],
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking@2026.7.4"
+      ],
       "enabled": true
     },
     "railway": {
       "type": "local",
-      "command": ["railway", "mcp"],
+      "command": [
+        "railway",
+        "mcp"
+      ],
       "enabled": true
+    },
+    "aws-mcp": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "mcp-proxy-for-aws@latest",
+        "https://aws-mcp.us-east-1.api.aws/mcp",
+        "--metadata",
+        "INSTALL_SOURCE=aws-cli"
+      ]
     }
   },
   "tool_output": {
