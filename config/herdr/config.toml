@@ -208,6 +208,10 @@ delay_seconds = 1
 # ============================================
 
 [experimental]
+# Forward Kitty graphics from pane applications to compatible outer terminals
+# so Pi and tools such as Yazi can render inline images through Herdr.
+kitty_graphics = true
+
 # Keep pane scrollback across a full server restart. Agent transcripts are the
 # reason to scroll back at all, and re-running the agent does not reproduce them.
 pane_history = true
