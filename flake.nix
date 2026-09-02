@@ -109,6 +109,13 @@
               # fighting the read-only store. uv keeps its interpreters and its
               # PyPI-only tools; see docs/nix.md.
               uv
+              # The machine-level interpreter, for this repo's own tooling
+              # (_dots/dots.py) and nothing else: it exists before `dots apply`
+              # has ever run, and is the same version on every distro. Project
+              # Pythons are uv's. uv's `--default` symlinks in ~/.local/bin
+              # were removed because that directory precedes this profile and
+              # they would shadow it -- `dots doctor` reports exactly that.
+              python3
               # --- The other toolchain managers, on the same terms as uv: the
               # manager is machine-level, what it manages lives in $HOME and is
               # per-project. Their self-updaters cannot write to the store, so
