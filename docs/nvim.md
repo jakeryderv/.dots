@@ -38,7 +38,7 @@ and CI on one version.
 | Formatters: `stylua`, `shfmt`, `prettierd` | [`flake.nix`](../flake.nix) | same binaries `just check` uses |
 | Linters: `shellcheck`, `eslint_d` | [`flake.nix`](../flake.nix) | `.shellcheckrc` is read by both |
 | Treesitter CLI | Mason | `tree-sitter-cli`, needed to build parsers |
-| **`ruff`** (Python format + lint) | **system** | not via Mason — install with `uv tool install ruff` |
+| **`ruff`** (Python format + lint) | [`flake.nix`](../flake.nix) | was a `uv tool` install; moved so all six formatters/linters share one owner |
 
 ## External (non-Mason) dependencies
 
@@ -48,7 +48,7 @@ These features need system binaries and are **not** installed by Mason:
   `xclip`/`xsel` (X11). Verify with `:checkhealth provider`.
 - **`markdown-preview`** — hard-codes `firefox --new-window` (see
   `markdown-preview.lua`). Needs Firefox on `PATH`, or edit the `browserfunc`.
-- **`ruff`** — see table above.
+- **`ruff`** — see table above; no longer an external dependency.
 
 ## Health checks
 

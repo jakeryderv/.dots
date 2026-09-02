@@ -71,6 +71,10 @@
           # shfmt and shellcheck were installed by both.
           eslint_d
           prettierd
+          # ruff joins them rather than staying a `uv tool` install: uv owns
+          # the per-project layer, and a formatter/linter is the same
+          # machine-level category as the five above.
+          ruff
           shellcheck
           shfmt
           stylua

@@ -66,7 +66,8 @@ the reason it is pinned that way, inline. Broadly:
   (`stylua`, `shfmt`, `shellcheck`, `prettierd`, `eslint_d`)
 - **Shell environment** — `git`, `gh`, `tmux`, `just`
 - **Node** — `nodejs`, `pnpm_10`, `yarn`, replacing nvm
-- **Python** — `uv`, the per-project manager, itself a machine-level tool
+- **Python** — `uv` and `ruff`; see [below](#three-managers-one-rule) for what
+  uv keeps
 - **Other** — `kanata` (the systemd unit execs `~/.nix-profile/bin/kanata`),
   `nix-direnv`
 
@@ -99,6 +100,40 @@ correct per-project answer for one machine-wide guess.
 Note the distinction that makes `uv` itself a flake entry: *the tool* is
 machine-level, *what it manages* is project-level. Pinning uv says nothing
 about which Python any project uses.
+
+## Three managers, one rule
+
+Machine-level CLIs come from three places, and that is deliberate:
+
+| Manager | Holds | Because |
+| --- | --- | --- |
+| `flake.nix` | most things | nixpkgs has them |
+| [`tools/install-npm-globals.sh`](../tools/README.md) | `pi`, `cf`, `wrangler`, `playwright-cli` | npm-only |
+| `uv tool` | `llm`, `qtile`, `serena-agent`, `pylatexenc`, `jcodemunch-mcp`, `poetry`, `qmk`, `git-filter-repo` | PyPI-only, or better tracked there |
+
+Three managers is not three sources of truth, because the split is by **where
+the tool comes from**, not by preference. The rule is narrower than "one
+manager":
+
+> **One manager per tool, chosen by the tool's origin — and no tool obtainable
+> from two.**
+
+The second half is the part that gets violated. Two live examples, both found
+by listing every `uv tool` entry against nixpkgs:
+
+- **`ruff`** was a `uv tool` install while the other five formatters and
+  linters came from this flake — `docs/nvim.md` said so in its own table. Same
+  category, two owners. It moved here.
+- **`pyright`** was installed *twice*, by Mason and by `uv tool`. Outside nvim
+  the uv copy won; inside nvim, Mason prepends its own bin and won instead — so
+  the version depended on where you invoked it. Mason owns language servers, so
+  the uv copy was removed. `pyright` is consequently not on the shell `PATH` any
+  more; that is what Mason ownership means, and `uvx pyright` covers the
+  occasional CLI use.
+
+This is the same failure `2956a44` fixed between apt and Mason. It recurs
+whenever a new manager is added, so the check is worth repeating: list what each
+manager owns, and look for a tool that appears twice or a category that splits.
 
 ## The rules this boundary follows
 
