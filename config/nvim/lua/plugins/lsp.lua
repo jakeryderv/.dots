@@ -13,7 +13,6 @@ return {
     dependencies = {
       { 'mason-org/mason.nvim', opts = {} },
       'mason-org/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
       { 'j-hui/fidget.nvim', opts = {} },
       'saghen/blink.cmp',
     },
@@ -135,18 +134,12 @@ return {
       -- automatic_enable = false so ONLY the servers we vim.lsp.enable() below
       -- start -- this stops mason-lspconfig 2.x from auto-enabling extras like
       -- stylua's LSP mode.
+      -- Mason installs language servers and nothing else. Formatters, linters
+      -- and tree-sitter all come from flake.nix, so mason-tool-installer had
+      -- one entry left and is gone with it.
       require('mason-lspconfig').setup({
         ensure_installed = vim.tbl_keys(servers),
         automatic_enable = false,
-      })
-      require('mason-tool-installer').setup({
-        ensure_installed = {
-          -- Formatters and linters come from flake.nix, not mason: they were
-          -- previously installed by mason *and* apt, and are stable enough to
-          -- pin with the rest of the toolchain. Mason still owns the language
-          -- servers, which churn faster.
-          'tree-sitter-cli', -- needed by nvim-treesitter (main) to build parsers
-        },
       })
 
       -- Start the servers (on matching filetypes). This replaces the removed

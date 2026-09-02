@@ -14,22 +14,24 @@ Personal Neovim config (Lua, `lazy.nvim`). Deployed to `~/.config/nvim/`.
 
 ## First-run order
 
-Plugins install on first launch via `lazy.nvim`. Tooling installs via Mason,
-and Treesitter parsers need `tree-sitter-cli` (installed by Mason) present
-*before* they build. Recommended sequence on a fresh machine:
+Plugins install on first launch via `lazy.nvim`; Mason then installs the
+language servers. Everything the parser build needs -- `tree-sitter`, plus a C
+compiler -- comes from outside nvim and is already present once
+`nix profile add ~/.dots` has run, so there is no ordering constraint around it
+any more. Recommended sequence on a fresh machine:
 
 1. `nvim` — let `lazy.nvim` finish installing plugins, then quit.
-2. `nvim` again — Mason auto-installs `tree-sitter-cli` and the LSP servers
-   below. Wait for `:Mason` / fidget to report done. Restart. (Formatters and
-   linters are not Mason's; they come from [`flake.nix`](../flake.nix).)
-3. `:TSUpdate` — build/refresh Treesitter parsers now that `tree-sitter-cli`
-   exists.
+2. `nvim` again — Mason auto-installs the LSP servers listed below. Wait for
+   `:Mason` / fidget to report done. Restart. (Formatters, linters and
+   `tree-sitter` are not Mason's; they come from
+   [`flake.nix`](../flake.nix).)
+3. `:TSUpdate` — build/refresh Treesitter parsers.
 
 ## Tooling ownership
 
 Split deliberately: Mason owns the language servers, which churn fastest and
-benefit from its auto-install; the flake owns the formatters and linters, which
-are stable and are also run by `just check`, so pinning them keeps the editor
+benefit from its auto-install; the flake owns everything else, which is stable
+and is also run by `just check`, so pinning it keeps the editor
 and CI on one version.
 
 | Tool | Owner | Notes |
@@ -37,7 +39,7 @@ and CI on one version.
 | LSP servers: `lua_ls`, `bashls`, `pyright`, `html`, `cssls`, `emmet_language_server`, `vtsls` | Mason (`mason-lspconfig`) | auto-installed |
 | Formatters: `stylua`, `shfmt`, `prettierd` | [`flake.nix`](../flake.nix) | same binaries `just check` uses |
 | Linters: `shellcheck`, `eslint_d` | [`flake.nix`](../flake.nix) | `.shellcheckrc` is read by both |
-| Treesitter CLI | Mason | `tree-sitter-cli`, needed to build parsers |
+| `tree-sitter` CLI | [`flake.nix`](../flake.nix) | builds every parser; was Mason's, but Mason's remit here is language servers |
 | **`ruff`** (Python format + lint) | [`flake.nix`](../flake.nix) | was a `uv tool` install; moved so all six formatters/linters share one owner |
 
 ## External (non-Mason) dependencies
@@ -48,6 +50,9 @@ These features need system binaries and are **not** installed by Mason:
   that actually breaks a fresh install. nvim-treesitter compiles every parser,
   and `telescope-fzf-native` has `build = 'make'`; without them both fail
   quietly and searching degrades to the pure-Lua sorter.
+- **`curl` and `tar`** (apt) — nvim-treesitter fetches and unpacks each grammar
+  before compiling it. `:checkhealth nvim-treesitter` reports all four of these
+  together, and is the fastest way to confirm the parser toolchain is intact.
 - **Clipboard** (`clipboard = unnamedplus`) — needs `wl-clipboard` (Wayland) or
   `xclip`/`xsel` (X11). Verify with `:checkhealth provider`.
 - **`markdown-preview`** — hard-codes `firefox --new-window` (see

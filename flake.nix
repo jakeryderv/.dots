@@ -90,6 +90,11 @@
           stylua
           # `rg` for telescope and grep; apt's copy stays but is shadowed.
           ripgrep
+          # nvim-treesitter compiles every parser with this. It was a mason
+          # package, but mason's boundary here is language servers, which churn
+          # -- a build tool pinned at a minimum of 0.26.1 is not that. Being on
+          # the shell PATH too is the point when a parser build needs debugging.
+          tree-sitter
           # Was /usr/local/bin/starship, dropped there by starship.rs' curl
           # installer with nothing tracking it. starship.toml was a manifest
           # package whose binary had no provenance at all -- the tmux case.
