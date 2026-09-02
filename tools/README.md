@@ -24,6 +24,13 @@ repo. Scripts are safe to re-run to update.
 
 ## Scripts
 
+One script per manager, named for the manager. npm is the only manager with
+user-level installs today; `uv tool`, `cargo install`, `go install` and
+`bun install -g` each hold nothing, and get no placeholder. When one of them
+gains an install that carries a decision (a flag, an ordering, a second
+command), it gets a sibling `install-<manager>-*.sh` with its own header --
+never a section in this one, whose header would then be true of neither.
+
 | Script | Installs | Notes |
 | --- | --- | --- |
 | `install-npm-globals.sh` | [Pi](https://pi.dev), [cf](https://www.npmjs.com/package/cf) + [wrangler](https://developers.cloudflare.com/workers/wrangler/), [Playwright CLI](https://playwright.dev/agent-cli/installation), [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) (`mmdc`) | The npm-only CLIs, in one pass. Installed with `--ignore-scripts`; playwright-cli additionally fetches its Chromium into `~/.cache/ms-playwright`, and mermaid-cli's puppeteer fetches its Chrome into `~/.cache/puppeteer`. `cf` is the newer generated CLI covering the whole API, `wrangler` the Workers build toolchain — overlapping but converging, see [`claude`](../docs/claude.md). Auth is **not** installed: each CLI holds its own OAuth grant (`cf auth login`, `wrangler login`). Global prefix is `~/.npm-global`. |
