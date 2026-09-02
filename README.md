@@ -29,7 +29,7 @@ appear automatically. Use it when the directory is exclusively ours.
 **`tree`** creates real directories and links each tracked file individually.
 Use it when the tool writes state into the same directory it reads config from
 (`~/.config/herdr` also holds sockets and `session.json`), or when the target is shared
-with other installers (`~/.local/bin` has 48 entries; three are ours).
+with other installers (`~/.local/bin` has 76 entries; four are ours).
 
 Nothing is inferred. Both the package name and the link shape are declared,
 because both were previously inferred and both were wrong.

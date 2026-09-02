@@ -10,8 +10,10 @@ See the root [README](../README.md) for shared deployment mechanics.
 |------|------|
 | `.tmux.conf` | Single-file config: prefix, display/colors, status bar, keybinds, plugins. |
 
-The generated cheatsheet command is provided by
-[`scripts`](scripts.md) as `~/.local/bin/tmux-cheatsheet`.
+`prefix + ?` opens a cheatsheet in a popup, generated from the live key tables
+by `tmux list-keys -N` and filtered through fzf. It lists only bindings that
+carry an `-N` note, so annotate new binds to keep them visible; `prefix + /`
+describes any single key, annotated or not.
 
 ## Activate
 

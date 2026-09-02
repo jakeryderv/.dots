@@ -44,7 +44,7 @@ qutebrowser     tree    config/qutebrowser                                  $XDG
 herdr           tree    config/herdr                                        $XDG_CONFIG_HOME/herdr
 
 # --- Shared targets: directories other installers also write into ------------
-# ~/.local/bin holds 48 entries; only three are ours. ~/.config/systemd/user is
+# ~/.local/bin holds 76 entries; only four are ours. ~/.config/systemd/user is
 # systemd's own tree, so kanata links its unit file, not the directory.
 kanata          tree    config/systemd/user                                 $XDG_CONFIG_HOME/systemd/user
 fonts           tree    data/fonts                                          $XDG_DATA_HOME/fonts

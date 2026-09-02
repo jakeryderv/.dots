@@ -24,27 +24,10 @@ Both rows are `tree` mode, which matters here. A single symlink at
 anything else installing there — such as
 [`tools/install-tealdeer.sh`](../tools/README.md) — writes a third-party
 file straight into the repo. As `tree` rows the targets stay real directories
-holding one symlink per tracked file; `~/.local/bin` currently has 48 entries,
-of which three are ours.
+holding one symlink per tracked file; `~/.local/bin` currently has 76 entries,
+of which four are ours.
 
 ## Scripts
-
-### `tmux-cheatsheet`
-
-Generates a reference from a running tmux server's effective prefix, root, vi
-copy-mode, and custom resize-mode key tables. It includes defaults, overrides,
-and loaded plugin bindings. The tmux config opens its order-preserving fzf mode
-with `prefix + ?`.
-
-```bash
-tmux-cheatsheet             # colored terminal output
-tmux-cheatsheet --pick      # interactive fzf picker
-tmux-cheatsheet --plain     # plain output for logs and pipes
-NO_COLOR=1 tmux-cheatsheet  # standard no-color convention
-```
-
-`tmux` and a running server are required for every mode; `--pick` also requires
-`fzf`.
 
 ### `gconf`
 
