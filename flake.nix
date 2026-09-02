@@ -109,6 +109,27 @@
           # fighting the read-only store. uv keeps its interpreters and its
           # PyPI-only tools; see docs/nix.md.
           uv
+          # --- The other toolchain managers, on the same terms as uv: the
+          # manager is machine-level, what it manages lives in $HOME and is
+          # per-project. Their self-updaters cannot write to the store, so
+          # updating any of them means updating the flake. See docs/nix.md.
+          #
+          # rustup, not rustc/cargo: toolchains stay in ~/.rustup, where
+          # rust-toolchain.toml picks one per project. `rustup self update`
+          # is disabled in this build, like uv's. The proxies rustup-init
+          # had put in ~/.cargo/bin were deleted; that directory stays on
+          # PATH, after this profile, for `cargo install` output only.
+          rustup
+          # Base Go. GOTOOLCHAIN=auto fetches whatever a go.mod asks for
+          # into the module cache, so one global version is right. Replaces
+          # a webi tarball in ~/.local/opt/go; ~/go/bin stays on PATH,
+          # after this profile, for `go install` output.
+          go
+          # Runtime plus package manager, the node case again. Replaces the
+          # curl installer's ~/.bun/bin/bun. nixpkgs trails bun's release
+          # cadence by about a minor (1.3.13 against the 1.4.0 it replaced)
+          # -- taken anyway, for one owner across all four managers.
+          bun
           # Was a hand-built binary in /usr/local/bin that no package manager
           # and no installer in this repo knew about -- the last unreproducible
           # thing in the daily path. TPM writes plugins to ~/.tmux/plugins at

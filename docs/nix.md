@@ -101,8 +101,9 @@ the reason it is pinned that way, inline. Broadly:
 - **Shell environment** — `git`, `gh`, `tmux`, `just`, `starship`, `direnv`
   (with `nix-direnv`, so host and plugin share one owner)
 - **Node** — `nodejs`, `pnpm_10`, `yarn`, replacing nvm
-- **Python** — `uv` and `ruff`; see [below](#two-managers-one-rule) for what
-  uv keeps
+- **Toolchain managers** — `uv`, `rustup`, `go`, `bun`; what each of them
+  manages stays outside the store, see [below](#machine-versions-vs-project-versions)
+- **Python** — `ruff`, beside uv
 - **Other** — `kanata` (the systemd unit execs `~/.nix-profile/bin/kanata`),
   `qmk`, `nix-direnv`
 
@@ -127,14 +128,22 @@ honest about why: in practice there was exactly one version. When
 `pi-cli-tools` needed 22 against a global 24, it got a project flake — which is
 the rule working, not an exception to it.
 
-The corollary is that **`rustup`, `bun`, `uv`, and Go's own `GOTOOLCHAIN` are
-not competitors to this flake.** They manage the per-project layer, which this
-flake does not reach. Replacing them with a pinned global version would trade a
-correct per-project answer for one machine-wide guess.
+The corollary is that **the managers belong here and what they manage does
+not.** `uv`, `rustup`, `go` and `bun` are all flake entries; the Pythons in
+`~/.local/share/uv`, the toolchains in `~/.rustup`, the versions
+`GOTOOLCHAIN=auto` fetches into the module cache, and bun's `~/.bun` cache are
+not. Pinning uv says nothing about which Python a project uses, and pinning
+rustup says nothing about which Rust. Go and bun are the node case again: one
+base version that is right machine-wide, with the per-project layer handled by
+the tool itself or by a project flake. Replacing a manager with a pinned global
+toolchain would trade a correct per-project answer for one machine-wide guess;
+pinning the manager costs nothing.
 
-Note the distinction that makes `uv` itself a flake entry: *the tool* is
-machine-level, *what it manages* is project-level. Pinning uv says nothing
-about which Python any project uses.
+The store is read-only, so `rustup self update` and `uv self update` are
+disabled in the nixpkgs builds and `bun upgrade` fails; updating any of them
+means updating the flake. `~/.cargo/bin` stays on `PATH` for `cargo install`
+output and `~/go/bin` for `go install` output -- both *after* the profile, so
+neither can shadow it.
 
 ## Two managers, one rule
 

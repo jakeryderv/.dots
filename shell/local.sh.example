@@ -39,6 +39,17 @@
 # NOT here: fzf, starship and direnv. flake.nix guarantees all three, so their
 # shell integrations are tracked in tools.sh. Adding them here too would run
 # each hook twice.
+#
+# Also NOT here: `source ~/.cargo/env`, the bun installer's BUN_INSTALL block,
+# or a Go root. rustup, go and bun come from flake.nix. What their installers
+# append prepends ~/.cargo/bin or ~/.bun/bin *ahead* of the profile, which
+# shadows the flake's copies -- `just doctor` reports exactly that. The only
+# PATH entries they still need are for `cargo install` and `go install`
+# output, appended after the profile:
+# case ":$PATH:" in
+#     *":$HOME/.cargo/bin:"*) ;;
+#     *) export PATH="$PATH:$HOME/.cargo/bin" ;;
+# esac
 
 # --- CUDA toolkit (match the version installed on this machine) -------
 # export PATH="/usr/local/cuda-XX.X/bin:$PATH"

@@ -20,7 +20,7 @@ required=(bash git just python3 find sed awk grep diff readlink file)
 optional=(
     shellcheck shfmt stylua prettierd eslint_d ruff luac fc-cache
     starship vim nvim tmux fzf bat rg fd ast-grep delta lazygit glow qmk
-    git gh just direnv uv node npm pnpm yarn tldr
+    git gh just direnv uv rustup cargo go bun node npm pnpm yarn tldr
     kanata pi claude agy cf wrangler herdr nix
 )
 

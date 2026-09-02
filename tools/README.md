@@ -60,13 +60,12 @@ already exists — the updater is the whole objection. Revisit at 1.0, or when
 reproducibility matters more than same-day releases. This is the reason t3code
 was rejected in 57fc210; the category outlived that installer.
 
-The language toolchain managers are the same category and are listed so the
-census is complete: `rustup` (its installer, `~/.cargo`), `bun` (its installer,
-`~/.bun`), and Go (a tarball unpacked by hand to `~/.local/opt/go`, on `PATH`
-via envman). Each owns per-project versions, which is why none of them is a
-flake candidate -- see [Machine versions vs project
-versions](../docs/nix.md#machine-versions-vs-project-versions). `shell/local.sh`
-wires all three into the shell.
+The language toolchain managers -- `rustup`, `go`, `bun` -- looked like this
+category and are not. Their self-updaters exist, but nixpkgs disables them the
+way it disables `uv self update`, and the per-project layer each one manages
+lives in `$HOME` regardless of where the manager comes from. All three moved
+into the flake on the same terms as uv; see [Machine versions vs project
+versions](../docs/nix.md#machine-versions-vs-project-versions).
 
 **GUI apps** — none are left here, but the finding is worth keeping so it is
 not re-derived. Three were tested under Nix on this host (qutebrowser, freecad,
