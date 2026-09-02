@@ -34,14 +34,12 @@ kitty           link    config/kitty                                        $XDG
 wezterm         link    config/wezterm                                      $XDG_CONFIG_HOME/wezterm
 direnv          link    config/direnv                                       $XDG_CONFIG_HOME/direnv
 tealdeer        link    config/tealdeer                                     $XDG_CONFIG_HOME/tealdeer
-openspec        link    config/openspec                                     $XDG_CONFIG_HOME/openspec
 kanata          link    config/kanata                                       $XDG_CONFIG_HOME/kanata
 starship        link    config/starship.toml                                $XDG_CONFIG_HOME/starship.toml
 
 # --- XDG config: the tool writes into its own config dir ---------------------
-# opencode drops node_modules/ and bun.lock; qutebrowser writes autoconfig.yml;
-# herdr keeps its sockets, logs, and session.json beside config.toml.
-opencode        tree    config/opencode                                     $XDG_CONFIG_HOME/opencode
+# qutebrowser writes autoconfig.yml; herdr keeps its sockets, logs, and
+# session.json beside config.toml.
 qutebrowser     tree    config/qutebrowser                                  $XDG_CONFIG_HOME/qutebrowser
 herdr           tree    config/herdr                                        $XDG_CONFIG_HOME/herdr
 

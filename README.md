@@ -28,7 +28,7 @@ appear automatically. Use it when the directory is exclusively ours.
 
 **`tree`** creates real directories and links each tracked file individually.
 Use it when the tool writes state into the same directory it reads config from
-(`~/.config/opencode` also holds `node_modules/`), or when the target is shared
+(`~/.config/herdr` also holds sockets and `session.json`), or when the target is shared
 with other installers (`~/.local/bin` has 48 entries; three are ours).
 
 Nothing is inferred. Both the package name and the link shape are declared,
@@ -87,9 +87,7 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 [bat](docs/bat.md), [direnv](docs/direnv.md),
 [editorconfig](docs/editorconfig.md), [tealdeer](docs/tealdeer.md).
 
-**Coding agents** — [claude](docs/claude.md),
-[opencode](docs/opencode.md),
-[openspec](docs/openspec.md).
+**Coding agents** — [claude](docs/claude.md).
 
 **Desktop & misc** — [qutebrowser](docs/qutebrowser.md), [fonts](docs/fonts.md),
 [scripts](docs/scripts.md), [kanata](docs/kanata.md) (keyboard remapping).
@@ -140,7 +138,7 @@ cp home/gitconfig.local.example ~/.gitconfig.local
 conflict rather than clobbering it. Back it up and remove it, then re-run.
 
 Packages needing activation beyond linking (starship enablement, `fc-cache` for
-fonts, TPM for tmux, first-run order for nvim/opencode) document it in their
+fonts, TPM for tmux, first-run order for nvim) document it in their
 own `docs/<pkg>.md`.
 
 ## Adding a package

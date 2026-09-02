@@ -44,9 +44,6 @@ alias codex='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-codex}" codex'
 alias claude='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-claude}" claude'
 alias claude-danger='claude --dangerously-skip-permissions'
 alias pi='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-pi}" pi'
-# OpenCode discovers both ~/.agents/skills and ~/.claude/skills by default.
-# Ignore the Claude compatibility mirror so each shared skill is loaded once.
-alias opencode='OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1 PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-opencode}" opencode'
 
 # color aliases
 # LC_COLLATE=C = GitHub-style byte-order sorting: dotfiles first, then

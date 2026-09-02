@@ -32,9 +32,6 @@
 # --- fzf -------------------------------------------------------------
 # [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-# --- opencode --------------------------------------------------------
-# export PATH="$HOME/.opencode/bin:$PATH"
-
 # --- nvm (node version manager) --------------------------------------
 # export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"

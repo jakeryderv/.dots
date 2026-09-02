@@ -19,10 +19,6 @@ else
     export EDITOR='nvim'
 fi
 
-# Tool telemetry opt-out. OpenSpec has no config-file switch — it checks
-# OPENSPEC_TELEMETRY === '0' (and the cross-tool DO_NOT_TRACK === '1').
-export OPENSPEC_TELEMETRY=0
-
 # Pi agent performance defaults. Keep provider prompt caches warm across
 # sessions, and avoid indexing the entire home directory when Pi starts there.
 export PI_CACHE_RETENTION=long

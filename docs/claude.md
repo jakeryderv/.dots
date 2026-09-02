@@ -82,7 +82,7 @@ Migration executed 2026-07-23: superpowers removed (its systematic-debugging
 and verification-before-completion skills salvaged into `agent-skills`, itself
 since deleted — both proved redundant and superpowers remains installable);
 OpenSpec 1.6.0 installed globally (custom profile: core workflows + verify,
-onboard, bulk-archive) with per-repo adoption via `openspec init`; a
-SessionStart hook in `settings.json` injects active-change state in
-OpenSpec-enabled repos; CLAUDE.md gained the "Specs and Source of Truth"
-section. Pilot repo: agy-plugin-cc.
+onboard, bulk-archive) with per-repo adoption via `openspec init`, itself since
+removed — the spec workflow went unused, and its SessionStart hook and the
+CLAUDE.md "Specs and Source of Truth" section went with it. Pilot repo:
+agy-plugin-cc.

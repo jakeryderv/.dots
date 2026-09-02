@@ -51,15 +51,6 @@ config/herdr/session.json
 config/herdr/.plugins.lock
 config/herdr/config.toml.bak*
 
-# opencode — track user-authored config; ignore plugin machinery
-config/opencode/node_modules/
-config/opencode/package*.json
-config/opencode/bun.lock
-
-# Installer-managed skills live under ~/.agents/skills and must never be copied
-# into an agent-specific tracked source.
-config/opencode/skills/use-railway/
-
 # Python build cruft (e.g. qutebrowser config.py)
 **/__pycache__/
 **/.ruff_cache/

@@ -59,17 +59,6 @@ else
     warn "shell/local.sh missing; copy shell/local.sh.example"
 fi
 
-if command -v opencode >/dev/null 2>&1; then
-    if opencode debug config >/dev/null 2>&1; then
-        ok "opencode resolved config is valid"
-    else
-        warn "opencode config failed to load"
-        fail=1
-    fi
-else
-    warn "opencode unavailable; skipping resolved config validation"
-fi
-
 # kanata is only useful when all three of these line up: the binary exists, the
 # user can reach the input devices, and the service is actually running. Each
 # fails independently and none of them are visible from the config alone.

@@ -41,7 +41,7 @@ exports → options → completions → functions → aliases → keybinds → l
 | `options.sh`       | history settings + shopt             | ✅      |
 | `completions.sh`   | bash-completion + readline bindings  | ✅      |
 | `functions.sh`     | shell functions                      | ✅      |
-| `aliases.sh`       | aliases, isolated Playwright sessions, and OpenCode skill discovery guard | ✅      |
+| `aliases.sh`       | aliases and isolated Playwright sessions                                  | ✅      |
 | `keybinds.sh`      | keybindings (may reference functions)| ✅      |
 | `llm.sh`           | short names for `ai` (see [docs/scripts.md](../docs/scripts.md)) | ✅      |
 | `local.sh`         | machine-specific config              | ❌ git-ignored |
