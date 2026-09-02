@@ -11,7 +11,7 @@ nothing here is ever deployed.
 | Path | Purpose |
 | --- | --- |
 | `bin/link.sh` | The deployer. Reads the manifest and creates the symlinks it declares. |
-| `bin/doctor.sh` | Live-machine health: shell wiring, deployed entrypoint, link state. |
+| `bin/doctor.sh` | Live-machine health: shell wiring, deployed entrypoint, link state, flake binaries shadowed on `PATH`. |
 | `bin/deps.sh` | Reports which expected tools are installed. |
 | `checks/check-repo.sh` | The repo gate, and what CI runs. Portable: never inspects `$HOME` or live targets. |
 | `checks/verify-readmes.sh` | Every manifest package has `docs/<pkg>.md`; every non-source top-level directory has a `README.md`. |

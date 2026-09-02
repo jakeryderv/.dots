@@ -79,6 +79,33 @@ else
     warn "kanata unavailable; skipping keyboard remapper checks"
 fi
 
+# A flake package that another PATH entry provides first is installed but never
+# run, which is silent: `nix profile list` and `just deps` both look healthy. It
+# has happened twice -- a stale ~/.local/bin/uvx outranked the flake copy and
+# broke `uvx` outright, and a hand-downloaded d2 kept resolving after the
+# package was added. ~/.local/bin sits ahead of ~/.nix-profile/bin and cannot be
+# reordered from this repo: Ubuntu's ~/.profile sources ~/.bashrc (and so
+# shell/exports.sh) before making its own prepend, so it always wins. Detect it
+# instead, and delete the older copy when it shows up.
+shadowed=()
+if [[ -d "$HOME/.nix-profile/bin" ]]; then
+    for binary in "$HOME/.nix-profile/bin"/*; do
+        [[ -x "$binary" && ! -d "$binary" ]] || continue
+        name="${binary##*/}"
+        resolved="$(command -v "$name" 2>/dev/null || true)"
+        # Only a real path counts; builtins and keywords resolve to a bare word.
+        [[ "$resolved" == /* && "$resolved" != "$binary" ]] || continue
+        shadowed+=("$name: $resolved")
+    done
+fi
+if ((${#shadowed[@]})); then
+    warn "flake binaries shadowed by an earlier PATH entry (delete the older copy):"
+    printf '    %s\n' "${shadowed[@]}"
+    fail=1
+else
+    ok "no flake binary is shadowed on PATH"
+fi
+
 check_log="$(mktemp)"
 status_log="$(mktemp)"
 trap 'rm -f "$check_log" "$status_log"' EXIT

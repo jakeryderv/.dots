@@ -136,6 +136,11 @@ This is the same failure `2956a44` fixed between apt and Mason. It recurs
 whenever a new manager is added, so the check is worth repeating: list what each
 manager owns, and look for a tool that appears twice or a category that splits.
 
+The narrower version of it — a flake binary that another `PATH` entry provides
+first — is automated. `just doctor` reports it, because that one is invisible
+otherwise: the package installs, `nix profile list` and `just deps` both look
+healthy, and the shell keeps running the other copy.
+
 ## Packaging something nixpkgs does not have
 
 A flake is not limited to what nixpkgs ships, but "package it ourselves" covers
