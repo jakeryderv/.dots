@@ -38,9 +38,9 @@ Not deployed from the manifest — install separately:
   extrakto).
 - **fzf** and **tmux-sessionizer** — the generated cheatsheet (`prefix + ?`),
   session picker (`prefix + S`), and sessionizer (`prefix + f`) need these on
-  `PATH`. fzf comes from [`flake.nix`](../flake.nix); tmux-sessionizer is still
-  [`tools/install-tmux-sessionizer.sh`](../tools/README.md), because nixpkgs
-  packages a different project of the same name.
+  `PATH`. fzf comes from [`flake.nix`](../flake.nix); tmux-sessionizer is
+  vendored into [`scripts`](scripts.md), because nixpkgs packages a different
+  project of the same name.
 
 ## Links, mouse, and clipboard
 

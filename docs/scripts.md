@@ -22,12 +22,28 @@ cd ~/.dots && just apply scripts
 Both rows are `tree` mode, which matters here. A single symlink at
 `~/.local/bin` or `~/.local/share/bash-completion/completions` would mean
 anything else installing there — such as
-[`tools/install-tmux-sessionizer.sh`](../tools/README.md) — writes a
+[`tools/install-npm-globals.sh`](../tools/README.md) — writes a
 third-party file straight into the repo. As `tree` rows the targets stay real directories
 holding one symlink per tracked file; `~/.local/bin` currently has 76 entries,
 of which four are ours.
 
 ## Scripts
+
+### `tmux-sessionizer`
+
+fzf a project directory and attach or switch to a tmux session for it. Bound to
+`prefix + f` in [`tmux`](tmux.md) and `Ctrl-F` in `shell/keybinds.sh`.
+
+Vendored from ThePrimeagen/tmux-sessionizer at commit `7edf8211`, which is
+unmaintained. It was previously fetched by an installer against a pinned commit
+and checksum; keeping the file here removes that indirection and puts it under
+the same ShellCheck and shfmt gates as the rest of `bin/`. The only local
+changes are formatting and the fixes those gates required, each marked
+`vendor fix` inline.
+
+Search paths come from `~/.config/tmux-sessionizer/tmux-sessionizer.conf`, which
+is **not tracked** — a fresh machine falls back to upstream's defaults
+(`~/ ~/personal ...`), which are wrong for this setup.
 
 ### `gconf`
 

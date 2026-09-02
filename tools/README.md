@@ -20,16 +20,13 @@ so this directory has exactly one job.
 
 Written for **Linux x86_64 + apt/sudo** (Pop!_OS / Debian). Each script's header
 documents its exact assumptions and whether it mutates anything outside the
-repo. Release installers verify GitHub-provided SHA-256 digests;
-`tmux-sessionizer` is pinned to a reviewed commit and checksum. Scripts are safe
-to re-run to update unless their header says a pin must be bumped deliberately.
+repo. Scripts are safe to re-run to update.
 
 ## Scripts
 
 | Script | Installs | Notes |
 | --- | --- | --- |
 | `install-npm-globals.sh` | [Pi](https://pi.dev), [cf](https://www.npmjs.com/package/cf) + [wrangler](https://developers.cloudflare.com/workers/wrangler/), [Playwright CLI](https://playwright.dev/agent-cli/installation) | The npm-only CLIs, in one pass. Installed with `--ignore-scripts`; playwright-cli additionally fetches its Chromium into `~/.cache/ms-playwright`. `cf` is the newer generated CLI covering the whole API, `wrangler` the Workers build toolchain — overlapping but converging, see [`claude`](../docs/claude.md). Auth is **not** installed: each CLI holds its own OAuth grant (`cf auth login`, `wrangler login`). Global prefix is `~/.npm-global`. |
-| `install-tmux-sessionizer.sh` | [tmux-sessionizer](https://github.com/ThePrimeagen/tmux-sessionizer) | Pinned commit + checksum → `~/.local/bin`. Used by [`tmux`](../docs/tmux.md). |
 
 ## Why these stay scripts
 
@@ -40,10 +37,11 @@ from scratch.
 **Absent from nixpkgs** — `pi`, `playwright-cli`, and `cf`. Nothing to migrate.
 (nixpkgs has `playwright-driver`, but not the agent CLI.)
 
-**Different upstream** — `tmux-sessionizer`. nixpkgs packages jrmoulton's Rust
-rewrite, whose binary is `tms`. This repo uses ThePrimeagen's shell script, and
-`home/tmux.conf` plus `shell/keybinds.sh` call it by name. Same name, different
-project; not a drop-in.
+**Different upstream** — `tmux-sessionizer` was here until its script was
+vendored into [`bin/`](../docs/scripts.md). nixpkgs packages jrmoulton's Rust
+rewrite, whose binary is `tms` and whose config format differs; this repo uses
+ThePrimeagen's shell script, which `home/tmux.conf` and `shell/keybinds.sh` call
+by name. Same name, different project.
 
 **GUI apps** — none are left here, but the finding is worth keeping so it is
 not re-derived. Three were tested under Nix on this host (qutebrowser, freecad,
