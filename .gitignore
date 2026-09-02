@@ -51,6 +51,9 @@ config/herdr/session-history.json
 config/herdr/.plugins.lock
 config/herdr/config.toml.bak*
 
+# nix — track nix.conf; ignore the flake registry it writes beside it.
+config/nix/registry.json
+
 # Python build cruft
 **/__pycache__/
 **/.ruff_cache/

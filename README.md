@@ -89,7 +89,7 @@ mechanism:
 
 ## Packages
 
-19 packages across 22 manifest rows. `just packages` lists them; each is
+20 packages across 23 manifest rows. `just packages` lists them; each is
 documented in [`docs/`](docs/README.md).
 
 **Terminals** — [ghostty](docs/ghostty.md) (daily driver),
@@ -107,7 +107,8 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 [herdr](docs/herdr.md) (terminal workspace manager).
 
 **Desktop & misc** — [fonts](docs/fonts.md),
-[scripts](docs/scripts.md), [kanata](docs/kanata.md) (keyboard remapping).
+[scripts](docs/scripts.md), [kanata](docs/kanata.md) (keyboard remapping),
+[nix](docs/nix.md) (the flakes opt-in; the flake itself is documented there).
 
 ## Conventions
 
@@ -149,8 +150,9 @@ git clone <repo> ~/.dots
 cd ~/.dots
 
 # The toolchain first — `just` itself comes from the flake, so this is the only
-# ordering that works. See docs/nix.md for the Nix bootstrap.
-nix profile add ~/.dots
+# ordering that works. The flag is the flakes opt-in; `just apply` then deploys
+# the same setting to ~/.config/nix/nix.conf, so it is typed exactly once.
+nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
 
 just plan            # preview every link
 just apply           # deploy
@@ -169,9 +171,9 @@ Packages needing activation beyond linking (starship enablement, `fc-cache` for
 fonts, TPM for tmux, first-run order for nvim) document it in their
 own `docs/<pkg>.md`.
 
-Nix itself is the one bootstrap this repo does not manage, alongside `just`, and
-flakes need an opt-in in an untracked `~/.config/nix/nix.conf`
-— [`docs/nix.md`](docs/nix.md) has both. `just deps` reports what is missing.
+Nix itself is the one bootstrap this repo does not manage, alongside the daemon
+settings in `/etc/nix/nix.conf` — [`docs/nix.md`](docs/nix.md) has both, per
+distro. `just deps` reports what is missing.
 
 ## Adding a package
 

@@ -13,15 +13,20 @@
 
   outputs = { self, nixpkgs }:
     let
-      # Single-platform on purpose: tools/README.md already scopes this repo to
-      # Linux x86_64, so a flake-utils dependency would buy nothing.
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      # One list, built per architecture. Only x86_64 has ever been installed
+      # from this; aarch64 is here so an ARM machine does not fail at
+      # `nix profile add` with a missing attribute, but nothing in the list has
+      # been exercised there. genAttrs is all the fan-out needed, so no
+      # flake-utils input.
+      systems = [ "x86_64-linux" "aarch64-linux" ];
+      forEachSystem = nixpkgs.lib.genAttrs systems;
     in
     {
-      packages.${system}.default = pkgs.buildEnv {
-        name = "dots-tools";
-        paths = with pkgs; [
+      packages = forEachSystem (system:
+        let pkgs = nixpkgs.legacyPackages.${system}; in {
+          default = pkgs.buildEnv {
+            name = "dots-tools";
+            paths = with pkgs; [
           ast-grep
           # Canonical `bat` name: apt ships it as `batcat` for the same reason
           # it renames fd. The guarded alias in shell/aliases.sh becomes a
@@ -116,7 +121,8 @@
           # NOT wrangler: tools/install-npm-globals.sh installs it as a pair
           # with `cf`, which is not in nixpkgs. Taking only half the pair put
           # two wranglers on PATH, with the npm one shadowing this.
-        ];
-      };
+            ];
+          };
+        });
     };
 }

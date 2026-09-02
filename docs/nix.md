@@ -14,6 +14,11 @@ and neither infers anything:
 | Applied by | `just apply` | `nix profile add ~/.dots` |
 | Lands in | `~/.config`, `~`, `~/.local` | `~/.nix-profile/bin` |
 
+The flake builds the same list for `x86_64-linux` and `aarch64-linux`. Only
+x86_64 has ever been installed; the second exists so an ARM machine fails on a
+missing binary cache entry at worst, not on a missing attribute at
+`nix profile add`.
+
 This replaced eight per-tool installers in [`tools/`](../tools/README.md), which
 fetched releases at HEAD and so could not reproduce a version on a second
 machine. Committing `flake.lock` is what makes them reproducible, the same way
@@ -28,20 +33,48 @@ Nix itself is **not** managed by this repo — it is the one bootstrap step, lik
 `just`. This host runs the multi-user daemon install (`nix-daemon.service`,
 `/nix/var/nix/profiles/default`).
 
-Flakes are still experimental, and the opt-in lives in an **untracked**
-`~/.config/nix/nix.conf`:
+Nix reads two config files in layers: `/etc/nix/nix.conf`, then
+`~/.config/nix/nix.conf` on top of it. They have different owners, and that
+split decides what this repo can manage.
+
+**`~/.config/nix/nix.conf` is a manifest package** — the `nix` row deploys
+[`config/nix/nix.conf`](../config/nix/nix.conf), which holds the flakes opt-in:
 
 ```
 experimental-features = nix-command flakes
 ```
 
-Without that line every command below fails. It is not in the manifest because
-`~/.config/nix` is Nix's own tree and the setting is per-machine.
+Flakes are still experimental, and without that line every command below
+fails. It is a *client* setting, so the user file is enough, and the user file
+is identical on Debian, Arch and NixOS — which is what makes it a dotfile. Nix
+writes `registry.json` beside it, hence the `tree` row.
+
+**`/etc/nix/nix.conf` is bootstrap, not config.** Whatever installed Nix owns
+it: the installer's plain file on apt and Arch, a generated read-only file on
+NixOS. *Daemon* settings only take effect from there — the daemon runs as root
+and never reads `$HOME` — so they are recorded here as a per-machine step
+beside installing Nix, not deployed:
+
+| Setting | apt / Arch (official installer) | NixOS (`configuration.nix`) |
+| --- | --- | --- |
+| `auto-optimise-store = true` | `echo 'auto-optimise-store = true' \| sudo tee -a /etc/nix/nix.conf && sudo systemctl restart nix-daemon` | `nix.settings.auto-optimise-store = true;` |
+
+Then `nix store optimise` once, to hardlink what the store already holds.
+
+**Bootstrap order.** `just` comes from the flake, but `just apply` is what
+deploys the conf, so the very first command carries the opt-in inline:
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
+just apply
+```
+
+Every command after that is plain.
 
 ## Usage
 
 ```bash
-nix profile add ~/.dots            # first install
+nix profile add ~/.dots            # first install (see Bootstrap order above)
 nix flake update --flake ~/.dots   # bump flake.lock (commit the result)
 nix profile upgrade --all          # rebuild the profile from the new lock
 ```
