@@ -77,7 +77,6 @@ BASH_PATHS=(
     bin
     config
     home
-    data/bash-completion/completions
     _dots/bin
     _dots/checks
     _dots/tests

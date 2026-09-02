@@ -5,8 +5,8 @@
 # a space.
 #
 # PKG is declared, not derived from the path. It is what `just status <pkg>`
-# filters on, and it lets several rows belong to one package (scripts ships both
-# binaries and completions).
+# filters on, and it lets several rows belong to one package (kanata ships both
+# its config and its systemd unit).
 #
 # MODE:
 #   link  One symlink at TARGET, pointing at SOURCE (a file or a whole
@@ -49,7 +49,6 @@ nix             tree    config/nix                                          $XDG
 # systemd's own tree, so kanata links its unit file, not the directory.
 kanata          tree    config/systemd/user                                 $XDG_CONFIG_HOME/systemd/user
 fonts           tree    data/fonts                                          $XDG_DATA_HOME/fonts
-scripts         tree    data/bash-completion/completions                    $XDG_DATA_HOME/bash-completion/completions
 scripts         tree    bin                                                 $HOME/.local/bin
 
 # --- $HOME: tools that ignore XDG entirely -----------------------------------

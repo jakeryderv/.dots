@@ -69,7 +69,7 @@ recorded. See [`docs/nix.md`](docs/nix.md).
 | --- | --- | --- |
 | [`config/`](config/README.md) | `$XDG_CONFIG_HOME` (`~/.config`) | Tools that respect XDG |
 | [`home/`](home/README.md) | `$HOME` | Tools that don't — stored undotted (`home/gitconfig` → `~/.gitconfig`) |
-| [`data/`](data/README.md) | `$XDG_DATA_HOME` (`~/.local/share`) | Fonts, shell completions |
+| [`data/`](data/README.md) | `$XDG_DATA_HOME` (`~/.local/share`) | Fonts |
 | `bin/` | `~/.local/bin` | Personal scripts (a manifest source, so no README inside — see [`docs/scripts.md`](docs/scripts.md)) |
 | [`docs/`](docs/README.md) | — | One file per package |
 
@@ -89,7 +89,7 @@ mechanism:
 
 ## Packages
 
-20 packages across 23 manifest rows. `just packages` lists them; each is
+20 packages across 22 manifest rows. `just packages` lists them; each is
 documented in [`docs/`](docs/README.md).
 
 **Terminals** — [ghostty](docs/ghostty.md) (daily driver),

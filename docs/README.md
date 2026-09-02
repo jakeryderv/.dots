@@ -35,7 +35,7 @@ this repo is applied.
 | [`kitty.md`](kitty.md) | `config/kitty` | `~/.config/kitty/` |
 | [`nix.md`](nix.md) | `config/nix`; `flake.nix`, `flake.lock` | `~/.config/nix/`; the flake via `nix profile`, not a link |
 | [`nvim.md`](nvim.md) | `config/nvim` | `~/.config/nvim/` |
-| [`scripts.md`](scripts.md) | `bin`, `data/bash-completion/completions` | `~/.local/bin/`, completions |
+| [`scripts.md`](scripts.md) | `bin` | `~/.local/bin/` |
 | [`starship.md`](starship.md) | `config/starship.toml` | `~/.config/starship.toml` |
 | [`tealdeer.md`](tealdeer.md) | `config/tealdeer` | `~/.config/tealdeer/` |
 | [`tmux.md`](tmux.md) | `home/tmux.conf` | `~/.tmux.conf` |
