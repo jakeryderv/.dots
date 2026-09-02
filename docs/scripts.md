@@ -22,8 +22,8 @@ cd ~/.dots && just apply scripts
 Both rows are `tree` mode, which matters here. A single symlink at
 `~/.local/bin` or `~/.local/share/bash-completion/completions` would mean
 anything else installing there — such as
-[`tools/install-tealdeer.sh`](../tools/README.md) — writes a third-party
-file straight into the repo. As `tree` rows the targets stay real directories
+[`tools/install-tmux-sessionizer.sh`](../tools/README.md) — writes a
+third-party file straight into the repo. As `tree` rows the targets stay real directories
 holding one symlink per tracked file; `~/.local/bin` currently has 76 entries,
 of which four are ours.
 

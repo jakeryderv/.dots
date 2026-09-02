@@ -1,7 +1,14 @@
 # tools
 
 Install and update scripts for third-party software that this repo configures
-but does not ship.
+but does not ship, **for the cases Nix does not cover**.
+
+Most tooling now comes from [`flake.nix`](../flake.nix) in the repo root, which
+declares it in one place and pins it with a committed `flake.lock`. What is left
+here is what nixpkgs cannot supply: packages it does not carry (`pi`,
+`playwright-cli`, `cf`), a differently-named upstream (`tmux-sessionizer`), and
+GUI apps whose Nix builds risk the OpenGL/mesa mismatch on a non-NixOS host
+(`freecad`, `t3code`, `qutebrowser`).
 
 **Never deployed.** This directory is not named in the [`manifest`](../manifest),
 which is the only thing that makes anything deployable.
@@ -21,8 +28,8 @@ to re-run to update unless their header says a pin must be bumped deliberately.
 
 ## Shared library
 
-The installers that download GitHub release assets (`delta`, `lazygit`,
-`tealdeer`, `t3code`, `nvim`, `kanata`, `ast-grep`, `freecad`) source
+The installers that download GitHub release assets (`t3code`, `freecad`)
+source
 [`lib/github-release.sh`](lib/github-release.sh)
 for the parts that must not drift between them: platform and dependency
 preflight, latest-release resolution, asset selection, and the SHA-256 digest
@@ -37,27 +44,19 @@ source builds) and stay self-contained.
 
 | Script | Installs | Notes |
 | --- | --- | --- |
-| `install-ast-grep.sh` | [ast-grep](https://github.com/ast-grep/ast-grep) | Verified release zip → `/usr/local/bin`, plus a bash completion the binary generates. Skips the download when already current; `--force` reinstalls. The zip's deprecated `sg` alias is **not** installed — `/usr/bin/sg` is already the `login` package's. |
 | `install-cloudflare.sh` | [cf](https://www.npmjs.com/package/cf) + [wrangler](https://developers.cloudflare.com/workers/wrangler/) | Both Cloudflare CLIs as global npm packages, lifecycle scripts disabled. `cf` is the newer generated CLI covering the whole API; `wrangler` is the Workers build toolchain. Overlapping but converging — see [`claude`](../docs/claude.md). Auth is **not** installed: each CLI holds its own OAuth grant (`cf auth login`, `wrangler login`). |
-| `install-delta.sh` | [delta](https://github.com/dandavison/delta) | Verified official `.deb` via `dpkg`. Skips the download when already current; `--force` reinstalls. Wire it into [`git`](../docs/git.md) yourself — see the script's closing note. |
 | `install-freecad.sh` | [FreeCAD](https://github.com/FreeCAD/FreeCAD) | Verified official AppImage (~820 MB) → `~/.local/opt/freecad`, symlinked to `~/.local/bin`; also installs launcher entry + icons. No sudo. Tracks the **stable** release, not the `weekly-*` prereleases; skips the download when already current. Needs `libfuse2t64`. |
-| `install-fzf.sh` | [fzf](https://github.com/junegunn/fzf) | Cloned to `~/.fzf`. `--all` **edits your shell rc files** to add keybindings/completion. |
-| `install-glow.sh` | [glow](https://github.com/charmbracelet/glow) | Charm apt repo. Markdown renderer used by [`ai`](../docs/scripts.md). |
-| `install-kanata.sh` | [kanata](https://github.com/jtroo/kanata) | Verified GitHub release binary → `/usr/local/bin`, the build compiled *without* `cmd` support. Binary only: `/dev/input` + `/dev/uinput` access is a deliberate manual step. See [`kanata`](../docs/kanata.md). |
-| `install-lazygit.sh` | [lazygit](https://github.com/jesseduffield/lazygit) | Verified GitHub release binary → `/usr/local/bin`. Skips the download when already current; `--force` reinstalls. |
 | `install-pi.sh` | [Pi coding agent](https://pi.dev) | Latest global npm release, installed with lifecycle scripts disabled. Pi config lives in the separate [pi-config](https://github.com/jakeryderv/pi-config) repo (`~/dev/projects/pi-config`). |
 | `install-playwright-cli.sh` | [Playwright CLI](https://playwright.dev/agent-cli/installation) | Global npm CLI + its Chromium build. The Agent Skill itself is untracked, managed by skills.sh. |
 | `install-qutebrowser.sh` | [qutebrowser](https://qutebrowser.org) | From source via `uv` + `mkvenv.py` (newer Qt than apt). `--keep` reuses the venv for a fast update. Also installs the `.desktop` entry + icons. See [`qutebrowser`](../docs/qutebrowser.md). |
 | `install-t3code.sh` | [T3 Code](https://t3.codes) | Verified official x86_64 AppImage → `~/.local/opt/t3code`, symlinked to `~/.local/bin`; also installs launcher entry + icon. The app handles routine updates itself. |
-| `install-tealdeer.sh` | [tealdeer](https://github.com/tealdeer-rs/tealdeer) | Verified static release binary → `/usr/local/bin/tldr`, plus its bash completion. Skips the download when already current; `--force` reinstalls. Newer than apt's `tealdeer`. Run `tldr --update` once to seed the page cache. |
 | `install-tmux-sessionizer.sh` | [tmux-sessionizer](https://github.com/ThePrimeagen/tmux-sessionizer) | Pinned commit + checksum → `~/.local/bin`. Used by [`tmux`](../docs/tmux.md). |
-| `install-nvim.sh` | [Neovim](https://neovim.io) | Verified official `.tar.gz` stable build → `/opt`, symlinked to `/usr/local/bin`. See [`nvim`](../docs/nvim.md) (needs ≥ 0.12). |
 
 ## Usage
 
 ```bash
 just tools               # list the installers
-just install delta       # run tools/install-delta.sh
+just install t3code      # run tools/install-t3code.sh
 ```
 
 Or run any of them directly:
@@ -66,5 +65,15 @@ Or run any of them directly:
 bash tools/<script>.sh
 ```
 
-Read the script's header comment first — some (notably `install-fzf.sh`) mutate
-files outside the repo.
+Read the script's header comment first — some mutate files outside the repo.
+
+## Nix-managed tooling
+
+Everything in [`flake.nix`](../flake.nix) is installed with one command, and
+upgraded without touching this directory:
+
+```bash
+nix profile add ~/.dots                              # first install
+nix flake update --flake ~/.dots \
+  && nix profile upgrade dots-tools                  # update everything
+```

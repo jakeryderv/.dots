@@ -11,10 +11,9 @@ See the root [README](../README.md) for shared deployment mechanics.
 |------|------|
 | `.config/tealdeer/config.toml` | Cache auto-update policy. Partial by design — tealdeer merges it over its built-in defaults. |
 
-The binary itself is **not** deployed. Install it with
-[`tools/install-tealdeer.sh`](../tools/README.md), which places `tldr` in
-`/usr/local/bin` and its bash completion in
-`~/.local/share/bash-completion/completions/`.
+The binary itself is **not** deployed. It comes from
+[`flake.nix`](../flake.nix), which puts `tldr` and its bash completion in
+`~/.nix-profile/`.
 
 ## Colors
 
@@ -54,5 +53,4 @@ dots status tealdeer
 
 Not managed by this repo:
 
-- **tealdeer** — the `tldr` binary. See
-  [`tools/install-tealdeer.sh`](../tools/README.md).
+- **tealdeer** — the `tldr` binary. Declared in [`flake.nix`](../flake.nix).

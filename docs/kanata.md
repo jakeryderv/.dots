@@ -229,5 +229,6 @@ is the reference for layers, aliases, and the tap-hold variants.
 
 Not managed by this repo:
 
-- **kanata** — the binary. See [`tools/install-kanata.sh`](../tools/README.md).
+- **kanata** — the binary. Declared in [`flake.nix`](../flake.nix); the
+  systemd unit execs it from `~/.nix-profile/bin/kanata`.
 - **`input` group membership and the udev rule** — see [Permissions](#permissions).

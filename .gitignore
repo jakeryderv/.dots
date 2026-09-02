@@ -62,3 +62,7 @@ config/herdr/config.toml.bak*
 *.bak-*
 *.orig
 *.rej
+
+# nix build output symlink
+result
+result-*

@@ -7,7 +7,7 @@ Personal Neovim config (Lua, `lazy.nvim`). Deployed to `~/.config/nvim/`.
 - **Neovim ≥ 0.12** — the config uses modern APIs (`vim.lsp.config()` /
   `vim.lsp.enable()`, `vim.hl.on_yank()`, `vim.o.winborder`,
   `client:supports_method()`). It has a runtime fallback for `nvim-0.11`, but is
-  developed and tested against 0.12. Install/update with `tools/install-nvim.sh`.
+  developed and tested against 0.12. Installed from [`flake.nix`](../flake.nix).
 - **git**, **curl** — plugin + tool fetching.
 - A **Nerd Font** (the repo ships `0xProto Nerd Font`; see root README for
   `fc-cache`/`fc-match`). Icons assume `vim.g.have_nerd_font`.

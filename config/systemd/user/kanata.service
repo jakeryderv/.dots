@@ -12,7 +12,10 @@ Type=simple
 # --no-wait is load-bearing under systemd: without it kanata stops at a "Press
 # enter to exit" prompt on failure instead of exiting, so the process never dies
 # and Restart=on-failure never fires.
-ExecStart=/usr/local/bin/kanata --no-wait --cfg %h/.config/kanata/kanata.kbd
+# Path is the nix profile, not /usr/local/bin: kanata is installed from
+# flake.nix. %h/.nix-profile/bin is a stable symlink into the store, so it
+# survives upgrades without needing the unit edited.
+ExecStart=%h/.nix-profile/bin/kanata --no-wait --cfg %h/.config/kanata/kanata.kbd
 Restart=on-failure
 RestartSec=2
 
