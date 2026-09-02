@@ -43,14 +43,15 @@ Without that line every command below fails. It is not in the manifest because
 ```bash
 nix profile add ~/.dots            # first install
 nix flake update --flake ~/.dots   # bump flake.lock (commit the result)
-nix profile upgrade 'git+file:///home/jake/.dots#packages.x86_64-linux.default'
-nix profile list                   # the entry's exact name
+nix profile upgrade --all          # rebuild the profile from the new lock
 ```
 
-The upgrade target is the **flake URL**, not `dots-tools`. `dots-tools` is the
-`buildEnv` name inside the derivation; `nix profile` names entries by the flake
-they came from, and upgrading by the wrong name warns that nothing matched
-rather than failing — a silent no-op. `nix profile list` prints the real one.
+`--all` is deliberate. The entry is not named `dots-tools` — that is the
+`buildEnv` name inside the derivation — and `nix profile` names it by its flake
+URL, which `nix profile list` prints in full. Upgrading by the wrong name warns
+that nothing matched rather than failing, a silent no-op; `--all` sidesteps the
+question because this profile holds exactly one entry. Run it from a clean tree:
+a dirty checkout evaluates, but locks the entry without a revision.
 
 Everything installs as a single `buildEnv` package, so it upgrades or rolls back
 as one unit. `nix profile rollback` undoes a bad update wholesale.
@@ -93,8 +94,8 @@ honest about why: in practice there was exactly one version. When
 `pi-cli-tools` needed 22 against a global 24, it got a project flake — which is
 the rule working, not an exception to it.
 
-The corollary is that **`rustup`, `uv`, and Go's own `GOTOOLCHAIN` are not
-competitors to this flake.** They manage the per-project layer, which this
+The corollary is that **`rustup`, `bun`, `uv`, and Go's own `GOTOOLCHAIN` are
+not competitors to this flake.** They manage the per-project layer, which this
 flake does not reach. Replacing them with a pinned global version would trade a
 correct per-project answer for one machine-wide guess.
 

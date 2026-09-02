@@ -38,11 +38,11 @@ kanata          link    config/kanata                                       $XDG
 starship        link    config/starship.toml                                $XDG_CONFIG_HOME/starship.toml
 
 # --- XDG config: the tool writes into its own config dir ---------------------
-# herdr keeps its sockets, logs, and session.json beside config.toml.
+# herdr keeps its sockets, logs, and session-history.json beside config.toml.
 herdr           tree    config/herdr                                        $XDG_CONFIG_HOME/herdr
 
 # --- Shared targets: directories other installers also write into ------------
-# ~/.local/bin holds 76 entries; only four are ours. ~/.config/systemd/user is
+# ~/.local/bin is shared with every other installer. ~/.config/systemd/user is
 # systemd's own tree, so kanata links its unit file, not the directory.
 kanata          tree    config/systemd/user                                 $XDG_CONFIG_HOME/systemd/user
 fonts           tree    data/fonts                                          $XDG_DATA_HOME/fonts

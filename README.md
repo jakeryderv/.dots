@@ -28,8 +28,8 @@ appear automatically. Use it when the directory is exclusively ours.
 
 **`tree`** creates real directories and links each tracked file individually.
 Use it when the tool writes state into the same directory it reads config from
-(`~/.config/herdr` also holds sockets and `session.json`), or when the target is shared
-with other installers (`~/.local/bin` has 76 entries; four are ours).
+(`~/.config/herdr` also holds sockets and `session-history.json`), or when the target is shared
+with other installers (most of `~/.local/bin` belongs to other tools).
 
 Nothing is inferred. Both the package name and the link shape are declared,
 because both were previously inferred and both were wrong.
@@ -125,6 +125,9 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
   with no flags, so it reads the same `.editorconfig` as format-on-save. If it
   fails, `shfmt -w <file>` fixes it. Bulk reformats belong in their own commit,
   listed in [`.git-blame-ignore-revs`](.git-blame-ignore-revs).
+- **CI runs the flake's binaries.** The workflow pulls `shfmt`, `shellcheck`,
+  `stylua`, and `kanata` from the nixpkgs revision `flake.lock` pins, via
+  `nix shell --inputs-from .`, so the gate cannot drift from the editor.
 - **Every package is documented** in `docs/<pkg>.md`, covering what it is, where
   it deploys, how to activate it, and any external dependencies.
   `_dots/checks/verify-readmes.sh` enforces this against the manifest.
@@ -136,9 +139,10 @@ scripts assume Linux x86_64 + apt/sudo.
 
 Debian renames two of these — `fd-find` provides `fdfind`, `bat` provides
 `batcat` — which is why both come from [`flake.nix`](flake.nix) under their
-canonical names instead. The apt copies stay installed and shadowed, and the
-guarded alias in `shell/aliases.sh` is the fallback for a machine without the
-flake, not the mechanism.
+canonical names instead. apt's `bat` was removed along with every other apt
+copy of a flake tool; `fd-find` stays because `pop-launcher` depends on it, and
+the names do not collide. The guarded alias in `shell/aliases.sh` is the
+fallback for a machine without the flake, not the mechanism.
 
 ```bash
 git clone <repo> ~/.dots

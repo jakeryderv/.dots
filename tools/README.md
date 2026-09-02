@@ -60,6 +60,14 @@ already exists — the updater is the whole objection. Revisit at 1.0, or when
 reproducibility matters more than same-day releases. This is the reason t3code
 was rejected in 57fc210; the category outlived that installer.
 
+The language toolchain managers are the same category and are listed so the
+census is complete: `rustup` (its installer, `~/.cargo`), `bun` (its installer,
+`~/.bun`), and Go (a tarball unpacked by hand to `~/.local/opt/go`, on `PATH`
+via envman). Each owns per-project versions, which is why none of them is a
+flake candidate -- see [Machine versions vs project
+versions](../docs/nix.md#machine-versions-vs-project-versions). `shell/local.sh`
+wires all three into the shell.
+
 **GUI apps** — none are left here, but the finding is worth keeping so it is
 not re-derived. Three were tested under Nix on this host (qutebrowser, freecad,
 t3code) and each was worse than its non-Nix install.
@@ -102,10 +110,5 @@ Read the script's header comment first — some mutate files outside the repo.
 ## Nix-managed tooling
 
 Everything in [`flake.nix`](../flake.nix) is installed with one command, and
-upgraded without touching this directory:
-
-```bash
-nix profile add ~/.dots            # first install
-nix flake update --flake ~/.dots   # bump flake.lock, then:
-nix profile upgrade 'git+file:///home/jake/.dots#packages.x86_64-linux.default'
-```
+upgraded without touching this directory. The commands are in
+[`docs/nix.md`](../docs/nix.md#usage).

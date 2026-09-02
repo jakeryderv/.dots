@@ -3,11 +3,7 @@
   # per-tool installers that used to live in tools/ -- see docs/nix.md for how
   # this half of the repo works, and tools/README.md for what is still a script.
   #
-  # Install:  nix profile add ~/.dots
-  # Update:   nix flake update --flake ~/.dots, then `nix profile upgrade`
-  #           addressed by the entry's flake URL -- NOT `dots-tools`, which
-  #           matches no entry and warns instead of upgrading. Exact command
-  #           in docs/nix.md.
+  # Install and update commands are in docs/nix.md, and only there.
   #
   # flake.lock is committed: it is what makes a second machine resolve the same
   # versions, the same way the manifest makes it resolve the same symlinks.
@@ -45,8 +41,9 @@
           # helper must call bare `gh`, not /usr/bin/gh, or it silently pins to
           # the apt copy.
           gh
-          # apt's git is 2.43 (Ubuntu 24.04). /usr/bin/git stays -- system
-          # packages depend on it -- and is shadowed, same as ripgrep.
+          # apt's git is 2.43 (Ubuntu 24.04). /usr/bin/git stays -- docker-ce,
+          # git-lfs and dpkg tooling depend on it -- and is shadowed. It is the
+          # one apt copy of a flake tool left, besides fd-find (pop-launcher).
           git
           glow
           # This repo's own task runner, so `just apply` works on a machine
@@ -88,7 +85,7 @@
           shellcheck
           shfmt
           stylua
-          # `rg` for telescope and grep; apt's copy stays but is shadowed.
+          # `rg` for telescope and grep.
           ripgrep
           # nvim-treesitter compiles every parser with this. It was a mason
           # package, but mason's boundary here is language servers, which churn
