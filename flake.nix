@@ -36,6 +36,16 @@
           kanata
           lazygit
           neovim
+          # Formatters and linters nvim shells out to, and that `just check`
+          # also runs. Previously split across apt and mason for no reason --
+          # shfmt and shellcheck were installed by both.
+          eslint_d
+          prettierd
+          shellcheck
+          shfmt
+          stylua
+          # `rg` for telescope and grep; apt's copy stays but is shadowed.
+          ripgrep
           tealdeer # ships the `tldr` binary
           # NOT tmux-sessionizer: nixpkgs packages jrmoulton's Rust rewrite
           # (binary `tms`), not ThePrimeagen's shell script that this repo's

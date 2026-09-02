@@ -19,22 +19,24 @@ and Treesitter parsers need `tree-sitter-cli` (installed by Mason) present
 *before* they build. Recommended sequence on a fresh machine:
 
 1. `nvim` — let `lazy.nvim` finish installing plugins, then quit.
-2. `nvim` again — Mason auto-installs the tools in
-   `mason-tool-installer` (`stylua`, `shfmt`, `shellcheck`, `prettierd`,
-   `eslint_d`, `tree-sitter-cli`) and the LSP servers below. Wait for
-   `:Mason` / fidget to report done. Restart.
+2. `nvim` again — Mason auto-installs `tree-sitter-cli` and the LSP servers
+   below. Wait for `:Mason` / fidget to report done. Restart. (Formatters and
+   linters are not Mason's; they come from [`flake.nix`](../flake.nix).)
 3. `:TSUpdate` — build/refresh Treesitter parsers now that `tree-sitter-cli`
    exists.
 
 ## Tooling ownership
 
-Most tools are **Mason-managed** and install automatically. Two exceptions:
+Split deliberately: Mason owns the language servers, which churn fastest and
+benefit from its auto-install; the flake owns the formatters and linters, which
+are stable and are also run by `just check`, so pinning them keeps the editor
+and CI on one version.
 
 | Tool | Owner | Notes |
 |------|-------|-------|
 | LSP servers: `lua_ls`, `bashls`, `pyright`, `html`, `cssls`, `emmet_language_server`, `vtsls` | Mason (`mason-lspconfig`) | auto-installed |
-| Formatters: `stylua`, `shfmt`, `prettierd` | Mason (`mason-tool-installer`) | auto-installed |
-| Linters: `shellcheck`, `eslint_d` | Mason | auto-installed |
+| Formatters: `stylua`, `shfmt`, `prettierd` | [`flake.nix`](../flake.nix) | same binaries `just check` uses |
+| Linters: `shellcheck`, `eslint_d` | [`flake.nix`](../flake.nix) | `.shellcheckrc` is read by both |
 | Treesitter CLI | Mason | `tree-sitter-cli`, needed to build parsers |
 | **`ruff`** (Python format + lint) | **system** | not via Mason — install with `uv tool install ruff` |
 

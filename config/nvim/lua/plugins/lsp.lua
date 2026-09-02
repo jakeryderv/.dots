@@ -141,11 +141,10 @@ return {
       })
       require('mason-tool-installer').setup({
         ensure_installed = {
-          'stylua',
-          'shfmt',
-          'shellcheck',
-          'prettierd',
-          'eslint_d',
+          -- Formatters and linters come from flake.nix, not mason: they were
+          -- previously installed by mason *and* apt, and are stable enough to
+          -- pin with the rest of the toolchain. Mason still owns the language
+          -- servers, which churn faster.
           'tree-sitter-cli', -- needed by nvim-treesitter (main) to build parsers
         },
       })
