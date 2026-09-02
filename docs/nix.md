@@ -136,6 +136,40 @@ This is the same failure `2956a44` fixed between apt and Mason. It recurs
 whenever a new manager is added, so the check is worth repeating: list what each
 manager owns, and look for a tool that appears twice or a category that splits.
 
+## Packaging something nixpkgs does not have
+
+A flake is not limited to what nixpkgs ships, but "package it ourselves" covers
+two jobs with very different costs.
+
+**Consuming a pinned artifact.** For a prebuilt release binary this is a
+`fetchurl` with a URL and a hash, unpacked and installed — about fifteen lines,
+plus `autoPatchelfHook` if it is dynamically linked. Updating means bumping a
+version and a hash. This is the declarative form of what
+`tools/lib/github-release.sh` used to do imperatively before a46a42e removed it
+with its last two consumers.
+
+**Becoming the packager.** `buildGoModule`, `rustPlatform`, `buildNpmPackage` —
+now a vendored-dependency hash, the build itself, and every upstream breakage
+are this repo's problem, per package, forever.
+
+Everything in the list above consumes *nixpkgs'* work. A custom derivation
+trades that for maintenance, so it needs to earn it:
+
+> Write one when the tool is (a) a single prebuilt or trivially built binary,
+> (b) not self-updating, and (c) something that would otherwise be
+> hand-installed and forgotten. Fail any one and leave it to its own channel.
+
+Audited 2026-09-02 against everything hand-installed on this machine, and
+nothing passes yet. The near miss is `runpodctl`: a single static binary with no
+self-updater, where nixpkgs is stalled at 2.9.0 against 2.11.0 installed — and
+stalled is the word, since current `nixpkgs-unstable` is also 2.9.0, so
+`nix flake update` would not close it the way it does for `gh`. That combination
+is exactly what (a)-(c) describe, and it is the one to revisit.
+
+Everything else fails (b), and not by coincidence: `claude`, `codex`, `agy`,
+`cursor-agent`, `copilot`, and `herdr` all ship their own updater because agent
+CLIs release weekly. That is a category, not a list.
+
 ## The rules this boundary follows
 
 Four things were learned the expensive way. They are why the package list looks

@@ -43,6 +43,17 @@ rewrite, whose binary is `tms` and whose config format differs; this repo uses
 ThePrimeagen's shell script, which `home/tmux.conf` and `shell/keybinds.sh` call
 by name. Same name, different project.
 
+**Self-updating** — `herdr` is installed by its own installer to
+`~/.local/bin/herdr` and keeps itself current with `herdr update` on a `stable`
+or `preview` channel. nixpkgs does have it, at the same 0.8.2 running here, so
+availability is not the obstacle: a read-only store has nowhere for `herdr
+update` to write, and pinning a 0.8.x tool under active integration would mean
+its releases arrive only when `nix flake update` bumps everything else at once.
+Writing a custom derivation would not help either, since the nixpkgs package
+already exists — the updater is the whole objection. Revisit at 1.0, or when
+reproducibility matters more than same-day releases. This is the reason t3code
+was rejected in 57fc210; the category outlived that installer.
+
 **GUI apps** — none are left here, but the finding is worth keeping so it is
 not re-derived. Three were tested under Nix on this host (qutebrowser, freecad,
 t3code) and each was worse than its non-Nix install.

@@ -2,8 +2,13 @@
 
 [Herdr](https://herdr.dev) — a terminal workspace manager for AI coding agents
 (panes, tabs, workspaces, git worktrees, and agent lifecycle detection).
-Installed to `~/.local/bin/herdr` by its own installer; config deployed to
-`~/.config/herdr/`.
+Installed to `~/.local/bin/herdr` by its own installer from
+[herdr.dev](https://herdr.dev); config deployed to `~/.config/herdr/`.
+
+The binary stays outside [`flake.nix`](../flake.nix) deliberately, even though
+nixpkgs carries the same 0.8.2 that is running here: `herdr update` keeps it
+current on the `stable` channel (`herdr channel show`), and a Nix store is
+read-only. See [Why these stay scripts](../tools/README.md#why-these-stay-scripts).
 
 See the root [README](../README.md) for shared deployment mechanics.
 
