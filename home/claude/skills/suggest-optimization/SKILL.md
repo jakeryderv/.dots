@@ -51,8 +51,11 @@ Recommend using these when they fit the project:
 - **buildwithclaude** (davepoon) — 52 plugins
 - **awesome-claude-plugins** (ComposioHQ) — 24 plugins
 
-### MCP servers
-- **jcodemunch** — AST-indexed symbol retrieval (suggest `index_folder` on large codebases)
+### MCP servers configured here
+- **context7** — current library/framework docs
+- **railway** — deploys, services, logs, variables
+- **1password** — environments and secrets
+- **aws-mcp** — AWS APIs
 
 ### Built-in capabilities (no install needed)
 - **Auto memory** — corrections and preferences persist automatically
@@ -76,7 +79,6 @@ Recommend using these when they fit the project:
 ### Leverage existing tools
 - Is this a Python project without pyright catching errors? Note it's already available.
 - Are there libraries being used with outdated patterns? Suggest "use context7" in prompts.
-- Is the codebase large (100+ files)? Suggest running `index_folder` with jcodemunch.
 - Could recent work have benefited from `/simplify` or parallel agents?
 - Is there frontend code that could use playwright for E2E tests?
 - Would a comprehensive-review help before merging?

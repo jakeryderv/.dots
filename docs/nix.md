@@ -67,10 +67,10 @@ the reason it is pinned that way, inline. Broadly:
 - **Shell environment** — `git`, `gh`, `tmux`, `just`, `starship`, `direnv`
   (with `nix-direnv`, so host and plugin share one owner)
 - **Node** — `nodejs`, `pnpm_10`, `yarn`, replacing nvm
-- **Python** — `uv` and `ruff`; see [below](#three-managers-one-rule) for what
+- **Python** — `uv` and `ruff`; see [below](#two-managers-one-rule) for what
   uv keeps
 - **Other** — `kanata` (the systemd unit execs `~/.nix-profile/bin/kanata`),
-  `nix-direnv`
+  `qmk`, `nix-direnv`
 
 ## Machine versions vs project versions
 
@@ -102,19 +102,17 @@ Note the distinction that makes `uv` itself a flake entry: *the tool* is
 machine-level, *what it manages* is project-level. Pinning uv says nothing
 about which Python any project uses.
 
-## Three managers, one rule
+## Two managers, one rule
 
-Machine-level CLIs come from three places, and that is deliberate:
+Machine-level CLIs come from two places, and that is deliberate:
 
 | Manager | Holds | Because |
 | --- | --- | --- |
-| `flake.nix` | most things | nixpkgs has them |
+| `flake.nix` | everything else | nixpkgs has them |
 | [`tools/install-npm-globals.sh`](../tools/README.md) | `pi`, `cf`, `wrangler`, `playwright-cli` | npm-only |
-| `uv tool` | `llm`, `qtile`, `serena-agent`, `pylatexenc`, `jcodemunch-mcp`, `poetry`, `qmk`, `git-filter-repo` | PyPI-only, or better tracked there |
 
-Three managers is not three sources of truth, because the split is by **where
-the tool comes from**, not by preference. The rule is narrower than "one
-manager":
+Two managers is not two sources of truth, because the split is by **where the
+tool comes from**, not by preference. The rule is narrower than "one manager":
 
 > **One manager per tool, chosen by the tool's origin — and no tool obtainable
 > from two.**
@@ -135,6 +133,11 @@ by listing every `uv tool` entry against nixpkgs:
 This is the same failure `2956a44` fixed between apt and Mason. It recurs
 whenever a new manager is added, so the check is worth repeating: list what each
 manager owns, and look for a tool that appears twice or a category that splits.
+
+Running it in full is what removed the third manager. `uv tool` held eight
+entries; auditing each one for actual use retired seven of them, and `qmk` --
+the only survivor -- was in nixpkgs, so it moved here. `uv tool list` is now
+empty. uv keeps the project layer it is good at, and this table lost a row.
 
 The narrower version of it — a flake binary that another `PATH` entry provides
 first — is automated. `just doctor` reports it, because that one is invisible

@@ -56,6 +56,12 @@
           # property the old installer went out of its way to preserve. Do not
           # swap this for kanata-with-cmd.
           kanata
+          # The other keyboard tool: firmware, where kanata is remapping. Was a
+          # `uv tool` install needing `--python 3.14 --with pip`; nixpkgs owns
+          # those dependencies, so the spec that made it worth scripting
+          # disappears here. The toolchains it downloads live in
+          # ~/.local/share/qmk, outside the store.
+          qmk
           lazygit
           neovim
           # Replaces nvm. npm ships with it; global installs need a writable
