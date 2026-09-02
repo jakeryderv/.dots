@@ -28,6 +28,13 @@
 #     *":$HOME/.local/some-tool/bin:"*) ;;
 #     *) export PATH="$HOME/.local/some-tool/bin:$PATH" ;;
 # esac
+#
+# Do NOT re-add ~/.local/bin or ~/.npm-global/bin: exports.sh already adds
+# both, guarded. Installers like to append an unguarded
+# `export PATH="$HOME/.local/bin:$PATH"` here and to ~/.profile; delete those
+# rather than keeping them. ~/.profile's own stock block adds ~/.local/bin a
+# second time because Ubuntu sources ~/.bashrc before it, which is harmless
+# and left alone.
 
 # --- fzf -------------------------------------------------------------
 # fzf comes from flake.nix, which ships the shell integration with the binary;

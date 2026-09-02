@@ -68,3 +68,8 @@ Per-machine layer — not committed. Use it for hardcoded/machine-specific
 paths (e.g. CUDA version), tools that may be absent (guard with
 `command -v`), secrets, or overrides of a committed module. See
 `local.sh.example`.
+
+Installers append to it. Audit it occasionally: `exports.sh` already puts
+`~/.local/bin` and `~/.npm-global/bin` on `PATH` behind a duplication guard, so
+an unguarded copy added here is redundant, and enough of them make it unclear
+which of two managers a binary resolves from.
