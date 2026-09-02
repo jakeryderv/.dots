@@ -36,8 +36,10 @@ The guard around the source means a machine without nix-direnv still loads
 
 ## `use_gh_account`
 
-The gh binary comes from [`flake.nix`](../flake.nix); tokens live in the system
-keyring, so it is unaffected by where gh itself is installed.
+The direnv and gh binaries both come from [`flake.nix`](../flake.nix). direnv
+was previously apt's 2.32.1 while nix-direnv — a direnv plugin — came from the
+flake, so host and plugin sat under different managers. gh's tokens live in the
+system keyring, so it is unaffected by where gh itself is installed.
 
 Two GitHub accounts are logged in (`gh auth status`): `jakeryderv` (default,
 personal) and `ah-jakev` (work). Tokens live in the system keyring, not in

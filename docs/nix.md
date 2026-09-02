@@ -64,7 +64,8 @@ the reason it is pinned that way, inline. Broadly:
   `ripgrep`, `tealdeer`
 - **Editor** — `neovim`, plus the formatters and linters it shells out to
   (`stylua`, `shfmt`, `shellcheck`, `prettierd`, `eslint_d`)
-- **Shell environment** — `git`, `gh`, `tmux`, `just`
+- **Shell environment** — `git`, `gh`, `tmux`, `just`, `starship`, `direnv`
+  (with `nix-direnv`, so host and plugin share one owner)
 - **Node** — `nodejs`, `pnpm_10`, `yarn`, replacing nvm
 - **Python** — `uv` and `ruff`; see [below](#three-managers-one-rule) for what
   uv keeps

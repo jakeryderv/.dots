@@ -32,6 +32,10 @@
           # no-op once the real name is on PATH.
           bat
           delta
+          # The host for nix-direnv, which was already here. apt's is 2.32.1
+          # against 2.37.1 -- plugin and host were under different managers,
+          # the same split that sends wrangler to npm alongside `cf`.
+          direnv
           # Canonical `fd` name: apt ships it as `fdfind` (Debian renames it to
           # avoid a clash), which telescope and fzf do not auto-detect.
           fd
@@ -60,7 +64,7 @@
           nodejs
           # Caches `use flake` evaluations for direnv and keeps the resulting
           # store paths alive as GC roots; without it every cd re-evaluates.
-          # Hooked up in config/direnv/direnvrc.
+          # Hooked up in config/direnv/direnvrc; direnv itself is above.
           nix-direnv
           # pnpm_10, not pnpm: the unversioned attr is 11.x, and these were on
           # 10.33.0 under nvm. Same major keeps existing lockfiles predictable.
@@ -80,6 +84,10 @@
           stylua
           # `rg` for telescope and grep; apt's copy stays but is shadowed.
           ripgrep
+          # Was /usr/local/bin/starship, dropped there by starship.rs' curl
+          # installer with nothing tracking it. starship.toml was a manifest
+          # package whose binary had no provenance at all -- the tmux case.
+          starship
           tealdeer # ships the `tldr` binary
           # The project-layer Python manager, itself a machine-level tool. The
           # hand-downloaded ~/.local/bin/uv must go: that directory precedes
