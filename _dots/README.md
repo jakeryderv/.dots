@@ -48,7 +48,7 @@ Run `dots` with no arguments for the full recipe list.
 ## Design notes
 
 Two decisions carry most of the weight, both reactions to how GNU Stow behaved
-before the migration (see [`docs/migration.md`](../docs/migration.md)):
+before the migration:
 
 - **`git ls-files` is the file enumerator.** `.gitignore` is therefore the only
   ignore list in the repo. There is no second ignore syntax, and no

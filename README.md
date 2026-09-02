@@ -32,8 +32,7 @@ Use it when the tool writes state into the same directory it reads config from
 with other installers (`~/.local/bin` has 48 entries; three are ours).
 
 Nothing is inferred. Both the package name and the link shape are declared,
-because both were previously inferred and both were wrong — see
-[`docs/migration.md`](docs/migration.md).
+because both were previously inferred and both were wrong.
 
 ### Files are enumerated with `git ls-files`
 
@@ -90,8 +89,7 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 
 **Coding agents** — [claude](docs/claude.md),
 [opencode](docs/opencode.md),
-[openspec](docs/openspec.md), plus documentation-only notes
-for [codex](docs/codex.md), [agy](docs/agy.md), and [serena](docs/serena.md).
+[openspec](docs/openspec.md).
 
 **Desktop & misc** — [qutebrowser](docs/qutebrowser.md), [fonts](docs/fonts.md),
 [scripts](docs/scripts.md), [kanata](docs/kanata.md) (keyboard remapping).
@@ -156,11 +154,9 @@ own `docs/<pkg>.md`.
 
 ## History
 
-This repo used GNU Stow until August 2026. The move off it, why it happened,
-and the bugs the migration surfaced are recorded in
-[`docs/migration.md`](docs/migration.md) — worth reading before changing how
-deployment works, because most of the design here is a reaction to a specific
-failure of Stow's implicit behaviour.
+This repo used GNU Stow until August 2026. Most of the design here — the
+explicit manifest, `git ls-files` enumeration, nothing inferred — is a reaction
+to a specific failure of Stow's implicit behaviour.
 
 ## Implement next/later
 
