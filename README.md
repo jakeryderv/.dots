@@ -131,10 +131,14 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 
 ## Setup on a new machine
 
-Written for **Pop!_OS / Debian** (apt, GNU coreutils, Linux x86_64). Package
-names differ elsewhere — notably `fd-find` provides `fdfind` and `bat` provides
-`batcat`; the bash config accounts for these. Helper scripts assume Linux
-x86_64 + apt/sudo.
+Written for **Pop!_OS / Debian** (apt, GNU coreutils, Linux x86_64). Helper
+scripts assume Linux x86_64 + apt/sudo.
+
+Debian renames two of these — `fd-find` provides `fdfind`, `bat` provides
+`batcat` — which is why both come from [`flake.nix`](flake.nix) under their
+canonical names instead. The apt copies stay installed and shadowed, and the
+guarded alias in `shell/aliases.sh` is the fallback for a machine without the
+flake, not the mechanism.
 
 ```bash
 git clone <repo> ~/.dots

@@ -78,7 +78,7 @@ afterward.
 ## Fresh machine
 
 ```bash
-sudo apt install direnv
+nix profile add ~/.dots   # direnv and nix-direnv both come from flake.nix
 just apply direnv
 ```
 

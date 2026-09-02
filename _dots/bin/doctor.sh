@@ -31,7 +31,7 @@ fi
 if command -v just >/dev/null 2>&1; then
     ok "just: $(command -v just)"
 else
-    warn "just is not installed (sudo apt install just)"
+    warn "just is not installed; it comes from flake.nix: nix profile add ~/.dots"
     fail=1
 fi
 
