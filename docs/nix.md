@@ -109,7 +109,7 @@ Machine-level CLIs come from two places, and that is deliberate:
 | Manager | Holds | Because |
 | --- | --- | --- |
 | `flake.nix` | everything else | nixpkgs has them |
-| [`tools/install-npm-globals.sh`](../tools/README.md) | `pi`, `cf`, `wrangler`, `playwright-cli` | npm-only |
+| [`tools/install-npm-globals.sh`](../tools/README.md) | `pi`, `cf`, `wrangler`, `playwright-cli`, `mermaid-cli` | npm-only, or needs its own browser |
 
 Two managers is not two sources of truth, because the split is by **where the
 tool comes from**, not by preference. The rule is narrower than "one manager":
@@ -251,7 +251,8 @@ still in use. See [`direnv.md`](direnv.md).
 ## What deliberately stays outside
 
 `pi`, `cf`, `wrangler`, and `playwright-cli` are absent from nixpkgs and come
-from [`tools/install-npm-globals.sh`](../tools/README.md).
+from [`tools/install-npm-globals.sh`](../tools/README.md), as does
+`mermaid-cli`, which nixpkgs has but only with a Nix-built browser.
 `tmux-sessionizer` is vendored into [`bin/`](scripts.md), because nixpkgs
 packages a different project under the same name. Each rejection is recorded
 with its reason in [`tools/README.md`](../tools/README.md#why-these-stay-scripts)

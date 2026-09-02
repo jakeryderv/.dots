@@ -26,7 +26,7 @@ repo. Scripts are safe to re-run to update.
 
 | Script | Installs | Notes |
 | --- | --- | --- |
-| `install-npm-globals.sh` | [Pi](https://pi.dev), [cf](https://www.npmjs.com/package/cf) + [wrangler](https://developers.cloudflare.com/workers/wrangler/), [Playwright CLI](https://playwright.dev/agent-cli/installation) | The npm-only CLIs, in one pass. Installed with `--ignore-scripts`; playwright-cli additionally fetches its Chromium into `~/.cache/ms-playwright`. `cf` is the newer generated CLI covering the whole API, `wrangler` the Workers build toolchain — overlapping but converging, see [`claude`](../docs/claude.md). Auth is **not** installed: each CLI holds its own OAuth grant (`cf auth login`, `wrangler login`). Global prefix is `~/.npm-global`. |
+| `install-npm-globals.sh` | [Pi](https://pi.dev), [cf](https://www.npmjs.com/package/cf) + [wrangler](https://developers.cloudflare.com/workers/wrangler/), [Playwright CLI](https://playwright.dev/agent-cli/installation), [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) (`mmdc`) | The npm-only CLIs, in one pass. Installed with `--ignore-scripts`; playwright-cli additionally fetches its Chromium into `~/.cache/ms-playwright`, and mermaid-cli's puppeteer fetches its Chrome into `~/.cache/puppeteer`. `cf` is the newer generated CLI covering the whole API, `wrangler` the Workers build toolchain — overlapping but converging, see [`claude`](../docs/claude.md). Auth is **not** installed: each CLI holds its own OAuth grant (`cf auth login`, `wrangler login`). Global prefix is `~/.npm-global`. |
 
 ## Why these stay scripts
 
@@ -36,6 +36,12 @@ from scratch.
 
 **Absent from nixpkgs** — `pi`, `playwright-cli`, and `cf`. Nothing to migrate.
 (nixpkgs has `playwright-driver`, but not the agent CLI.)
+
+**Present in nixpkgs, but wraps a Nix browser** — `mermaid-cli` renders through
+puppeteer. The nixpkgs package bundles nixpkgs' chromium, which puts it in the
+GUI-under-Nix category below; the npm install downloads its own Chrome
+instead. Headless was not tested, so this is the weakest rejection here and the
+one to revisit if a Nix browser is ever shown to work on this host.
 
 **Different upstream** — `tmux-sessionizer` was here until its script was
 vendored into [`bin/`](../docs/scripts.md). nixpkgs packages jrmoulton's Rust
