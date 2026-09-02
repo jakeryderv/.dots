@@ -11,7 +11,7 @@ runtime files can coexist without being written into this repository.
 
 ```text
 ~/.vim/                 # real directory
-├── vimrc -> ~/.dots/home/vim/vimrc
+├── vimrc -> ~/.dots/pkgs/vim/vimrc
 └── undo/               # generated locally by Vim
 ```
 

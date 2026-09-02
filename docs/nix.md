@@ -38,7 +38,7 @@ Nix reads two config files in layers: `/etc/nix/nix.conf`, then
 split decides what this repo can manage.
 
 **`~/.config/nix/nix.conf` is a manifest package** — the `nix` row deploys
-[`config/nix/nix.conf`](../config/nix/nix.conf), which holds the flakes opt-in:
+[`pkgs/nix/nix.conf`](../pkgs/nix/nix.conf), which holds the flakes opt-in:
 
 ```
 experimental-features = nix-command flakes
@@ -280,7 +280,7 @@ canonical names, which is the whole reason `fd` is in the flake.
 
 The flake is the *global* toolchain. A project needing a different version uses
 `nix-direnv`, which the flake also installs and
-[`config/direnv/direnvrc`](../config/direnv/direnvrc) sources:
+[`pkgs/direnv/direnvrc`](../pkgs/direnv/direnvrc) sources:
 
 ```bash
 echo 'use flake' > .envrc && direnv allow

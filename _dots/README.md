@@ -26,7 +26,7 @@ at: `checks/` reads only the repo, so CI can run it on a bare checkout, while
 `doctor.sh` inspects the live machine — `$HOME`, shell wiring, deployed links.
 
 The user-facing entrypoint is the repo-root [`justfile`](../justfile). The
-`dots` command in [`bin/`](../bin) is a thin wrapper that points `just` back at
+`dots` command in [`pkgs/scripts/`](../pkgs/scripts) is a thin wrapper that points `just` back at
 it, so the commands below work from any directory.
 
 ## Common commands

@@ -18,9 +18,9 @@ package, a link mode, a repo-relative source, and a target:
 
 ```
 PKG          MODE   SOURCE                TARGET
-nvim         link   config/nvim           $XDG_CONFIG_HOME/nvim
+nvim         link   pkgs/nvim           $XDG_CONFIG_HOME/nvim
 scripts      tree   bin                   $HOME/.local/bin
-claude       tree   home/claude           $HOME/.claude
+claude       tree   pkgs/claude           $HOME/.claude
 ```
 
 **`link`** places one symlink at the target, so new files inside the source
@@ -45,7 +45,7 @@ The consequence is a rule that applies to every source directory:
 > **A source directory contains only deployable content.**
 
 Documentation therefore lives in [`docs/`](docs/README.md) as `docs/<pkg>.md`,
-never inside a source. A `README.md` in `config/nvim/` would deploy to
+never inside a source. A `README.md` in `pkgs/nvim/` would deploy to
 `~/.config/nvim/README.md`.
 
 ### Config is linked; software comes from a flake
@@ -67,9 +67,9 @@ recorded. See [`docs/nix.md`](docs/nix.md).
 
 | Directory | Deploys to | Contents |
 | --- | --- | --- |
-| [`config/`](config/README.md) | `$XDG_CONFIG_HOME` (`~/.config`) | Tools that respect XDG |
-| [`home/`](home/README.md) | `$HOME` | Tools that don't — stored undotted (`home/gitconfig` → `~/.gitconfig`) |
-| [`data/`](data/README.md) | `$XDG_DATA_HOME` (`~/.local/share`) | Fonts |
+| [`config/`](pkgs/README.md) | `$XDG_CONFIG_HOME` (`~/.config`) | Tools that respect XDG |
+| [`home/`](pkgs/README.md) | `$HOME` | Tools that don't — stored undotted (`pkgs/git/gitconfig` → `~/.gitconfig`) |
+| [`data/`](pkgs/README.md) | `$XDG_DATA_HOME` (`~/.local/share`) | Fonts |
 | `bin/` | `~/.local/bin` | Personal scripts (a manifest source, so no README inside — see [`docs/scripts.md`](docs/scripts.md)) |
 | [`docs/`](docs/README.md) | — | One file per package |
 
@@ -161,7 +161,7 @@ just apply           # deploy
 # snippet in shell/README.md, which warns instead of failing silently if the
 # loader ever goes missing. This is the one step `just apply` cannot do.
 cp shell/local.sh.example shell/local.sh   # then edit for this machine
-cp home/gitconfig.local.example ~/.gitconfig.local
+cp pkgs/git/gitconfig.local.example ~/.gitconfig.local
 ```
 
 `just apply` refuses to overwrite an existing real file, reporting it as a

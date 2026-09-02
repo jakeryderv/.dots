@@ -34,7 +34,7 @@ done < <(sort -u -k1,1 "$MANIFEST")
 
 # Directories that ARE a manifest source, and so must not contain a README of
 # their own. Compared whole, not by leading path segment: `bin` is a source, but
-# `config` merely contains sources (config/nvim, config/ghostty, ...) and must
+# `config` merely contains sources (pkgs/nvim, pkgs/ghostty, ...) and must
 # still describe itself.
 mapfile -t sources < <(awk '!/^#/ && NF {print $3}' "$MANIFEST" | sort -u)
 

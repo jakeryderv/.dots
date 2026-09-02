@@ -23,45 +23,45 @@
 # TARGET honors $XDG_CONFIG_HOME (default ~/.config) and $XDG_DATA_HOME
 # (default ~/.local/share).
 #
-# Every SOURCE points into config/, home/, data/, or bin/.
+# Every SOURCE points into pkgs/.
 
 # --- XDG config: directories that are exclusively ours -----------------------
-alacritty       link    config/alacritty                                    $XDG_CONFIG_HOME/alacritty
-nvim            link    config/nvim                                         $XDG_CONFIG_HOME/nvim
-ghostty         link    config/ghostty                                      $XDG_CONFIG_HOME/ghostty
-bat             link    config/bat                                          $XDG_CONFIG_HOME/bat
-kitty           link    config/kitty                                        $XDG_CONFIG_HOME/kitty
-wezterm         link    config/wezterm                                      $XDG_CONFIG_HOME/wezterm
-direnv          link    config/direnv                                       $XDG_CONFIG_HOME/direnv
-tealdeer        link    config/tealdeer                                     $XDG_CONFIG_HOME/tealdeer
-kanata          link    config/kanata                                       $XDG_CONFIG_HOME/kanata
-starship        link    config/starship.toml                                $XDG_CONFIG_HOME/starship.toml
+alacritty       link    pkgs/alacritty                               $XDG_CONFIG_HOME/alacritty
+nvim            link    pkgs/nvim                                    $XDG_CONFIG_HOME/nvim
+ghostty         link    pkgs/ghostty                                 $XDG_CONFIG_HOME/ghostty
+bat             link    pkgs/bat                                     $XDG_CONFIG_HOME/bat
+kitty           link    pkgs/kitty                                   $XDG_CONFIG_HOME/kitty
+wezterm         link    pkgs/wezterm                                 $XDG_CONFIG_HOME/wezterm
+direnv          link    pkgs/direnv                                  $XDG_CONFIG_HOME/direnv
+tealdeer        link    pkgs/tealdeer                                $XDG_CONFIG_HOME/tealdeer
+kanata          link    pkgs/kanata                                  $XDG_CONFIG_HOME/kanata
+starship        link    pkgs/starship/starship.toml                  $XDG_CONFIG_HOME/starship.toml
 
 # --- XDG config: the tool writes into its own config dir ---------------------
 # herdr keeps its sockets, logs, and session-history.json beside config.toml.
-herdr           tree    config/herdr                                        $XDG_CONFIG_HOME/herdr
+herdr           tree    pkgs/herdr                                   $XDG_CONFIG_HOME/herdr
 # nix writes registry.json beside nix.conf. The conf is the flakes opt-in; the
 # flake it enables is flake.nix at the repo root. Both are in docs/nix.md.
-nix             tree    config/nix                                          $XDG_CONFIG_HOME/nix
+nix             tree    pkgs/nix                                     $XDG_CONFIG_HOME/nix
 
 # --- Shared targets: directories other installers also write into ------------
 # ~/.local/bin is shared with every other installer. ~/.config/systemd/user is
 # systemd's own tree, so kanata links its unit file, not the directory.
-kanata          tree    config/systemd/user                                 $XDG_CONFIG_HOME/systemd/user
-fonts           tree    data/fonts                                          $XDG_DATA_HOME/fonts
-scripts         tree    bin                                                 $HOME/.local/bin
+kanata          tree    pkgs/kanata                                  $XDG_CONFIG_HOME/systemd/user
+fonts           tree    pkgs/fonts                                   $XDG_DATA_HOME/fonts
+scripts         tree    pkgs/scripts                                 $HOME/.local/bin
 
 # --- $HOME: tools that ignore XDG entirely -----------------------------------
-git             link    home/gitconfig                                      $HOME/.gitconfig
-tmux            link    home/tmux.conf                                      $HOME/.tmux.conf
-editorconfig    link    home/editorconfig                                   $HOME/.editorconfig
-vim             tree    home/vim                                            $HOME/.vim
+git             link    pkgs/git/gitconfig                           $HOME/.gitconfig
+tmux            link    pkgs/tmux/tmux.conf                          $HOME/.tmux.conf
+editorconfig    link    pkgs/editorconfig/editorconfig               $HOME/.editorconfig
+vim             tree    pkgs/vim                                     $HOME/.vim
 
-claude          tree    home/claude                                         $HOME/.claude
+claude          tree    pkgs/claude                                  $HOME/.claude
 
 # Skills shared by every coding agent. ~/.agents/skills is also written by
 # skill installers, so each skill is linked individually rather than the dir.
 # Claude Code reads ~/.claude/skills; the second row mirrors the installer's
 # own per-skill symlinks there.
-agent-skills    link    home/agents/skills/project-practices                $HOME/.agents/skills/project-practices
-agent-skills    link    home/agents/skills/project-practices                $HOME/.claude/skills/project-practices
+agent-skills    link    pkgs/agent-skills/project-practices          $HOME/.agents/skills/project-practices
+agent-skills    link    pkgs/agent-skills/project-practices          $HOME/.claude/skills/project-practices

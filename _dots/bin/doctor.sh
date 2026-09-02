@@ -37,12 +37,12 @@ fi
 
 # The `dots` entrypoint is itself a deployed script now, not a special-cased
 # symlink, so this is really a spot check that the scripts rows applied.
-expected_dots="$REPO_ROOT/bin/dots"
+expected_dots="$REPO_ROOT/pkgs/scripts/dots"
 actual_dots="$(readlink -f "$HOME/.local/bin/dots" 2>/dev/null || true)"
 if [[ "$actual_dots" == "$(readlink -f "$expected_dots")" ]]; then
-    ok "\$HOME/.local/bin/dots points at bin/dots"
+    ok "\$HOME/.local/bin/dots points at pkgs/scripts/dots"
 else
-    warn "\$HOME/.local/bin/dots is not linked to bin/dots; run: just apply scripts"
+    warn "\$HOME/.local/bin/dots is not linked to pkgs/scripts/dots; run: just apply scripts"
     fail=1
 fi
 
