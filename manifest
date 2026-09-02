@@ -38,9 +38,7 @@ kanata          link    config/kanata                                       $XDG
 starship        link    config/starship.toml                                $XDG_CONFIG_HOME/starship.toml
 
 # --- XDG config: the tool writes into its own config dir ---------------------
-# qutebrowser writes autoconfig.yml; herdr keeps its sockets, logs, and
-# session.json beside config.toml.
-qutebrowser     tree    config/qutebrowser                                  $XDG_CONFIG_HOME/qutebrowser
+# herdr keeps its sockets, logs, and session.json beside config.toml.
 herdr           tree    config/herdr                                        $XDG_CONFIG_HOME/herdr
 
 # --- Shared targets: directories other installers also write into ------------

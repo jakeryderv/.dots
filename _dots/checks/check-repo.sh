@@ -149,7 +149,7 @@ else
     echo 'Skipping Bash formatting check (shfmt not installed).'
 fi
 
-echo 'Parsing JSON, TOML, and Python configuration...'
+echo 'Parsing JSON and TOML configuration...'
 python3 - <<'PY'
 import json
 import pathlib
@@ -162,8 +162,6 @@ for path in root.rglob('*.json'):
 for path in root.rglob('*.toml'):
     with path.open('rb') as stream:
         tomllib.load(stream)
-python_config = root / 'config/qutebrowser/config.py'
-compile(python_config.read_text(), str(python_config), 'exec')
 PY
 
 if command -v luac >/dev/null 2>&1; then

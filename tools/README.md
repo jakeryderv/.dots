@@ -29,7 +29,6 @@ to re-run to update unless their header says a pin must be bumped deliberately.
 | Script | Installs | Notes |
 | --- | --- | --- |
 | `install-npm-globals.sh` | [Pi](https://pi.dev), [cf](https://www.npmjs.com/package/cf) + [wrangler](https://developers.cloudflare.com/workers/wrangler/), [Playwright CLI](https://playwright.dev/agent-cli/installation) | The npm-only CLIs, in one pass. Installed with `--ignore-scripts`; playwright-cli additionally fetches its Chromium into `~/.cache/ms-playwright`. `cf` is the newer generated CLI covering the whole API, `wrangler` the Workers build toolchain — overlapping but converging, see [`claude`](../docs/claude.md). Auth is **not** installed: each CLI holds its own OAuth grant (`cf auth login`, `wrangler login`). Global prefix is `~/.npm-global`. |
-| `install-qutebrowser.sh` | [qutebrowser](https://qutebrowser.org) | From source via `uv` + `mkvenv.py` (newer Qt than apt). `--keep` reuses the venv for a fast update. Also installs the `.desktop` entry + icons. See [`qutebrowser`](../docs/qutebrowser.md). |
 | `install-tmux-sessionizer.sh` | [tmux-sessionizer](https://github.com/ThePrimeagen/tmux-sessionizer) | Pinned commit + checksum → `~/.local/bin`. Used by [`tmux`](../docs/tmux.md). |
 
 ## Why these stay scripts
@@ -46,34 +45,29 @@ rewrite, whose binary is `tms`. This repo uses ThePrimeagen's shell script, and
 `home/tmux.conf` plus `shell/keybinds.sh` call it by name. Same name, different
 project; not a drop-in.
 
-**GUI on a non-NixOS host** — `qutebrowser`. nixpkgs 3.7.0 matches what
-`install-qutebrowser.sh` builds from source, so migrating it would retire the
-`uv` + `mkvenv.py` build. What stops it being a one-liner is graphics.
+**GUI apps** — none are left here, but the finding is worth keeping so it is
+not re-derived. Three were tested under Nix on this host (qutebrowser, freecad,
+t3code) and each was worse than its non-Nix install.
 
 A nixpkgs GUI binary uses Nix's own dynamic linker, which does not search
-`/usr/lib`. With default environment, libglvnd falls back to the system
-`/usr/share/glvnd/egl_vendor.d/`, whose JSONs name `libEGL_nvidia.so.0` and
-`libEGL_mesa.so.0` in `/usr/lib` -- unopenable from a Nix process. EGL then
-fails to initialize at all, software fallback included.
-
-Pointing three variables at Nix's own mesa fixes it, and yields hardware
-acceleration on the **Intel iGPU**:
+`/usr/lib`. libglvnd then falls back to the system
+`/usr/share/glvnd/egl_vendor.d/`, whose JSONs name libraries in `/usr/lib` that
+a Nix process cannot open, so EGL fails to initialize and Qt apps abort
+outright. Three variables pointing at Nix's own mesa fix that and give hardware
+acceleration on the Intel iGPU:
 
     __EGL_VENDOR_LIBRARY_DIRS=$MESA/share/glvnd/egl_vendor.d
     LIBGL_DRIVERS_PATH=$MESA/lib/dri
     GBM_BACKENDS_PATH=$MESA/lib/gbm
 
-Reaching the **NVIDIA dGPU** does not work. `nix-gl-host` (which borrows the
-host driver, so no version pinning) does get EGL onto the 5070 Ti -- `eglinfo`
-confirms it -- but it prepends host library directories to `LD_LIBRARY_PATH`,
-which shadows nixpkgs' own libraries. Plain C programs tolerate that; Qt6 does
-not, and a Qt app dies with `QRhiGles2: Failed to create context` on both the
-xcb and wayland platforms. GLX stays broken under it too. (Measured with
-FreeCAD, whose installer has since been removed.)
+Two things stay broken even then. The NVIDIA dGPU is unreachable: `nix-gl-host`
+borrows the host driver and does get EGL onto it, but it prepends host library
+directories to `LD_LIBRARY_PATH`, shadowing nixpkgs' own libraries -- plain C
+programs tolerate that, Qt6 does not. And VA-API video decode fails the same
+`/usr/lib` way, costing hardware video acceleration.
 
-The iGPU is fine for a browser, so qutebrowser remains a genuine candidate --
-it just needs a wrapper setting those three variables, and has not been
-trialled.
+So a Nix desktop app here needs a wrapper, crashes without it, and still loses
+capability the system install has.
 
 ## Usage
 

@@ -89,7 +89,7 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 
 **Coding agents** — [claude](docs/claude.md).
 
-**Desktop & misc** — [qutebrowser](docs/qutebrowser.md), [fonts](docs/fonts.md),
+**Desktop & misc** — [fonts](docs/fonts.md),
 [scripts](docs/scripts.md), [kanata](docs/kanata.md) (keyboard remapping).
 
 ## Conventions

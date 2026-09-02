@@ -51,7 +51,7 @@ config/herdr/session.json
 config/herdr/.plugins.lock
 config/herdr/config.toml.bak*
 
-# Python build cruft (e.g. qutebrowser config.py)
+# Python build cruft
 **/__pycache__/
 **/.ruff_cache/
 

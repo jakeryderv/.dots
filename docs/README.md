@@ -27,7 +27,6 @@ beyond linking, and any external dependencies.
 | [`kanata.md`](kanata.md) | `config/kanata`, `config/systemd/user` | `~/.config/kanata/`, `~/.config/systemd/user/` |
 | [`kitty.md`](kitty.md) | `config/kitty` | `~/.config/kitty/` |
 | [`nvim.md`](nvim.md) | `config/nvim` | `~/.config/nvim/` |
-| [`qutebrowser.md`](qutebrowser.md) | `config/qutebrowser` | `~/.config/qutebrowser/` |
 | [`scripts.md`](scripts.md) | `bin`, `data/bash-completion/completions` | `~/.local/bin/`, completions |
 | [`starship.md`](starship.md) | `config/starship.toml` | `~/.config/starship.toml` |
 | [`tealdeer.md`](tealdeer.md) | `config/tealdeer` | `~/.config/tealdeer/` |
