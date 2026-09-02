@@ -44,7 +44,6 @@ exports → options → completions → functions → aliases → keybinds → t
 | `aliases.sh`       | aliases and isolated Playwright sessions                                  | ✅      |
 | `keybinds.sh`      | keybindings (may reference functions)| ✅      |
 | `tools.sh`         | fzf, starship, direnv shell integrations | ✅      |
-| `llm.sh`           | short names for `ai` (see [docs/scripts.md](../docs/scripts.md)) | ✅      |
 | `local.sh`         | machine-specific config              | ❌ git-ignored |
 | `local.sh.example` | template for `local.sh`              | ✅      |
 
