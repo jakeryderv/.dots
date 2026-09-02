@@ -59,3 +59,6 @@ Not managed by this repo:
   with repositories that use LFS.
 - **Neovim** — configured as the Git editor.
 - **GitHub CLI** — needed when the local config uses `gh auth git-credential`.
+  Comes from [`flake.nix`](../flake.nix). The helper must invoke bare `gh`, not
+  an absolute path: a hardcoded `/usr/bin/gh` keeps resolving to an apt copy and
+  silently pins Git auth to it.

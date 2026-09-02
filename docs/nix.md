@@ -64,8 +64,9 @@ the reason it is pinned that way, inline. Broadly:
   `ripgrep`, `tealdeer`
 - **Editor** — `neovim`, plus the formatters and linters it shells out to
   (`stylua`, `shfmt`, `shellcheck`, `prettierd`, `eslint_d`)
-- **Shell environment** — `git`, `tmux`, `just`
+- **Shell environment** — `git`, `gh`, `tmux`, `just`
 - **Node** — `nodejs`, `pnpm_10`, `yarn`, replacing nvm
+- **Python** — `uv`, the per-project manager, itself a machine-level tool
 - **Other** — `kanata` (the systemd unit execs `~/.nix-profile/bin/kanata`),
   `nix-direnv`
 
@@ -94,6 +95,10 @@ The corollary is that **`rustup`, `uv`, and Go's own `GOTOOLCHAIN` are not
 competitors to this flake.** They manage the per-project layer, which this
 flake does not reach. Replacing them with a pinned global version would trade a
 correct per-project answer for one machine-wide guess.
+
+Note the distinction that makes `uv` itself a flake entry: *the tool* is
+machine-level, *what it manages* is project-level. Pinning uv says nothing
+about which Python any project uses.
 
 ## The rules this boundary follows
 

@@ -36,6 +36,9 @@ The guard around the source means a machine without nix-direnv still loads
 
 ## `use_gh_account`
 
+The gh binary comes from [`flake.nix`](../flake.nix); tokens live in the system
+keyring, so it is unaffected by where gh itself is installed.
+
 Two GitHub accounts are logged in (`gh auth status`): `jakeryderv` (default,
 personal) and `ah-jakev` (work). Tokens live in the system keyring, not in
 `~/.config/gh/`. gh has no built-in per-directory switching - upstream keeps

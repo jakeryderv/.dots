@@ -36,6 +36,11 @@
           # avoid a clash), which telescope and fzf do not auto-detect.
           fd
           fzf
+          # Replaces a hand-added cli.github.com apt source and its GPG key,
+          # which nothing in this repo managed. ~/.gitconfig.local's credential
+          # helper must call bare `gh`, not /usr/bin/gh, or it silently pins to
+          # the apt copy.
+          gh
           # apt's git is 2.43 (Ubuntu 24.04). /usr/bin/git stays -- system
           # packages depend on it -- and is shadowed, same as ripgrep.
           git
@@ -72,6 +77,13 @@
           # `rg` for telescope and grep; apt's copy stays but is shadowed.
           ripgrep
           tealdeer # ships the `tldr` binary
+          # The project-layer Python manager, itself a machine-level tool. The
+          # hand-downloaded ~/.local/bin/uv must go: that directory precedes
+          # this one on PATH, so it would shadow this copy. nixpkgs disables
+          # `uv self update`, which fails with a clear message rather than
+          # fighting the read-only store. uv keeps its interpreters and its
+          # PyPI-only tools; see docs/nix.md.
+          uv
           # Was a hand-built binary in /usr/local/bin that no package manager
           # and no installer in this repo knew about -- the last unreproducible
           # thing in the daily path. TPM writes plugins to ~/.tmux/plugins at
