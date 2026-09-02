@@ -45,6 +45,8 @@ return {
         -- ibl's bundled scope table omits loops/conditionals for Python & Bash
         -- (it only knows their functions/classes), so scope wouldn't follow
         -- if/for/while there. Add the missing treesitter node types per language.
+        -- Node lists are grouped by construct; stylua would explode them.
+        -- stylua: ignore
         include = {
           node_type = {
             python = {

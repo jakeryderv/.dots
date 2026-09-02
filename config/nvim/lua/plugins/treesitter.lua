@@ -6,6 +6,8 @@ return {
   config = function()
     -- Parsers to keep installed. (main branch has no `auto_install`: to add a
     -- new language later, add it here and run :TSUpdate, or :TSInstall <lang>.)
+    -- Grouped by category on purpose; stylua would explode it one per line.
+    -- stylua: ignore
     require('nvim-treesitter').install {
       'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline',
       'query', 'vim', 'vimdoc',

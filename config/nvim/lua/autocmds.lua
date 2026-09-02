@@ -24,6 +24,8 @@ vim.api.nvim_create_autocmd('InsertLeave', {
 --
 -- A project .editorconfig overrides all of this -- it is applied after FileType
 -- and wins, which is the intended precedence.
+-- The pattern list is grouped by language family, not one entry per line.
+-- stylua: ignore
 vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('web-indent', { clear = true }),
   pattern = {

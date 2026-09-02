@@ -16,6 +16,8 @@ return {
         show_close_icon = false,
         diagnostics = 'nvim_lsp',
       },
+      -- The aligned `=` column keeps the bar/fg/bold pattern scannable.
+      -- stylua: ignore
       highlights = {
         fill               = { bg = bar },
         -- inactive: dim

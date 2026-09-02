@@ -1,5 +1,7 @@
 -- carbonfox palette
 -- source: https://github.com/EdenEast/nightfox.nvim/tree/main/lua/nightfox/palette/carbonfox.lua
+-- The aligned `=` column is the point here; stylua would collapse it.
+-- stylua: ignore
 return {
   bg       = '#161616',
   bg2      = '#1c1c1c',
