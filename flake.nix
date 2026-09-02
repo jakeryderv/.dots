@@ -27,12 +27,22 @@
         name = "dots-tools";
         paths = with pkgs; [
           ast-grep
+          # Canonical `bat` name: apt ships it as `batcat` for the same reason
+          # it renames fd. The guarded alias in shell/aliases.sh becomes a
+          # no-op once the real name is on PATH.
+          bat
           delta
           # Canonical `fd` name: apt ships it as `fdfind` (Debian renames it to
           # avoid a clash), which telescope and fzf do not auto-detect.
           fd
           fzf
+          # apt's git is 2.43 (Ubuntu 24.04). /usr/bin/git stays -- system
+          # packages depend on it -- and is shadowed, same as ripgrep.
+          git
           glow
+          # This repo's own task runner, so `just apply` works on a machine
+          # where the only bootstrap step was installing Nix. apt has 1.42.
+          just
           # Default build is compiled without `cmd` support, which is the
           # property the old installer went out of its way to preserve. Do not
           # swap this for kanata-with-cmd.
@@ -62,6 +72,11 @@
           # `rg` for telescope and grep; apt's copy stays but is shadowed.
           ripgrep
           tealdeer # ships the `tldr` binary
+          # Was a hand-built binary in /usr/local/bin that no package manager
+          # and no installer in this repo knew about -- the last unreproducible
+          # thing in the daily path. TPM writes plugins to ~/.tmux/plugins at
+          # runtime, outside the store, so nothing here needs a wrapper.
+          tmux
           # NOT tmux-sessionizer: nixpkgs packages jrmoulton's Rust rewrite
           # (binary `tms`), not ThePrimeagen's shell script that this repo's
           # tmux.conf and keybinds.sh call by name. Vendored into bin/ instead.

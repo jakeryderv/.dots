@@ -135,11 +135,12 @@ names differ elsewhere — notably `fd-find` provides `fdfind` and `bat` provide
 x86_64 + apt/sudo.
 
 ```bash
-sudo apt install just
 git clone <repo> ~/.dots
 cd ~/.dots
 
-nix profile add ~/.dots   # the toolchain — see docs/nix.md for the Nix bootstrap
+# The toolchain first — `just` itself comes from the flake, so this is the only
+# ordering that works. See docs/nix.md for the Nix bootstrap.
+nix profile add ~/.dots
 
 just plan            # preview every link
 just apply           # deploy

@@ -49,6 +49,10 @@ The explicit `--includes` makes `git config --global` show entries loaded from
 
 ## External dependencies
 
+The **git binary** comes from [`flake.nix`](../flake.nix); apt's `/usr/bin/git`
+stays installed for system packages that depend on it, and is shadowed on
+`PATH`. See [`nix.md`](nix.md).
+
 Not managed by this repo:
 
 - **Git LFS** — needed by the tracked `filter.lfs` configuration when working

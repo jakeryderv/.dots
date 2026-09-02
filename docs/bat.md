@@ -3,9 +3,11 @@
 Configuration and carbonfox theme for [bat](https://github.com/sharkdp/bat).
 Deployed to `~/.config/bat/`.
 
-On Debian/Ubuntu the binary is **`batcat`** (the `bat` name is taken by another
-package); `shell/aliases.sh` handles the alias. The config directory is
-`~/.config/bat` either way.
+The binary comes from [`flake.nix`](../flake.nix) under its canonical name.
+apt's copy is `batcat` (Debian renames it because another package owns `bat`)
+and stays installed but shadowed; the guarded alias in `shell/aliases.sh` is now
+a no-op, kept as the fallback for a machine without the flake. The config
+directory is `~/.config/bat` either way.
 
 ## Why this package exists
 
@@ -15,7 +17,7 @@ theme file fixes syntax highlighting in two places:
 
 | Consumer | Reads |
 | --- | --- |
-| `bat` / `batcat` | `--theme` in this config |
+| `bat` | `--theme` in this config |
 | `delta` (git pager) | `syntax-theme` in [`git`](git.md)'s `.gitconfig` |
 
 ## The theme file
@@ -36,7 +38,7 @@ the theme as `carbonfox`. Re-check them if you ever regenerate the file.
 ```bash
 cd ~/.dots
 just apply bat
-batcat cache --build     # required: compiles themes/ into ~/.cache/bat
+bat cache --build        # required: compiles themes/ into ~/.cache/bat
 ```
 
 The cache build is **not** optional — until it runs, `--theme="carbonfox"`
@@ -46,7 +48,7 @@ does the same. Re-run it after changing anything in `themes/`.
 Verify:
 
 ```bash
-batcat --list-themes | grep carbonfox
+bat --list-themes | grep carbonfox
 delta --show-config | grep syntax-theme
 ```
 

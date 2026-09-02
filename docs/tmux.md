@@ -25,6 +25,10 @@ Reload a running server with `prefix + R` (prefix is `Alt+a`).
 
 ## External dependencies
 
+The **tmux binary** comes from [`flake.nix`](../flake.nix). It previously lived
+at `/usr/local/bin/tmux` as a hand-built copy that no package manager tracked;
+that file is left in place but shadowed. See [`nix.md`](nix.md).
+
 Not deployed from the manifest — install separately:
 
 - **TPM** (tmux plugin manager) — clone before plugins can install:

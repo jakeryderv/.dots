@@ -60,13 +60,40 @@ as one unit. `nix profile rollback` undoes a bad update wholesale.
 Read [`flake.nix`](../flake.nix) for the list — every non-obvious entry carries
 the reason it is pinned that way, inline. Broadly:
 
-- **CLI tools** — `ast-grep`, `delta`, `fd`, `fzf`, `glow`, `lazygit`,
+- **CLI tools** — `ast-grep`, `bat`, `delta`, `fd`, `fzf`, `glow`, `lazygit`,
   `ripgrep`, `tealdeer`
 - **Editor** — `neovim`, plus the formatters and linters it shells out to
   (`stylua`, `shfmt`, `shellcheck`, `prettierd`, `eslint_d`)
+- **Shell environment** — `git`, `tmux`, `just`
 - **Node** — `nodejs`, `pnpm_10`, `yarn`, replacing nvm
 - **Other** — `kanata` (the systemd unit execs `~/.nix-profile/bin/kanata`),
   `nix-direnv`
+
+## Machine versions vs project versions
+
+The rule that decides whether something belongs here at all:
+
+> **The global flake holds tools whose version is a property of the machine.
+> Per-project flakes hold toolchains whose version is a property of the
+> project.**
+
+A linter, a pager, a multiplexer, a task runner — one version is correct
+everywhere, and being on two versions is a bug. Those go here.
+
+A language toolchain is the opposite. `rust-toolchain.toml`, the `go` directive
+in `go.mod`, and `.python-version` all exist because the correct version is a
+fact about the repository you are standing in, and the global profile can only
+hold one. Those go in the project, via [`use flake`](#per-project-toolchains).
+
+`nodejs` is here despite being a language toolchain, and it is worth being
+honest about why: in practice there was exactly one version. When
+`pi-cli-tools` needed 22 against a global 24, it got a project flake — which is
+the rule working, not an exception to it.
+
+The corollary is that **`rustup`, `uv`, and Go's own `GOTOOLCHAIN` are not
+competitors to this flake.** They manage the per-project layer, which this
+flake does not reach. Replacing them with a pinned global version would trade a
+correct per-project answer for one machine-wide guess.
 
 ## The rules this boundary follows
 
