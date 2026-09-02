@@ -2,7 +2,7 @@
 
 Global [direnv](https://direnv.net/) extensions - shared helper functions for
 per-directory environments. direnv itself is hooked into bash from
-[`shell/local.sh`](../shell/README.md) (`eval "$(direnv hook bash)"`), not from
+[`shell/tools.sh`](../shell/README.md) (`eval "$(direnv hook bash)"`), not from
 this package.
 
 ## Tracked

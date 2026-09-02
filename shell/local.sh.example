@@ -36,13 +36,9 @@
 # second time because Ubuntu sources ~/.bashrc before it, which is harmless
 # and left alone.
 
-# --- fzf -------------------------------------------------------------
-# fzf comes from flake.nix, which ships the shell integration with the binary;
-# no ~/.fzf.bash shim is involved.
-# command -v fzf >/dev/null 2>&1 && eval "$(fzf --bash)"
-
-# --- starship prompt -------------------------------------------------
-# command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
+# NOT here: fzf, starship and direnv. flake.nix guarantees all three, so their
+# shell integrations are tracked in tools.sh. Adding them here too would run
+# each hook twice.
 
 # --- CUDA toolkit (match the version installed on this machine) -------
 # export PATH="/usr/local/cuda-XX.X/bin:$PATH"

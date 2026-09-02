@@ -13,21 +13,18 @@ See the root [README](../README.md) for shared deployment mechanics.
 
 ## Activate
 
-Deploying installs the config but does **not** enable the prompt. You must also:
-
-1. Install starship — it comes from [`flake.nix`](../flake.nix). It previously
-   lived at `/usr/local/bin/starship`, put there by starship.rs' curl installer
-   with nothing tracking it; that copy is left in place but shadowed.
-2. Enable it in [`shell/local.sh`](../shell/README.md) (machine-local, not
-   committed):
-
-   ```bash
-   eval "$(starship init bash)"
-   ```
-
 ```bash
 just apply starship
 ```
+
+Nothing else. The binary comes from [`flake.nix`](../flake.nix) and
+[`shell/tools.sh`](../shell/README.md) runs `starship init bash`, so a machine
+that has run `nix profile add` and wired `shell/` into `~/.bashrc` gets the
+prompt on the next shell.
+
+starship previously lived at `/usr/local/bin/starship`, put there by
+starship.rs' curl installer with nothing tracking it; that copy is left in
+place but shadowed. The init line used to be a manual step in `local.sh`.
 
 ## Notable choices
 

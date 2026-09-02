@@ -23,6 +23,7 @@ bash_modules=(
     functions   # shell functions
     aliases     # aliases
     keybinds    # readline keybindings (may reference functions)
+    tools       # fzf/starship/direnv integrations (install their own binds)
     llm         # llm helper functions
     local       # machine-specific, git-ignored (optional)
 )

@@ -32,7 +32,7 @@ controlled. Env first, then functions, then things that may reference them;
 `local` is last so it can override anything above it.
 
 ```
-exports → options → completions → functions → aliases → keybinds → llm → local
+exports → options → completions → functions → aliases → keybinds → tools → llm → local
 ```
 
 | Module             | Purpose                              | Tracked |
@@ -43,11 +43,14 @@ exports → options → completions → functions → aliases → keybinds → l
 | `functions.sh`     | shell functions                      | ✅      |
 | `aliases.sh`       | aliases and isolated Playwright sessions                                  | ✅      |
 | `keybinds.sh`      | keybindings (may reference functions)| ✅      |
+| `tools.sh`         | fzf, starship, direnv shell integrations | ✅      |
 | `llm.sh`           | short names for `ai` (see [docs/scripts.md](../docs/scripts.md)) | ✅      |
 | `local.sh`         | machine-specific config              | ❌ git-ignored |
 | `local.sh.example` | template for `local.sh`              | ✅      |
 
-Missing modules are skipped silently, so `local.sh` is optional.
+`local.sh` is the only optional module: a missing one is skipped, while any
+other missing module warns on stderr, since a shell without `exports.sh` or
+`aliases.sh` starts degraded rather than merely plain.
 
 ## New machine
 
