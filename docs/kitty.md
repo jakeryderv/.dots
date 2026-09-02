@@ -26,5 +26,5 @@ Reload a running instance with `ctrl+shift+f5`.
 - **Theme** — carbonfox palette vendored inline from the nightfox upstream.
 - **No decorations**, slight transparency (`background_opacity 0.97`).
 - **`ctrl+shift+t` disabled** (`no_op`) to avoid conflicting with tmux.
-- **Kitty graphics protocol** is what `image.nvim` targets — see
-  [`nvim`](nvim.md).
+- **Kitty graphics protocol** is what [`herdr`](herdr.md) forwards from pane
+  applications (`kitty_graphics = true`).

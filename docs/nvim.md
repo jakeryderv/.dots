@@ -44,11 +44,6 @@ These features need system binaries and are **not** installed by Mason:
 
 - **Clipboard** (`clipboard = unnamedplus`) — needs `wl-clipboard` (Wayland) or
   `xclip`/`xsel` (X11). Verify with `:checkhealth provider`.
-- **`image.nvim`** — renders images via the **Kitty graphics protocol**
-  (`backend = 'kitty'`) using a LuaRocks-installed ImageMagick
-  (`processor = 'magick_rock'`). Requires a Kitty-protocol-capable terminal
-  (Kitty, or WezTerm/Ghostty with support) plus ImageMagick + LuaRocks. Falls
-  flat in terminals without the protocol.
 - **`markdown-preview`** — hard-codes `firefox --new-window` (see
   `markdown-preview.lua`). Needs Firefox on `PATH`, or edit the `browserfunc`.
 - **`ruff`** — see table above.

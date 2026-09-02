@@ -116,7 +116,8 @@ place.
   or `RESIZE`, with separate `SYNC` and `ZOOM` badges when pane synchronization
   or pane zoom is active.
 - **True color + image passthrough** — `allow-passthrough` + terminal-features
-  enable kitty/iTerm2 image protocols (used by [`nvim`](nvim.md)'s
-  `image.nvim`). Sixel is intentionally dropped (see the note in `.tmux.conf`).
+  enable kitty/iTerm2 image protocols, which [`herdr`](herdr.md) forwards from
+  pane applications. Sixel is intentionally dropped (see the note in
+  `.tmux.conf`).
 - **continuum auto-restore is OFF** — sessions auto-save every 15 min but
   restore is manual (`prefix + Ctrl+r`).
