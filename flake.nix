@@ -36,6 +36,14 @@
           kanata
           lazygit
           neovim
+          # Replaces nvm. npm ships with it; global installs need a writable
+          # prefix (~/.npm-global) because the store is read-only -- see
+          # shell/exports.sh.
+          nodejs
+          # pnpm_10, not pnpm: the unversioned attr is 11.x, and these were on
+          # 10.33.0 under nvm. Same major keeps existing lockfiles predictable.
+          pnpm_10
+          yarn # 1.22.22, identical to what nvm had
           # Formatters and linters nvim shells out to, and that `just check`
           # also runs. Previously split across apt and mason for no reason --
           # shfmt and shellcheck were installed by both.
@@ -50,7 +58,10 @@
           # NOT tmux-sessionizer: nixpkgs packages jrmoulton's Rust rewrite
           # (binary `tms`), not ThePrimeagen's shell script that this repo's
           # tmux.conf and keybinds.sh call by name. Stays a script.
-          wrangler
+          #
+          # NOT wrangler: tools/install-cloudflare.sh installs it as a pair with
+          # `cf`, which is not in nixpkgs. Taking only half the pair put two
+          # wranglers on PATH, with the npm one shadowing this.
         ];
       };
     };

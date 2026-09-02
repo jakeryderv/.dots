@@ -3,7 +3,8 @@
 # installation. Pi's tracked settings restore its extension packages separately.
 #
 # Assumes: Linux x86_64, Node.js, npm, network access, and a writable global
-# npm prefix (the active nvm installation satisfies this without sudo).
+# npm prefix. Node comes from flake.nix, whose store path is read-only, so
+# ~/.npmrc sets prefix=~/.npm-global -- see shell/exports.sh for the PATH entry.
 
 set -euo pipefail
 

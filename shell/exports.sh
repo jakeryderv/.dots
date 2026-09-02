@@ -7,6 +7,14 @@ case ":$PATH:" in
 *) export PATH="$HOME/.local/bin:$PATH" ;;
 esac
 
+# npm global prefix. Node comes from flake.nix, whose store path is read-only,
+# so `npm install -g` needs somewhere writable; ~/.npm-global is set as npm's
+# prefix in ~/.npmrc and its bin dir goes here.
+case ":$PATH:" in
+*":$HOME/.npm-global/bin:"*) ;;
+*) export PATH="$HOME/.npm-global/bin:$PATH" ;;
+esac
+
 # ls colors (LS_COLORS)
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
