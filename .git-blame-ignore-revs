@@ -12,3 +12,6 @@ d175a3293df172a6f3459fdd32621cd9fa5eca45
 # lua: normalize formatting with stylua (parens per config/nvim/.stylua.toml,
 # and wezterm.lua tabs -> 2 spaces per .editorconfig)
 83af3f11ae9a2cc59f995d0910710cc2c789a5ab
+
+# flake: re-indent the package list to match the genAttrs nesting
+94875a11170242eaf0e18c2bd27b14ac318edef8
