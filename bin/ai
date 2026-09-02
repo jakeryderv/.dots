@@ -63,11 +63,13 @@ render() {
         fi
         ;;
     bat | batcat)
+        # Canonical name first: bat comes from flake.nix, and apt's batcat is
+        # the older fallback. Matches bin/bs.
         local bat=''
-        if command -v batcat >/dev/null 2>&1; then
-            bat=batcat
-        elif command -v bat >/dev/null 2>&1; then
+        if command -v bat >/dev/null 2>&1; then
             bat=bat
+        elif command -v batcat >/dev/null 2>&1; then
+            bat=batcat
         fi
         if [[ -n $bat ]]; then
             "$bat" --language markdown --paging=never

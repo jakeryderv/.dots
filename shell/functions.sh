@@ -36,11 +36,12 @@ bashstyle() {
     local mode=${1:-auto}
     local bat=''
 
-    # debian/ubuntu ship bat as batcat
-    if hash batcat 2>/dev/null; then
-        bat=batcat
-    elif hash bat 2>/dev/null; then
+    # bat comes from flake.nix under its canonical name; apt's batcat is the
+    # older fallback, so check the real name first.
+    if hash bat 2>/dev/null; then
         bat=bat
+    elif hash batcat 2>/dev/null; then
+        bat=batcat
     fi
 
     if [[ $mode == auto ]]; then
