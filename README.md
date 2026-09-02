@@ -48,6 +48,21 @@ Documentation therefore lives in [`docs/`](docs/README.md) as `docs/<pkg>.md`,
 never inside a source. A `README.md` in `config/nvim/` would deploy to
 `~/.config/nvim/README.md`.
 
+### Config is linked; software comes from a flake
+
+The manifest only ever moves configuration. The binaries that configuration
+describes are declared in [`flake.nix`](flake.nix) and pinned by a committed
+`flake.lock` — same idea, other half of the machine:
+
+```bash
+nix profile add ~/.dots      # install the toolchain
+just apply                   # link the config
+```
+
+Neither one is optional on a fresh machine, and neither infers anything. What
+Nix cannot supply stays a script in [`tools/`](tools/README.md), with the reason
+recorded. See [`docs/nix.md`](docs/nix.md).
+
 ## Layout
 
 | Directory | Deploys to | Contents |
@@ -124,6 +139,8 @@ sudo apt install just
 git clone <repo> ~/.dots
 cd ~/.dots
 
+nix profile add ~/.dots   # the toolchain — see docs/nix.md for the Nix bootstrap
+
 just plan            # preview every link
 just apply           # deploy
 
@@ -140,6 +157,10 @@ conflict rather than clobbering it. Back it up and remove it, then re-run.
 Packages needing activation beyond linking (starship enablement, `fc-cache` for
 fonts, TPM for tmux, first-run order for nvim) document it in their
 own `docs/<pkg>.md`.
+
+Nix itself is the one bootstrap this repo does not manage, alongside `just`, and
+flakes need an opt-in in an untracked `~/.config/nix/nix.conf`
+— [`docs/nix.md`](docs/nix.md) has both. `just deps` reports what is missing.
 
 ## Adding a package
 

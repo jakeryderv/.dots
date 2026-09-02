@@ -1,10 +1,13 @@
 {
   # Third-party tooling this machine needs, declared in one place. Replaces the
-  # per-tool installers that used to live in tools/ -- see tools/README.md for
-  # what is still a script and why.
+  # per-tool installers that used to live in tools/ -- see docs/nix.md for how
+  # this half of the repo works, and tools/README.md for what is still a script.
   #
-  # Install:  nix profile install ~/.dots
-  # Update:   nix flake update --flake ~/.dots && nix profile upgrade dots-tools
+  # Install:  nix profile add ~/.dots
+  # Update:   nix flake update --flake ~/.dots, then `nix profile upgrade`
+  #           addressed by the entry's flake URL -- NOT `dots-tools`, which
+  #           matches no entry and warns instead of upgrading. Exact command
+  #           in docs/nix.md.
   #
   # flake.lock is committed: it is what makes a second machine resolve the same
   # versions, the same way the manifest makes it resolve the same symlinks.
@@ -61,11 +64,11 @@
           tealdeer # ships the `tldr` binary
           # NOT tmux-sessionizer: nixpkgs packages jrmoulton's Rust rewrite
           # (binary `tms`), not ThePrimeagen's shell script that this repo's
-          # tmux.conf and keybinds.sh call by name. Stays a script.
+          # tmux.conf and keybinds.sh call by name. Vendored into bin/ instead.
           #
-          # NOT wrangler: tools/install-cloudflare.sh installs it as a pair with
-          # `cf`, which is not in nixpkgs. Taking only half the pair put two
-          # wranglers on PATH, with the npm one shadowing this.
+          # NOT wrangler: tools/install-npm-globals.sh installs it as a pair
+          # with `cf`, which is not in nixpkgs. Taking only half the pair put
+          # two wranglers on PATH, with the npm one shadowing this.
         ];
       };
     };
