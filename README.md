@@ -89,7 +89,7 @@ mechanism:
 
 ## Packages
 
-22 packages across 25 manifest rows. `just packages` lists them; each is
+19 packages across 22 manifest rows. `just packages` lists them; each is
 documented in [`docs/`](docs/README.md).
 
 **Terminals** — [ghostty](docs/ghostty.md) (daily driver),
@@ -102,7 +102,9 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 [bat](docs/bat.md), [direnv](docs/direnv.md),
 [editorconfig](docs/editorconfig.md), [tealdeer](docs/tealdeer.md).
 
-**Coding agents** — [claude](docs/claude.md).
+**Coding agents** — [claude](docs/claude.md),
+[agent-skills](docs/agent-skills.md) (skills shared by every agent),
+[herdr](docs/herdr.md) (terminal workspace manager).
 
 **Desktop & misc** — [fonts](docs/fonts.md),
 [scripts](docs/scripts.md), [kanata](docs/kanata.md) (keyboard remapping).
