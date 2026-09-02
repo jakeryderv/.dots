@@ -121,7 +121,7 @@ Everything in [`flake.nix`](../flake.nix) is installed with one command, and
 upgraded without touching this directory:
 
 ```bash
-nix profile add ~/.dots                              # first install
-nix flake update --flake ~/.dots \
-  && nix profile upgrade dots-tools                  # update everything
+nix profile add ~/.dots            # first install
+nix flake update --flake ~/.dots   # bump flake.lock, then:
+nix profile upgrade 'git+file:///home/jake/.dots#packages.x86_64-linux.default'
 ```
