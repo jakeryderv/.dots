@@ -11,9 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Install validation tools
-        run: sudo apt-get update && sudo apt-get install -y shellcheck lua5.4 shfmt
+      - uses: cachix/install-nix-action@v31
+      # The gate's tools come from the same nixpkgs revision flake.lock pins,
+      # not from apt: --inputs-from resolves `nixpkgs#` to the locked input, so
+      # shfmt, shellcheck, stylua and kanata here are byte-identical to the
+      # ones the editor and `just check` run locally. Only the gate's tools are
+      # pulled, not the whole profile -- neovim, nodejs and qmk would add
+      # minutes of download for nothing. lua5_4 is CI-only: `luac -p` needs it,
+      # and it is not a machine tool, so it is not in flake.nix.
       - name: Run portable checks
         env:
           REQUIRE_LINTERS: "1"
-        run: bash _dots/checks/check-repo.sh
+        run: >
+          nix shell --inputs-from .
+          nixpkgs#shellcheck nixpkgs#shfmt nixpkgs#stylua nixpkgs#lua5_4 nixpkgs#kanata
+          -c bash _dots/checks/check-repo.sh

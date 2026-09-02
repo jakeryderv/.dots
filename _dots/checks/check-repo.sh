@@ -197,8 +197,9 @@ fi
 # device, so it is safe to run anywhere.
 #
 # Unlike the linters above this is never escalated by REQUIRE_LINTERS: kanata is
-# package-specific software rather than a repo-wide tool, and CI runs with
-# REQUIRE_LINTERS=1 on a runner that has no reason to install it.
+# package-specific software rather than a repo-wide tool. CI does pull it from
+# the flake's nixpkgs (see .github/workflows/ci.yml), so the check runs there
+# too, but a local machine without the package still passes the gate.
 if command -v kanata >/dev/null 2>&1; then
     echo 'Checking kanata configuration...'
     kanata --cfg config/kanata/kanata.kbd --check >/dev/null
