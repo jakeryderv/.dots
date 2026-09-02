@@ -52,7 +52,7 @@ credential store:
 | --- | --- | --- |
 | 11 skills + 2 commands | `settings.json` (plugin cache) | none — documentation only |
 | 5 remote MCP servers | the plugin's `.mcp.json` | Claude Code's own OAuth store |
-| `cf` and `wrangler` CLIs | [`install-cloudflare.sh`](../tools/install-cloudflare.sh) | `~/.config/cloudflare/`, `~/.config/.wrangler/` |
+| `cf` and `wrangler` CLIs | [`install-npm-globals.sh`](../tools/install-npm-globals.sh) | `~/.config/cloudflare/`, `~/.config/.wrangler/` |
 
 Three OAuth grants means three things to re-authenticate on a new machine and
 three to revoke. The MCP servers and the `cf` CLI overlap heavily — `cf tools`

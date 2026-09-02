@@ -42,10 +42,8 @@ source builds) and stay self-contained.
 
 | Script | Installs | Notes |
 | --- | --- | --- |
-| `install-cloudflare.sh` | [cf](https://www.npmjs.com/package/cf) + [wrangler](https://developers.cloudflare.com/workers/wrangler/) | Both Cloudflare CLIs as global npm packages, lifecycle scripts disabled. `cf` is the newer generated CLI covering the whole API; `wrangler` is the Workers build toolchain. Overlapping but converging — see [`claude`](../docs/claude.md). Auth is **not** installed: each CLI holds its own OAuth grant (`cf auth login`, `wrangler login`). |
+| `install-npm-globals.sh` | [Pi](https://pi.dev), [cf](https://www.npmjs.com/package/cf) + [wrangler](https://developers.cloudflare.com/workers/wrangler/), [Playwright CLI](https://playwright.dev/agent-cli/installation) | The npm-only CLIs, in one pass. Installed with `--ignore-scripts`; playwright-cli additionally fetches its Chromium into `~/.cache/ms-playwright`. `cf` is the newer generated CLI covering the whole API, `wrangler` the Workers build toolchain — overlapping but converging, see [`claude`](../docs/claude.md). Auth is **not** installed: each CLI holds its own OAuth grant (`cf auth login`, `wrangler login`). Global prefix is `~/.npm-global`. |
 | `install-freecad.sh` | [FreeCAD](https://github.com/FreeCAD/FreeCAD) | Verified official AppImage (~820 MB) → `~/.local/opt/freecad`, symlinked to `~/.local/bin`; also installs launcher entry + icons. No sudo. Tracks the **stable** release, not the `weekly-*` prereleases; skips the download when already current. Needs `libfuse2t64`. |
-| `install-pi.sh` | [Pi coding agent](https://pi.dev) | Latest global npm release, installed with lifecycle scripts disabled. Pi config lives in the separate [pi-config](https://github.com/jakeryderv/pi-config) repo (`~/dev/projects/pi-config`). |
-| `install-playwright-cli.sh` | [Playwright CLI](https://playwright.dev/agent-cli/installation) | Global npm CLI + its Chromium build. The Agent Skill itself is untracked, managed by skills.sh. |
 | `install-qutebrowser.sh` | [qutebrowser](https://qutebrowser.org) | From source via `uv` + `mkvenv.py` (newer Qt than apt). `--keep` reuses the venv for a fast update. Also installs the `.desktop` entry + icons. See [`qutebrowser`](../docs/qutebrowser.md). |
 | `install-t3code.sh` | [T3 Code](https://t3.codes) | Verified official x86_64 AppImage → `~/.local/opt/t3code`, symlinked to `~/.local/bin`; also installs launcher entry + icon. The app handles routine updates itself. |
 | `install-tmux-sessionizer.sh` | [tmux-sessionizer](https://github.com/ThePrimeagen/tmux-sessionizer) | Pinned commit + checksum → `~/.local/bin`. Used by [`tmux`](../docs/tmux.md). |
@@ -104,7 +102,7 @@ trialled.
 
 ```bash
 just tools               # list the installers
-just install t3code      # run tools/install-t3code.sh
+just install npm-globals # run tools/install-npm-globals.sh
 ```
 
 Or run any of them directly:
