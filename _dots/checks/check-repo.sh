@@ -176,6 +176,21 @@ else
     echo 'Skipping Lua syntax check (luac not installed).'
 fi
 
+# Lua was the last language whose formatter ran only on save. shfmt has gated
+# Bash here for a while; stylua now gates Lua the same way, so the editor and
+# this check run the same pinned binary from flake.nix. config/nvim has its own
+# .stylua.toml; config/wezterm falls back to .editorconfig. Blocks that are
+# aligned or grouped by hand carry `-- stylua: ignore`.
+if command -v stylua >/dev/null 2>&1; then
+    echo 'Checking Lua formatting...'
+    stylua --check "${LUA_PATHS[@]}"
+elif [[ "${REQUIRE_LINTERS:-0}" == 1 ]]; then
+    echo 'error: stylua is required but unavailable' >&2
+    exit 1
+else
+    echo 'Skipping Lua formatting check (stylua not installed).'
+fi
+
 # A kanata config that does not parse leaves the keyboard unmapped, and the
 # failure only shows up when the service restarts -- by which point typing may
 # be how you would fix it. `--check` parses and exits without touching any
