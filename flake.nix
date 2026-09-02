@@ -40,6 +40,10 @@
           # prefix (~/.npm-global) because the store is read-only -- see
           # shell/exports.sh.
           nodejs
+          # Caches `use flake` evaluations for direnv and keeps the resulting
+          # store paths alive as GC roots; without it every cd re-evaluates.
+          # Hooked up in config/direnv/direnvrc.
+          nix-direnv
           # pnpm_10, not pnpm: the unversioned attr is 11.x, and these were on
           # 10.33.0 under nvm. Same major keeps existing lockfiles predictable.
           pnpm_10

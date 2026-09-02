@@ -9,11 +9,30 @@ this package.
 
 | File | Purpose |
 | --- | --- |
-| `.config/direnv/direnvrc` | `use_gh_account` - pin the gh CLI to a specific GitHub account per directory tree |
+| `.config/direnv/direnvrc` | `use_gh_account` - pin the gh CLI to a specific GitHub account per directory tree; sources `nix-direnv` for `use flake` |
 
 `direnvrc` is sourced before every `.envrc`, so its functions need no
 `source_env`. direnv watches the file: editing it invalidates cached
 environments, and the next `cd` into a direnv directory re-evaluates.
+
+## Per-project toolchains with `use flake`
+
+`direnvrc` sources [nix-direnv](https://github.com/nix-community/nix-direnv)
+(installed by [`flake.nix`](../flake.nix)), which adds `use flake`, caches the
+evaluation so a `cd` is not a full re-eval, and registers the resulting store
+paths as GC roots so `nix store gc` cannot collect a shell still in use.
+
+A project pins its own toolchain with a `flake.nix` plus a one-line `.envrc`:
+
+```bash
+echo 'use flake' > .envrc && direnv allow
+```
+
+`pi-cli-tools` uses this to get Node 22 where the global toolchain ships 24.
+Add `.direnv/` to the project's `.gitignore` - it holds the GC roots.
+
+The guard around the source means a machine without nix-direnv still loads
+`direnvrc`; only `use flake` is unavailable.
 
 ## `use_gh_account`
 

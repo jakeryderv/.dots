@@ -6,6 +6,13 @@
 # Note: direnv does not apply `set -euo pipefail` to .envrc by default (that is
 # opt-in via `strict_env`), so helpers here must check their own failures.
 
+# nix-direnv: adds `use flake`, caches the evaluation, and registers the result
+# as a GC root so `nix store gc` cannot collect a shell you are still using.
+# Installed by flake.nix; guarded so a machine without it still loads direnvrc.
+if [[ -f $HOME/.nix-profile/share/nix-direnv/direnvrc ]]; then
+	source "$HOME/.nix-profile/share/nix-direnv/direnvrc"
+fi
+
 # use_gh_account <username>
 #
 # Pin the gh CLI to one of several authenticated accounts for this directory
