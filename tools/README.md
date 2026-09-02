@@ -24,28 +24,12 @@ repo. Release installers verify GitHub-provided SHA-256 digests;
 `tmux-sessionizer` is pinned to a reviewed commit and checksum. Scripts are safe
 to re-run to update unless their header says a pin must be bumped deliberately.
 
-## Shared library
-
-The installers that download GitHub release assets (`t3code`, `freecad`)
-source
-[`lib/github-release.sh`](lib/github-release.sh)
-for the parts that must not drift between them: platform and dependency
-preflight, latest-release resolution, asset selection, and the SHA-256 digest
-verification on every download. Each script keeps only what is genuinely its
-own — how the installed version is detected, the install step itself, and the
-post-install notes. The library is tested offline by
-`_dots/tests/github-release-test.sh` against a fixture release and a stubbed
-`curl`. The other installers use different mechanisms (apt repos, git clones,
-source builds) and stay self-contained.
-
 ## Scripts
 
 | Script | Installs | Notes |
 | --- | --- | --- |
 | `install-npm-globals.sh` | [Pi](https://pi.dev), [cf](https://www.npmjs.com/package/cf) + [wrangler](https://developers.cloudflare.com/workers/wrangler/), [Playwright CLI](https://playwright.dev/agent-cli/installation) | The npm-only CLIs, in one pass. Installed with `--ignore-scripts`; playwright-cli additionally fetches its Chromium into `~/.cache/ms-playwright`. `cf` is the newer generated CLI covering the whole API, `wrangler` the Workers build toolchain — overlapping but converging, see [`claude`](../docs/claude.md). Auth is **not** installed: each CLI holds its own OAuth grant (`cf auth login`, `wrangler login`). Global prefix is `~/.npm-global`. |
-| `install-freecad.sh` | [FreeCAD](https://github.com/FreeCAD/FreeCAD) | Verified official AppImage (~820 MB) → `~/.local/opt/freecad`, symlinked to `~/.local/bin`; also installs launcher entry + icons. No sudo. Tracks the **stable** release, not the `weekly-*` prereleases; skips the download when already current. Needs `libfuse2t64`. |
 | `install-qutebrowser.sh` | [qutebrowser](https://qutebrowser.org) | From source via `uv` + `mkvenv.py` (newer Qt than apt). `--keep` reuses the venv for a fast update. Also installs the `.desktop` entry + icons. See [`qutebrowser`](../docs/qutebrowser.md). |
-| `install-t3code.sh` | [T3 Code](https://t3.codes) | Verified official x86_64 AppImage → `~/.local/opt/t3code`, symlinked to `~/.local/bin`; also installs launcher entry + icon. The app handles routine updates itself. |
 | `install-tmux-sessionizer.sh` | [tmux-sessionizer](https://github.com/ThePrimeagen/tmux-sessionizer) | Pinned commit + checksum → `~/.local/bin`. Used by [`tmux`](../docs/tmux.md). |
 
 ## Why these stay scripts
@@ -62,11 +46,9 @@ rewrite, whose binary is `tms`. This repo uses ThePrimeagen's shell script, and
 `home/tmux.conf` plus `shell/keybinds.sh` call it by name. Same name, different
 project; not a drop-in.
 
-**Self-updating** — `t3code` updates itself in place. The Nix store is
-read-only, so packaging it would trade a working updater for manual version
-bumps in `flake.nix`.
-
-**GPU-bound** — `freecad`. This one is not about packaging at all:
+**GUI on a non-NixOS host** — `qutebrowser`. nixpkgs 3.7.0 matches what
+`install-qutebrowser.sh` builds from source, so migrating it would retire the
+`uv` + `mkvenv.py` build. What stops it being a one-liner is graphics.
 
 A nixpkgs GUI binary uses Nix's own dynamic linker, which does not search
 `/usr/lib`. With default environment, libglvnd falls back to the system
@@ -81,21 +63,16 @@ acceleration on the **Intel iGPU**:
     LIBGL_DRIVERS_PATH=$MESA/lib/dri
     GBM_BACKENDS_PATH=$MESA/lib/gbm
 
-Reaching the **NVIDIA dGPU** is the part that does not work. `nix-gl-host`
-(which borrows the host driver, so no version pinning) does get EGL onto the
-5070 Ti -- `eglinfo` confirms it -- but it prepends host library directories to
-`LD_LIBRARY_PATH`, which shadows nixpkgs' own libraries. Plain C programs
-tolerate that; Qt6 does not, and FreeCAD dies with `QRhiGles2: Failed to create
-context` on both the xcb and wayland platforms. GLX stays broken under it too.
+Reaching the **NVIDIA dGPU** does not work. `nix-gl-host` (which borrows the
+host driver, so no version pinning) does get EGL onto the 5070 Ti -- `eglinfo`
+confirms it -- but it prepends host library directories to `LD_LIBRARY_PATH`,
+which shadows nixpkgs' own libraries. Plain C programs tolerate that; Qt6 does
+not, and a Qt app dies with `QRhiGles2: Failed to create context` on both the
+xcb and wayland platforms. GLX stays broken under it too. (Measured with
+FreeCAD, whose installer has since been removed.)
 
-So a Nix FreeCAD is limited to the Intel iGPU, while the AppImage links against
-system libraries and can use the dGPU. For CAD that is a capability
-**downgrade**, which is the whole reason to keep the AppImage.
-
-**Still open** — `qutebrowser`. nixpkgs 3.7.0 matches what
-`install-qutebrowser.sh` builds from source, and a browser on the iGPU is fine,
-so this one would be a real win: it would retire the `uv` + `mkvenv.py` source
-build. It needs a wrapper setting the three variables above, and has not been
+The iGPU is fine for a browser, so qutebrowser remains a genuine candidate --
+it just needs a wrapper setting those three variables, and has not been
 trialled.
 
 ## Usage
