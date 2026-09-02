@@ -5,10 +5,8 @@ but does not ship, **for the cases Nix does not cover**.
 
 Most tooling now comes from [`flake.nix`](../flake.nix) in the repo root, which
 declares it in one place and pins it with a committed `flake.lock`. What is left
-here is what nixpkgs cannot supply: packages it does not carry (`pi`,
-`playwright-cli`, `cf`), a differently-named upstream (`tmux-sessionizer`), and
-GUI apps whose Nix builds risk the OpenGL/mesa mismatch on a non-NixOS host
-(`freecad`, `t3code`, `qutebrowser`).
+here is what nixpkgs cannot supply, plus the GUI apps where a Nix build would
+be a downgrade. See [Why these stay scripts](#why-these-stay-scripts).
 
 **Never deployed.** This directory is not named in the [`manifest`](../manifest),
 which is the only thing that makes anything deployable.
@@ -51,6 +49,56 @@ source builds) and stay self-contained.
 | `install-qutebrowser.sh` | [qutebrowser](https://qutebrowser.org) | From source via `uv` + `mkvenv.py` (newer Qt than apt). `--keep` reuses the venv for a fast update. Also installs the `.desktop` entry + icons. See [`qutebrowser`](../docs/qutebrowser.md). |
 | `install-t3code.sh` | [T3 Code](https://t3.codes) | Verified official x86_64 AppImage → `~/.local/opt/t3code`, symlinked to `~/.local/bin`; also installs launcher entry + icon. The app handles routine updates itself. |
 | `install-tmux-sessionizer.sh` | [tmux-sessionizer](https://github.com/ThePrimeagen/tmux-sessionizer) | Pinned commit + checksum → `~/.local/bin`. Used by [`tmux`](../docs/tmux.md). |
+
+## Why these stay scripts
+
+Measured 2026-09-02, on Pop!_OS 24.04 / COSMIC Wayland, hybrid Intel Arrow Lake
++ NVIDIA (proprietary 580.173.02). Recorded so the question is not re-opened
+from scratch.
+
+**Absent from nixpkgs** — `pi`, `playwright-cli`, and `cf`. Nothing to migrate.
+(nixpkgs has `playwright-driver`, but not the agent CLI.)
+
+**Different upstream** — `tmux-sessionizer`. nixpkgs packages jrmoulton's Rust
+rewrite, whose binary is `tms`. This repo uses ThePrimeagen's shell script, and
+`home/tmux.conf` plus `shell/keybinds.sh` call it by name. Same name, different
+project; not a drop-in.
+
+**Self-updating** — `t3code` updates itself in place. The Nix store is
+read-only, so packaging it would trade a working updater for manual version
+bumps in `flake.nix`.
+
+**GPU-bound** — `freecad`. This one is not about packaging at all:
+
+A nixpkgs GUI binary uses Nix's own dynamic linker, which does not search
+`/usr/lib`. With default environment, libglvnd falls back to the system
+`/usr/share/glvnd/egl_vendor.d/`, whose JSONs name `libEGL_nvidia.so.0` and
+`libEGL_mesa.so.0` in `/usr/lib` -- unopenable from a Nix process. EGL then
+fails to initialize at all, software fallback included.
+
+Pointing three variables at Nix's own mesa fixes it, and yields hardware
+acceleration on the **Intel iGPU**:
+
+    __EGL_VENDOR_LIBRARY_DIRS=$MESA/share/glvnd/egl_vendor.d
+    LIBGL_DRIVERS_PATH=$MESA/lib/dri
+    GBM_BACKENDS_PATH=$MESA/lib/gbm
+
+Reaching the **NVIDIA dGPU** is the part that does not work. `nix-gl-host`
+(which borrows the host driver, so no version pinning) does get EGL onto the
+5070 Ti -- `eglinfo` confirms it -- but it prepends host library directories to
+`LD_LIBRARY_PATH`, which shadows nixpkgs' own libraries. Plain C programs
+tolerate that; Qt6 does not, and FreeCAD dies with `QRhiGles2: Failed to create
+context` on both the xcb and wayland platforms. GLX stays broken under it too.
+
+So a Nix FreeCAD is limited to the Intel iGPU, while the AppImage links against
+system libraries and can use the dGPU. For CAD that is a capability
+**downgrade**, which is the whole reason to keep the AppImage.
+
+**Still open** — `qutebrowser`. nixpkgs 3.7.0 matches what
+`install-qutebrowser.sh` builds from source, and a browser on the iGPU is fine,
+so this one would be a real win: it would retire the `uv` + `mkvenv.py` source
+build. It needs a wrapper setting the three variables above, and has not been
+trialled.
 
 ## Usage
 
