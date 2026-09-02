@@ -50,6 +50,9 @@
         paths = with pkgs; [
           ast-grep
           delta
+          # Canonical `fd` name: apt ships it as `fdfind` (Debian renames it to
+          # avoid a clash), which telescope and fzf do not auto-detect.
+          fd
           fzf
           glow
           # Default build is compiled without `cmd` support, which is the
