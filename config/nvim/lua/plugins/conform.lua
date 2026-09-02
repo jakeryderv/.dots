@@ -33,7 +33,7 @@ return {
       -- ft=bash), so a 'bash' key here would never match. shfmt gets no
       -- prepend_args: any formatting flag makes it ignore .editorconfig.
       sh = { 'shfmt' },
-      -- ruff is system-managed (not via Mason). Install with: uv tool install ruff
+      -- ruff comes from flake.nix, like the other formatters here.
       python = { 'ruff_organize_imports', 'ruff_format' },
       html = { 'prettierd', 'prettier', stop_after_first = true },
       css = { 'prettierd', 'prettier', stop_after_first = true },

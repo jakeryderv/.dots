@@ -44,11 +44,21 @@ and CI on one version.
 
 These features need system binaries and are **not** installed by Mason:
 
+- **A C compiler and `make`** (`cc`, from apt's `build-essential`) — the one
+  that actually breaks a fresh install. nvim-treesitter compiles every parser,
+  and `telescope-fzf-native` has `build = 'make'`; without them both fail
+  quietly and searching degrades to the pure-Lua sorter.
 - **Clipboard** (`clipboard = unnamedplus`) — needs `wl-clipboard` (Wayland) or
   `xclip`/`xsel` (X11). Verify with `:checkhealth provider`.
 - **`markdown-preview`** — hard-codes `firefox --new-window` (see
   `markdown-preview.lua`). Needs Firefox on `PATH`, or edit the `browserfunc`.
-- **`ruff`** — see table above; no longer an external dependency.
+  Its `build` step also shells out to `node`/`yarn`, which come from
+  [`flake.nix`](../flake.nix).
+
+Everything else a plugin shells out to is already declared in
+[`flake.nix`](../flake.nix) and needs no separate step: `rg` and `fd`
+(telescope auto-detects both -- the reason `fd` is in the flake at all),
+`lazygit`, `tmux` for vim-tmux-navigator, and `git` for lazy.nvim's clones.
 
 ## Health checks
 
