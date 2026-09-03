@@ -470,12 +470,13 @@ def cmd_doctor(repo: Repo, links: list[Link], out: Out) -> int:
     dirty = subprocess.run(git_status, capture_output=True, text=True).stdout
     out.ok("git working tree clean") if not dirty else out.warn("git working tree has changes")
 
-    expected = repo.root / "config/scripts/dots"
-    deployed = repo.home / ".local/bin/dots"
-    if same_path(deployed, expected):
-        out.ok("~/.local/bin/dots points at config/scripts/dots")
+    # `dots` on PATH is the flake's wrapper (nix/dots.nix), which execs this
+    # file. Anything else resolving first is a stale copy of the old wrapper.
+    found = shutil.which("dots")
+    if found and same_path(Path(found), repo.home / ".nix-profile/bin/dots"):
+        out.ok("dots on PATH is the flake's wrapper")
     else:
-        out.warn("~/.local/bin/dots is not linked to config/scripts/dots; run: dots apply scripts")
+        out.warn(f"dots on PATH is {found or 'missing'}; expected ~/.nix-profile/bin/dots (nix profile add ~/.dots)")
         fail = 1
 
     bashrc = repo.home / ".bashrc"

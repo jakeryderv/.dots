@@ -85,7 +85,7 @@ recorded. See [`docs/nix.md`](docs/nix.md).
 | [`dots.toml`](dots.toml) | What deploys where |
 | [`config/`](config/README.md) | One directory per package, deployable content only |
 | [`docs/`](docs/README.md) | One file per package |
-| [`flake.nix`](flake.nix) | The toolchain, pinned by `flake.lock` |
+| [`flake.nix`](flake.nix) | The toolchain and the `dots` package, pinned by `flake.lock`; pieces in [`nix/`](nix/README.md) |
 | [`shell/`](shell/README.md) | Modular bash config, *sourced* from `~/.bashrc`, not linked |
 | [`dots.py`](dots.py) | The `dots` tool: deployer, validator, gate, doctor |
 | [`tests/`](tests/README.md) | Behaviour tests for `dots.py` |
@@ -157,13 +157,13 @@ fallback for a machine without the flake, not the mechanism.
 git clone <repo> ~/.dots
 cd ~/.dots
 
-# The toolchain first: python3, which `dots` runs on, comes from the flake.
-# The flag is the flakes opt-in; `dots apply` then deploys the same setting
-# to ~/.config/nix/nix.conf, so it is typed exactly once.
+# The toolchain first; `dots` itself is in it. The flag is the flakes opt-in;
+# `dots apply` then deploys the same setting to ~/.config/nix/nix.conf, so it
+# is typed exactly once.
 nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
 
-python3 dots.py plan             # preview every link
-python3 dots.py apply            # deploy; from here on, plain `dots`
+dots plan            # preview every link
+dots apply           # deploy
 
 # shell/ is sourced, not linked — wire it into ~/.bashrc by hand. Use the
 # snippet in shell/README.md, which warns instead of failing silently if the
@@ -187,8 +187,10 @@ distro. `dots deps` reports what is missing.
 
 [`dots.py`](dots.py) is one standard-library Python file: the deployer, the
 validator, the repository gate, and the machine doctor, behind one CLI. The
-`dots` on `PATH` is [`config/scripts/dots`](config/scripts/dots), a wrapper
-that finds the repo and execs it, so every command works from any directory.
+`dots` on `PATH` comes from the flake ([`nix/dots.nix`](nix/dots.nix)): a
+wrapper that execs the live `dots.py` with a pinned python, so it exists
+before anything is linked and every command works from any directory. Without
+Nix, `python3 dots.py` is the same tool.
 
 ```bash
 dots status          # every entry: does the target resolve into the repo?

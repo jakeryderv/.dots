@@ -61,12 +61,12 @@ beside installing Nix, not deployed:
 
 Then `nix store optimise` once, to hardlink what the store already holds.
 
-**Bootstrap order.** `dots` runs on the flake's python3, and `dots apply` is
-what deploys the conf, so the very first command carries the opt-in inline:
+**Bootstrap order.** `dots` comes from the flake, and `dots apply` is what
+deploys the conf, so the very first command carries the opt-in inline:
 
 ```bash
 nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
-python3 dots.py apply            # from here on, plain `dots`
+dots apply
 ```
 
 Every command after that is plain.
@@ -91,8 +91,8 @@ as one unit. `nix profile rollback` undoes a bad update wholesale.
 
 ## What is in it
 
-Read [`flake.nix`](../flake.nix) for the list — every non-obvious entry carries
-the reason it is pinned that way, inline. Broadly:
+Read [`nix/tools.nix`](../nix/tools.nix) for the list — every non-obvious entry
+carries the reason it is pinned that way, inline. Broadly:
 
 - **CLI tools** — `ast-grep`, `bat`, `delta`, `fd`, `fzf`, `glow`, `lazygit`,
   `ripgrep`, `tealdeer`
@@ -105,7 +105,10 @@ the reason it is pinned that way, inline. Broadly:
   manages stays outside the store, see [below](#machine-versions-vs-project-versions)
 - **Python** — `ruff`, beside uv
 - **Other** — `kanata` (the systemd unit execs `~/.nix-profile/bin/kanata`),
-  `qmk`, `nix-direnv`, and `python3`, which `dots` itself runs on
+  `qmk`, `nix-direnv`
+- **`dots` itself** — [`nix/dots.nix`](../nix/dots.nix), a wrapper that execs
+  the checkout's `dots.py` with the store's python3, so editing the tool needs
+  no rebuild and no python3 on `PATH`
 
 ## Machine versions vs project versions
 
