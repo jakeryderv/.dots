@@ -64,6 +64,12 @@ links = [
   { source = "kanata.service", target = "~/.config/systemd/user/kanata.service" },
 ]
 
+# The shared shell config. link, not tree: local.sh is untracked and must
+# still be visible at ~/.config/shell/local.sh for the rc files to source it.
+[packages.shell]
+mode = "link"
+target = "~/.config/shell"
+
 # --- ~/.config, the tool writes into its own directory -----------------------
 
 # herdr keeps sockets, logs and session-history.json beside config.toml.
@@ -87,6 +93,11 @@ mode = "tree"
 target = "~/.local/bin"
 
 # --- $HOME, tools that ignore XDG --------------------------------------------
+
+[packages.bash]
+mode = "link"
+source = "config/bash/bashrc"
+target = "~/.bashrc"
 
 [packages.git]
 mode = "link"

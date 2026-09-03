@@ -5,7 +5,7 @@ Deployed to `~/.config/bat/`.
 
 The binary comes from [`flake.nix`](../flake.nix) under its canonical name.
 apt's copy is `batcat` (Debian renames it because another package owns `bat`)
-and stays installed but shadowed; the guarded alias in `shell/aliases.sh` is now
+and stays installed but shadowed; the guarded alias in `config/shell/aliases.sh` is now
 a no-op, kept as the fallback for a machine without the flake. The config
 directory is `~/.config/bat` either way.
 

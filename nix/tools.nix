@@ -7,7 +7,7 @@ with pkgs;
 [
   ast-grep
   # Canonical `bat` name: apt ships it as `batcat` for the same reason
-  # it renames fd. The guarded alias in shell/aliases.sh becomes a
+  # it renames fd. The guarded alias in config/shell/aliases.sh becomes a
   # no-op once the real name is on PATH.
   bat
   delta
@@ -43,7 +43,7 @@ with pkgs;
   neovim
   # Replaces nvm. npm ships with it; global installs need a writable
   # prefix (~/.npm-global) because the store is read-only -- see
-  # shell/exports.sh.
+  # config/shell/env.sh.
   nodejs
   # Caches `use flake` evaluations for direnv and keeps the resulting
   # store paths alive as GC roots; without it every cd re-evaluates.

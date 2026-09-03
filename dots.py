@@ -35,9 +35,10 @@ from pathlib import Path
 MODES = ("link", "tree")
 MANIFEST = "dots.toml"
 
-# What the gate lints, by language. Bash files are recognised by shebang or a
-# ShellCheck directive, wherever they sit under these paths.
-BASH_PATHS = ("shell", "tools", "config")
+# What the gate lints, by language. Shell files are recognised by shebang or a
+# ShellCheck directive (bash, or sh for the POSIX files both shells source),
+# wherever they sit under these paths.
+BASH_PATHS = ("tools", "config")
 LUA_PATHS = ("config/nvim", "config/wezterm")
 PYTHON_PATHS = ("dots.py", "tests")
 
@@ -178,7 +179,7 @@ class Repo:
         """Tracked files plus untracked ones .gitignore does not exclude.
 
         The gate lints these rather than only tracked files, so a new script is
-        checked before it is added, while an ignored file like shell/local.sh
+        checked before it is added, while an ignored file like config/shell/local.sh
         never is.
         """
         out = subprocess.run(
@@ -479,17 +480,10 @@ def cmd_doctor(repo: Repo, links: list[Link], out: Out) -> int:
         out.warn(f"dots on PATH is {found or 'missing'}; expected ~/.nix-profile/bin/dots (nix profile add ~/.dots)")
         fail = 1
 
-    bashrc = repo.home / ".bashrc"
-    if bashrc.is_file() and ".dots/shell/_init_.sh" in bashrc.read_text():
-        out.ok("~/.bashrc sources shell/_init_.sh")
+    if (repo.root / "config/shell/local.sh").is_file():
+        out.ok("config/shell/local.sh exists")
     else:
-        out.warn("~/.bashrc does not appear to source shell/_init_.sh")
-        fail = 1
-
-    if (repo.root / "shell/local.sh").is_file():
-        out.ok("shell/local.sh exists")
-    else:
-        out.warn("shell/local.sh missing; copy shell/local.sh.example")
+        out.warn("config/shell/local.sh missing; copy config/shell/local.sh.example")
 
     # kanata needs the binary, the input group, and a running service; each
     # fails independently and none is visible from the config alone.
@@ -547,7 +541,7 @@ def is_bash_file(path: Path) -> bool:
             first = fh.readline().decode(errors="replace")
     except OSError:
         return False
-    return re.match(r"^#!.*\bbash\b|^# shellcheck shell=bash$", first) is not None
+    return re.match(r"^#!.*\bbash\b|^# shellcheck shell=(bash|sh)$", first) is not None
 
 
 def under(path: Path, prefixes: tuple[str, ...]) -> bool:

@@ -253,7 +253,7 @@ binaries*.
 Anything that wants to write into its own install directory does not fit.
 
 - `npm install -g` cannot write to the store, so `~/.npmrc` sets
-  `prefix=~/.npm-global` and [`shell/exports.sh`](../shell/exports.sh) puts its
+  `prefix=~/.npm-global` and [`config/shell/env.sh`](../config/shell/env.sh) puts its
   `bin/` on `PATH`.
 - Self-updating apps are disqualified outright — see
   [`tools/README.md`](../tools/README.md).

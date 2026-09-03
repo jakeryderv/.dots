@@ -86,7 +86,6 @@ recorded. See [`docs/nix.md`](docs/nix.md).
 | [`config/`](config/README.md) | One directory per package, deployable content only |
 | [`docs/`](docs/README.md) | One file per package |
 | [`flake.nix`](flake.nix) | The toolchain and the `dots` package, pinned by `flake.lock`; pieces in [`nix/`](nix/README.md) |
-| [`shell/`](shell/README.md) | Modular bash config, *sourced* from `~/.bashrc`, not linked |
 | [`dots.py`](dots.py) | The `dots` tool: deployer, validator, gate, doctor |
 | [`tests/`](tests/README.md) | Behaviour tests for `dots.py` |
 | [`tools/`](tools/README.md) | Installers for what nixpkgs cannot supply (`dots tools`) |
@@ -104,7 +103,8 @@ prefix on the rest is a readability convention, not a mechanism.
 [wezterm](docs/wezterm.md). All four pin the same font (0xProto Nerd Font Mono)
 and a Nightfox-family theme; a font or theme change must be mirrored in each.
 
-**Editors & shell** — [nvim](docs/nvim.md), [vim](docs/vim.md),
+**Editors & shell** — [shell](docs/shell.md) (shared by every shell),
+[bash](docs/bash.md), [nvim](docs/nvim.md), [vim](docs/vim.md),
 [tmux](docs/tmux.md), [starship](docs/starship.md), [git](docs/git.md),
 [bat](docs/bat.md), [direnv](docs/direnv.md),
 [editorconfig](docs/editorconfig.md), [tealdeer](docs/tealdeer.md).
@@ -150,7 +150,7 @@ Debian renames two of these — `fd-find` provides `fdfind`, `bat` provides
 `batcat` — which is why both come from [`flake.nix`](flake.nix) under their
 canonical names instead. apt's `bat` was removed along with every other apt
 copy of a flake tool; `fd-find` stays because `pop-launcher` depends on it, and
-the names do not collide. The guarded alias in `shell/aliases.sh` is the
+the names do not collide. The guarded alias in `config/shell/aliases.sh` is the
 fallback for a machine without the flake, not the mechanism.
 
 ```bash
@@ -162,13 +162,11 @@ cd ~/.dots
 # is typed exactly once.
 nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
 
+mv ~/.bashrc ~/.bashrc.pre-dots     # the distro's; ~/.bashrc is a package now
 dots plan            # preview every link
 dots apply           # deploy
 
-# shell/ is sourced, not linked — wire it into ~/.bashrc by hand. Use the
-# snippet in shell/README.md, which warns instead of failing silently if the
-# loader ever goes missing. This is the one step `dots apply` cannot do.
-cp shell/local.sh.example shell/local.sh   # then edit for this machine
+cp config/shell/local.sh.example config/shell/local.sh   # then edit for this machine
 cp config/git/gitconfig.local.example ~/.gitconfig.local
 ```
 

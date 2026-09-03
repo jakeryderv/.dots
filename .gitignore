@@ -8,11 +8,11 @@
 # remaining cases: state copied in by hand, or a row switched to `link` mode
 # without thinking through what the tool writes.
 
-# Bash — machine-specific config (use local.sh.example as template)
-shell/local.sh
-# ...and any hand-made backup of it. Deliberately not `shell/local.sh*`, which
-# would also swallow the tracked local.sh.example.
-shell/local.sh.bak*
+# Shell — machine-specific config (use local.sh.example as template)
+config/shell/local.sh
+# ...and any hand-made backup of it. Deliberately not `local.sh*`, which would
+# also swallow the tracked local.sh.example.
+config/shell/local.sh.bak*
 
 # Git — machine-specific identity, credentials, and overrides
 config/git/gitconfig.local

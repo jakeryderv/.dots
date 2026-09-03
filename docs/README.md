@@ -23,6 +23,7 @@ this repo is applied.
 | --- | --- | --- |
 | [`agent-skills.md`](agent-skills.md) | `config/agent-skills/project-practices` | `~/.agents/skills/`, `~/.claude/skills/` |
 | [`alacritty.md`](alacritty.md) | `config/alacritty` | `~/.config/alacritty/` |
+| [`bash.md`](bash.md) | `config/bash/bashrc` | `~/.bashrc` |
 | [`bat.md`](bat.md) | `config/bat` | `~/.config/bat/` |
 | [`claude.md`](claude.md) | `config/claude` | `~/.claude/` |
 | [`direnv.md`](direnv.md) | `config/direnv` | `~/.config/direnv/` |
@@ -36,6 +37,7 @@ this repo is applied.
 | [`nix.md`](nix.md) | `config/nix`; `flake.nix`, `flake.lock` | `~/.config/nix/`; the flake via `nix profile`, not a link |
 | [`nvim.md`](nvim.md) | `config/nvim` | `~/.config/nvim/` |
 | [`scripts.md`](scripts.md) | `bin` | `~/.local/bin/` |
+| [`shell.md`](shell.md) | `config/shell` | `~/.config/shell/` |
 | [`starship.md`](starship.md) | `config/starship/starship.toml` | `~/.config/starship.toml` |
 | [`tealdeer.md`](tealdeer.md) | `config/tealdeer` | `~/.config/tealdeer/` |
 | [`tmux.md`](tmux.md) | `config/tmux/tmux.conf` | `~/.tmux.conf` |

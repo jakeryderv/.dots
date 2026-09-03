@@ -3,18 +3,19 @@
 # local.sh — machine-specific bash config (NOT committed to git)
 # =====================================================================
 #
-# This file is the per-machine layer on top of the portable modules in
-# ~/.dots/bash. The real `local.sh` is git-ignored; this `.example` is
-# the committed template. Put anything here that:
+# This file is the per-machine layer on top of the shared config in
+# ~/.config/shell (config/shell in the repo). The real `local.sh` is
+# git-ignored; this `.example` is the committed template. Both bash and zsh
+# source it, last, so keep it to what both understand. Put anything here that:
 #   - has hardcoded / machine-specific paths (CUDA version, toolkits)
 #   - may not exist on every machine (guard with `command -v` or `[ -f ]`)
 #   - is secret and must not be committed (API keys, tokens)
 #   - overrides a committed module for this box only
 #
-# Loaded LAST by _init_.sh, so it can override earlier modules.
+# Loaded LAST by the rc file, so it can override anything before it.
 #
 # Set up on a new machine:
-#   cp ~/.dots/bash/local.sh.example ~/.dots/bash/local.sh
+#   cp ~/.dots/config/shell/local.sh.example ~/.dots/config/shell/local.sh
 #   then uncomment / edit the bits that apply.
 # =====================================================================
 
@@ -29,7 +30,7 @@
 #     *) export PATH="$HOME/.local/some-tool/bin:$PATH" ;;
 # esac
 #
-# Do NOT re-add ~/.local/bin or ~/.npm-global/bin: exports.sh already adds
+# Do NOT re-add ~/.local/bin or ~/.npm-global/bin: env.sh already adds
 # both, guarded. Installers like to append an unguarded
 # `export PATH="$HOME/.local/bin:$PATH"` here and to ~/.profile; delete those
 # rather than keeping them. ~/.profile's own stock block adds ~/.local/bin a
@@ -37,8 +38,8 @@
 # and left alone.
 
 # NOT here: fzf, starship and direnv. flake.nix guarantees all three, so their
-# shell integrations are tracked in tools.sh. Adding them here too would run
-# each hook twice.
+# shell integrations are in the rc file. Adding them here too would run each
+# hook twice.
 #
 # Also NOT here: `source ~/.cargo/env`, the bun installer's BUN_INSTALL block,
 # or a Go root. rustup, go and bun come from flake.nix. What their installers

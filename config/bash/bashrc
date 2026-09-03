@@ -1,0 +1,92 @@
+# shellcheck shell=bash
+# ~/.bashrc -- what only bash understands. Deployed by dots from
+# config/bash/bashrc. Everything both shells share -- environment, aliases,
+# functions, the machine-specific local.sh -- is in ~/.config/shell
+# (config/shell in the repo); this file is history, shopt, readline,
+# bash-completion, and the --bash flavour of each tool's shell hook.
+#
+# ~/.profile is the distro's, untracked: it sources this for login shells and
+# is what gives the graphical session its PATH. It is not interactive config.
+
+# Non-interactive: nothing below applies.
+case $- in
+*i*) ;;
+*) return ;;
+esac
+
+shell_config="$HOME/.config/shell"
+if [ ! -r "$shell_config/env.sh" ]; then
+    printf 'warning: %s missing; shell config NOT loaded (run: dots apply shell)\n' "$shell_config" >&2
+fi
+# shellcheck source=/dev/null
+[ -r "$shell_config/env.sh" ] && . "$shell_config/env.sh"
+
+# --- history -----------------------------------------------------------------
+# Ignore duplicates and space-prefixed lines; append rather than overwrite.
+HISTCONTROL=ignoreboth
+shopt -s histappend
+# The stock 1000/2000 truncated: ~/.bash_history sat at exactly HISTFILESIZE,
+# dropping the oldest line on every write.
+HISTSIZE=100000
+HISTFILESIZE=200000
+# Flush each command as it runs, so with many tmux panes open the last shell
+# to close does not overwrite what the others recorded. `history -a` only
+# writes; it does not re-read, so panes keep their own recall.
+PROMPT_COMMAND="history -a${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+shopt -s checkwinsize
+
+# less on non-text input, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# --- completion and readline -------------------------------------------------
+# bash-completion loads a command's completion on first Tab. It searches
+# $XDG_DATA_DIRS/bash-completion/completions, and the Nix profile script puts
+# ~/.nix-profile/share there, so every flake tool that ships a completion
+# (gh, rg, fd, bat, uv, ...) gets it with nothing listed here.
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
+fi
+bind '"\t": menu-complete'
+bind '"\e[Z": menu-complete-backward'
+bind "set completion-ignore-case on"
+bind "set show-all-if-ambiguous on"
+bind "set menu-complete-display-prefix on"
+bind "set mark-directories on"
+bind "set colored-stats on"
+bind "set colored-completion-prefix on"
+bind "set completion-map-case on"
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
+
+# --- shared ------------------------------------------------------------------
+# shellcheck source=/dev/null
+[ -r "$shell_config/functions.sh" ] && . "$shell_config/functions.sh"
+# shellcheck source=/dev/null
+[ -r "$shell_config/aliases.sh" ] && . "$shell_config/aliases.sh"
+
+# bash-only aliases: dotglob is a shopt, which zsh does not have.
+alias lsd="shopt -s dotglob; ls -CxdF [^.]* .[^.]* 2>/dev/null"
+alias lsl="shopt -s dotglob; ls -ldF [^.]* .[^.]* 2>/dev/null"
+
+# --- keybindings -------------------------------------------------------------
+# Ctrl-F: tmux-sessionizer (config/scripts). fzf takes Ctrl-R, Ctrl-T, Alt-C
+# below; no collision.
+if command -v tmux-sessionizer >/dev/null 2>&1; then
+    bind -x '"\C-f": tmux-sessionizer'
+fi
+
+# --- tool hooks --------------------------------------------------------------
+# All three come from flake.nix; the guards keep a machine without the flake
+# usable, just plainer. Hooks that install their own bindings go after ours.
+command -v fzf >/dev/null 2>&1 && eval "$(fzf --bash)"
+command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook bash)"
+
+# --- machine-specific, untracked ---------------------------------------------
+# shellcheck source=/dev/null
+[ -r "$shell_config/local.sh" ] && . "$shell_config/local.sh"
+unset shell_config

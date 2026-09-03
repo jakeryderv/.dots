@@ -21,7 +21,7 @@ holding one symlink per tracked file, beside everything else that lands there.
 ### `tmux-sessionizer`
 
 fzf a project directory and attach or switch to a tmux session for it. Bound to
-`prefix + f` in [`tmux`](tmux.md) and `Ctrl-F` in `shell/keybinds.sh`.
+`prefix + f` in [`tmux`](tmux.md) and `Ctrl-F` in `config/bash/bashrc`.
 
 Vendored from ThePrimeagen/tmux-sessionizer at commit `7edf8211`, which is
 unmaintained. It was previously fetched by an installer against a pinned commit

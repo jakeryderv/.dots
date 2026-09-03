@@ -18,8 +18,8 @@ dots apply starship
 ```
 
 Nothing else. The binary comes from [`flake.nix`](../flake.nix) and
-[`shell/tools.sh`](../shell/README.md) runs `starship init bash`, so a machine
-that has run `nix profile add` and wired `shell/` into `~/.bashrc` gets the
+[`config/bash/bashrc`](bash.md) runs `starship init bash`, so a machine
+that has run `nix profile add` and `dots apply` gets the
 prompt on the next shell.
 
 starship previously lived at `/usr/local/bin/starship`, put there by

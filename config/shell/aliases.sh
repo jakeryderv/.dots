@@ -1,5 +1,6 @@
-#!/usr/bin/env bash
-# Aliases
+# shellcheck shell=bash
+# Aliases, written to run under bash and zsh alike. Anything that needs a
+# bash-only builtin lives in config/bash/bashrc instead.
 
 # scratchpad
 alias pad="nvim ~/.scratchpad.md"
@@ -61,8 +62,6 @@ alias egrep='grep -E --color=auto'
 alias ll='ls -AlF --group-directories-first'
 alias la='ls -AF --group-directories-first'
 alias l='ls -CF --group-directories-first'
-alias lsd="shopt -s dotglob; ls -CxdF [^.]* .[^.]* 2>/dev/null"
-alias lsl="shopt -s dotglob; ls -ldF [^.]* .[^.]* 2>/dev/null"
 
 # alert for long running commands, e.g.  sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'

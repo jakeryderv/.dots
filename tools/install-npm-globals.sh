@@ -14,7 +14,7 @@
 #
 # Assumes: Linux x86_64, Node.js, npm, network access, and a writable global
 # npm prefix. Node comes from flake.nix, whose store path is read-only, so
-# ~/.npmrc sets prefix=~/.npm-global -- see shell/exports.sh for the PATH entry.
+# ~/.npmrc sets prefix=~/.npm-global -- see config/shell/env.sh for the PATH entry.
 #
 # Re-runnable: everything is pinned to @latest, so this updates as well as
 # installs.
