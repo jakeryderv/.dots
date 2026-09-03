@@ -25,8 +25,8 @@ symbol = " "
 
 # Colours are ANSI names, so the terminal theme (carbonfox in all four) sets
 # the real values, and each kind of information gets its own: where is blue,
-# git is purple with pink for dirty, environments are green (venv) and cyan
-# (nix), outcomes are red (exit code) and yellow (duration), and the shell
+# git is purple with pink for dirty, a nix shell is cyan, a venv stays grey
+# (the glyph is enough), outcomes are red (exit code) and yellow (duration), and the shell
 # name stays dim grey because it is metadata, not information.
 [directory]
 style = "bold blue"
@@ -93,6 +93,6 @@ min_time = 2000
 [python]
 format = "[$symbol$virtualenv]($style) "
 symbol = " "
-style = "green"
+style = "bright-black"
 detect_extensions = []
 detect_files = []
