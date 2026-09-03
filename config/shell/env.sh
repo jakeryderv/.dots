@@ -13,9 +13,9 @@
 # Goes first so the prepends below still land ahead of the profile.
 nix_profile_sh=/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 if [ -r "$nix_profile_sh" ]; then
+    # shellcheck source=/dev/null
     case ":$PATH:" in
     *":$HOME/.nix-profile/bin:"*) ;;
-    # shellcheck source=/dev/null
     *) . "$nix_profile_sh" ;;
     esac
 fi
