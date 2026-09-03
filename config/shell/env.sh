@@ -3,6 +3,24 @@
 # its rc file, first, so everything after it sees the same PATH. POSIX sh on
 # purpose -- no bash-isms -- so bash and zsh read one file.
 
+# The Nix profile, if this shell did not inherit it. bash login shells get it
+# from /etc/profile.d/nix.sh, but zsh reads neither /etc/profile nor the
+# /etc/zshrc the installer writes (Debian's zsh reads /etc/zsh/zshrc), so a zsh
+# login shell would have no ~/.nix-profile/bin -- and so no starship, direnv,
+# fzf or nvim. Sourcing it here makes every shell self-sufficient on any
+# distro; the script guards itself against running twice, and it also sets
+# XDG_DATA_DIRS, which is how bash-completion finds the flake's completions.
+# Goes first so the prepends below still land ahead of the profile.
+nix_profile_sh=/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+if [ -r "$nix_profile_sh" ]; then
+    case ":$PATH:" in
+    *":$HOME/.nix-profile/bin:"*) ;;
+    # shellcheck source=/dev/null
+    *) . "$nix_profile_sh" ;;
+    esac
+fi
+unset nix_profile_sh
+
 # ~/.local/bin and the npm global prefix, guarded against duplication when a
 # subshell re-sources this. Node comes from flake.nix, whose store path is
 # read-only, so `npm install -g` needs the writable prefix ~/.npmrc names.

@@ -99,6 +99,11 @@ mode = "link"
 source = "config/bash/bashrc"
 target = "~/.bashrc"
 
+[packages.zsh]
+mode = "link"
+source = "config/zsh/zshrc"
+target = "~/.zshrc"
+
 [packages.git]
 mode = "link"
 source = "config/git/gitconfig"

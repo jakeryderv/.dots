@@ -40,6 +40,7 @@ MANIFEST = "dots.toml"
 # wherever they sit under these paths.
 BASH_PATHS = ("tools", "config")
 LUA_PATHS = ("config/nvim", "config/wezterm")
+ZSH_PATHS = ("config/zsh",)
 PYTHON_PATHS = ("dots.py", "tests")
 
 REQUIRED_TOOLS = ("bash", "git", "python3", "find", "sed", "awk", "grep", "diff", "readlink", "file")
@@ -622,6 +623,17 @@ def cmd_check(repo: Repo, links: list[Link], out: Out) -> int:
         out.line("Checking Bash formatting...")
         if not gate.run("shfmt", "--diff", *bash_files):
             err("bash files are not shfmt-formatted; run: shfmt -w <file>")
+
+    # zsh has no shellcheck; a syntax check is what there is. Never required:
+    # the distro owns zsh, and CI has no reason to install it.
+    zsh_files = [str(f) for f in files if under(f, ZSH_PATHS)]
+    if zsh_files:
+        if shutil.which("zsh"):
+            out.line("Checking zsh syntax...")
+            for f in zsh_files:
+                gate.run("zsh", "-n", f)
+        else:
+            out.line("Skipping zsh syntax check (zsh not installed).")
 
     out.line("Parsing JSON and TOML configuration...")
     for f in files:

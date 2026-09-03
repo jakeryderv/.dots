@@ -15,9 +15,11 @@ up() {
         echo "up: argument must be a positive number" >&2
         return 1
     fi
-    local path=""
+    # Not `path`: zsh ties that name to PATH, and a local scalar of it would
+    # clobber the search path for the cd below.
+    local target=""
     for ((i = 0; i < count; i++)); do
-        path+="../"
+        target+="../"
     done
-    cd "$path" || return 1
+    cd "$target" || return 1
 }

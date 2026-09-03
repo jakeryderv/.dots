@@ -43,3 +43,4 @@ this repo is applied.
 | [`tmux.md`](tmux.md) | `config/tmux/tmux.conf` | `~/.tmux.conf` |
 | [`vim.md`](vim.md) | `config/vim` | `~/.vim/` |
 | [`wezterm.md`](wezterm.md) | `config/wezterm` | `~/.config/wezterm/` |
+| [`zsh.md`](zsh.md) | `config/zsh/zshrc` | `~/.zshrc` |

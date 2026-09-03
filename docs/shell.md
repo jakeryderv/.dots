@@ -7,7 +7,7 @@ wants, in the order it wants.
 
 | File | Sourced | Contents |
 | --- | --- | --- |
-| `env.sh` | first | PATH, EDITOR, MANPAGER, ls colours. POSIX sh, so both shells read one file. |
+| `env.sh` | first | The Nix profile if the shell did not inherit it, then PATH, EDITOR, MANPAGER, ls colours. POSIX sh, so both shells read one file. |
 | `functions.sh` | after the shell's own setup | `mkcd`, `up`. Written to run under both shells. |
 | `aliases.sh` | after functions | Aliases. Anything needing a bash-only builtin is in the rc file instead. |
 | `local.sh` | last | Machine-specific: CUDA, ROS, toolchain output dirs, secrets. **Untracked**; `local.sh.example` is the template. |
@@ -20,7 +20,7 @@ which is what a file sourced at startup needs.
 
 They run under bash and zsh alike. History, completion, keybindings, `shopt`,
 and the `--bash` / `--zsh` flavour of a tool's hook belong in the rc file of
-the shell that understands them — see [`bash.md`](bash.md). The gate lints
+the shell that understands them — see [`bash.md`](bash.md) and [`zsh.md`](zsh.md). The gate lints
 `env.sh` as POSIX sh and the other two as bash.
 
 ## Activate
@@ -30,8 +30,8 @@ dots apply shell
 cp ~/.dots/config/shell/local.sh.example ~/.dots/config/shell/local.sh   # then edit
 ```
 
-`dots apply bash` (or a future `zsh` package) deploys the rc file that sources
-this. Nothing here is loaded until an rc file does.
+`dots apply bash` or `dots apply zsh` deploys the rc file that sources this.
+Nothing here is loaded until an rc file does.
 
 ## local.sh
 

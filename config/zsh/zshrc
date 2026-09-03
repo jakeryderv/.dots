@@ -1,0 +1,75 @@
+# ~/.zshrc -- what only zsh understands. Deployed by dots from
+# config/zsh/zshrc. Everything both shells share -- environment, aliases,
+# functions, the machine-specific local.sh -- is in ~/.config/shell
+# (config/shell in the repo); this file is history, completion, keybindings,
+# and the --zsh flavour of each tool's shell hook. It mirrors config/bash/bashrc
+# section for section, so the two shells behave the same where they can.
+
+shell_config="$HOME/.config/shell"
+if [[ ! -r $shell_config/env.sh ]]; then
+    print -u2 "warning: $shell_config missing; shell config NOT loaded (run: dots apply shell)"
+fi
+[[ -r $shell_config/env.sh ]] && source "$shell_config/env.sh"
+
+# --- history -----------------------------------------------------------------
+# The same policy as bash: skip duplicates and space-prefixed lines, append
+# rather than overwrite, flush each command as it runs so parallel tmux panes
+# do not overwrite each other. Not SHARE_HISTORY, on purpose: that would
+# interleave every pane's recall, which the bash side deliberately avoids.
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=100000
+SAVEHIST=200000
+setopt HIST_IGNORE_DUPS HIST_IGNORE_SPACE APPEND_HISTORY INC_APPEND_HISTORY
+setopt INTERACTIVE_COMMENTS
+
+# --- completion and keymap ---------------------------------------------------
+# The flake's tools ship zsh completions under the profile's site-functions
+# (gh, rg, fd, bat, uv, cargo, ...); putting that on fpath is the whole wiring.
+fpath=("$HOME/.nix-profile/share/zsh/site-functions" $fpath)
+autoload -Uz compinit && compinit
+# Tab cycles through matches, case-insensitively, with colours -- the readline
+# settings in bashrc, in zsh terms.
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+bindkey -e # emacs keymap, the same base as bash's readline
+bindkey '^I' menu-complete
+bindkey '^[[Z' reverse-menu-complete
+# Up/Down search history by what is already typed, as bashrc binds them.
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey '^[[A' up-line-or-beginning-search
+bindkey '^[[B' down-line-or-beginning-search
+
+# --- shared ------------------------------------------------------------------
+[[ -r $shell_config/functions.sh ]] && source "$shell_config/functions.sh"
+[[ -r $shell_config/aliases.sh ]] && source "$shell_config/aliases.sh"
+
+# zsh-only aliases: the (D) glob qualifier includes dotfiles, which is what
+# bashrc's shopt dotglob does for its lsd/lsl.
+alias lsd='ls -CxdF -- *(D) 2>/dev/null'
+alias lsl='ls -ldF -- *(D) 2>/dev/null'
+
+# --- keybindings -------------------------------------------------------------
+# Ctrl-F: tmux-sessionizer (config/scripts), as a widget so the prompt redraws
+# after it returns. fzf takes Ctrl-R, Ctrl-T, Alt-C below; no collision.
+if command -v tmux-sessionizer >/dev/null 2>&1; then
+    tmux-sessionizer-widget() {
+        tmux-sessionizer
+        zle reset-prompt
+    }
+    zle -N tmux-sessionizer-widget
+    bindkey '^F' tmux-sessionizer-widget
+fi
+
+# --- tool hooks --------------------------------------------------------------
+# All three come from flake.nix; the guards keep a machine without the flake
+# usable, just plainer. Hooks that install their own bindings go after ours.
+command -v fzf >/dev/null 2>&1 && source <(fzf --zsh)
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+
+# --- machine-specific, untracked ---------------------------------------------
+[[ -r $shell_config/local.sh ]] && source "$shell_config/local.sh"
+unset shell_config
