@@ -7,10 +7,13 @@ paths. Files are enumerated with `git ls-files`, so an untracked file is never
 deployed and .gitignore is the only ignore list.
 
     dots status|plan|apply|unlink|diff [PKG...]
-    dots doctor | deps | check | validate | packages
+    dots check | validate | doctor | deps | packages
     dots tools | install <name>
 
-Standard library only. Runs with the python3 from flake.nix.
+`dots check` is the repository gate CI runs: manifest and documentation rules,
+then every linter and formatter the repo pins, then the tests. It reads only
+the repository, never $HOME. `dots doctor` is the opposite: it inspects this
+machine. Standard library only.
 """
 
 from __future__ import annotations
@@ -18,7 +21,9 @@ from __future__ import annotations
 import argparse
 import difflib
 import io
+import json
 import os
+import re
 import shutil
 import string
 import subprocess
@@ -29,6 +34,12 @@ from pathlib import Path
 
 MODES = ("link", "tree")
 MANIFEST = "dots.toml"
+
+# What the gate lints, by language. Bash files are recognised by shebang or a
+# ShellCheck directive, wherever they sit under these paths.
+BASH_PATHS = ("shell", "tools", "config")
+LUA_PATHS = ("config/nvim", "config/wezterm")
+PYTHON_PATHS = ("dots.py", "tests")
 
 REQUIRED_TOOLS = ("bash", "git", "python3", "find", "sed", "awk", "grep", "diff", "readlink", "file")
 # fmt: off
@@ -162,6 +173,21 @@ class Repo:
             check=True,
         ).stdout
         return [Path(p) for p in out.split("\0") if p]
+
+    def candidates(self) -> list[Path]:
+        """Tracked files plus untracked ones .gitignore does not exclude.
+
+        The gate lints these rather than only tracked files, so a new script is
+        checked before it is added, while an ignored file like shell/local.sh
+        never is.
+        """
+        out = subprocess.run(
+            ["git", "-C", str(self.root), "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+        return [Path(p) for p in out.split("\0") if p and (self.root / p).is_file()]
 
     def expand(self, target: str) -> Path:
         vars_ = {
@@ -491,12 +517,12 @@ def cmd_doctor(repo: Repo, links: list[Link], out: Out) -> int:
     else:
         out.ok("no flake binary is shadowed on PATH")
 
-    check = subprocess.run(["bash", str(repo.root / "_dots/checks/check-repo.sh")], capture_output=True, text=True)
-    if check.returncode == 0:
-        out.ok("portable repository checks pass")
+    gate_log = io.StringIO()
+    if cmd_check(repo, links, Out(stream=gate_log)) == 0:
+        out.ok("repository checks pass")
     else:
-        out.warn("portable repository checks failed")
-        out.line(check.stdout + check.stderr)
+        out.warn("repository checks failed")
+        out.line(gate_log.getvalue())
         fail = 1
 
     if cmd_status(repo, links, Out(stream=io.StringIO())) == 0:
@@ -510,8 +536,145 @@ def cmd_doctor(repo: Repo, links: list[Link], out: Out) -> int:
     return fail
 
 
+# --- commands: check (the repository gate) -----------------------------------
+
+
+def is_bash_file(path: Path) -> bool:
+    """Scripts carry a shebang; sourced files declare their shell with a directive."""
+    try:
+        with path.open("rb") as fh:
+            first = fh.readline().decode(errors="replace")
+    except OSError:
+        return False
+    return re.match(r"^#!.*\bbash\b|^# shellcheck shell=bash$", first) is not None
+
+
+def under(path: Path, prefixes: tuple[str, ...]) -> bool:
+    return any(path == Path(p) or Path(p) in path.parents for p in prefixes)
+
+
+def broken_doc_links(repo: Repo) -> list[str]:
+    """Relative markdown links whose target does not exist.
+
+    Nothing renders this repo's markdown, so a broken link is invisible until
+    someone follows it; the stow-to-manifest migration broke 29 in one commit.
+    """
+    broken = []
+    for f in repo.tracked(Path(".")):
+        if f.suffix != ".md":
+            continue
+        for m in re.finditer(r"\[[^\]]*\]\(([^)#][^)]*)\)", (repo.root / f).read_text()):
+            target = m.group(1)
+            if target.startswith(("http://", "https://", "mailto:")):
+                continue
+            if not (repo.root / f.parent / target.split("#")[0]).exists():
+                broken.append(f"{f} -> {target}")
+    return broken
+
+
+class Gate:
+    """Runs the gate steps, tallying failures; REQUIRE_LINTERS=1 makes a missing tool fatal."""
+
+    def __init__(self, repo: Repo, out: Out):
+        self.repo = repo
+        self.out = out
+        self.require = os.environ.get("REQUIRE_LINTERS") == "1"
+        self.failed = False
+
+    def fail(self, message: str) -> None:
+        err(message)
+        self.failed = True
+
+    def have(self, tool: str) -> bool:
+        if shutil.which(tool):
+            return True
+        if self.require:
+            self.fail(f"{tool} is required but unavailable")
+        else:
+            self.out.line(f"Skipping {tool} (not installed).")
+        return False
+
+    def run(self, *cmd: str, quiet: bool = False) -> bool:
+        result = subprocess.run(cmd, cwd=self.repo.root, capture_output=quiet, text=True)
+        if result.returncode != 0:
+            self.failed = True
+        return result.returncode == 0
+
+
 def cmd_check(repo: Repo, links: list[Link], out: Out) -> int:
-    return subprocess.run(["bash", str(repo.root / "_dots/checks/check-repo.sh")]).returncode
+    gate = Gate(repo, out)
+    files = repo.candidates()
+
+    out.line("Validating manifest and documentation rules...")
+    if cmd_validate(repo, links, Out(stream=io.StringIO())) != 0:
+        gate.failed = True
+
+    out.line("Checking documentation links...")
+    for entry in broken_doc_links(repo):
+        gate.fail(f"broken doc link: {entry}")
+
+    bash_files = [str(f) for f in files if under(f, BASH_PATHS) and is_bash_file(repo.root / f)]
+    out.line("Checking Bash syntax...")
+    for f in bash_files:
+        gate.run("bash", "-n", f)
+    if bash_files and gate.have("shellcheck"):
+        out.line("Running ShellCheck...")
+        gate.run("shellcheck", "-x", "-S", "warning", *bash_files)
+    # No flags on purpose: shfmt then reads .editorconfig, the same rules the
+    # editor's format-on-save applies. Any formatting flag would make it ignore
+    # .editorconfig and silently diverge.
+    if bash_files and gate.have("shfmt"):
+        out.line("Checking Bash formatting...")
+        if not gate.run("shfmt", "--diff", *bash_files):
+            err("bash files are not shfmt-formatted; run: shfmt -w <file>")
+
+    out.line("Parsing JSON and TOML configuration...")
+    for f in files:
+        if "node_modules" in f.parts:
+            continue
+        try:
+            if f.suffix == ".json":
+                json.loads((repo.root / f).read_text())
+            elif f.suffix == ".toml":
+                tomllib.loads((repo.root / f).read_text())
+        except (ValueError, UnicodeDecodeError) as exc:
+            gate.fail(f"{f}: {exc}")
+
+    lua_files = [str(f) for f in files if under(f, LUA_PATHS) and f.suffix == ".lua"]
+    if lua_files and gate.have("luac"):
+        out.line("Checking Lua syntax...")
+        for f in lua_files:
+            gate.run("luac", "-p", f)
+    if lua_files and gate.have("stylua"):
+        out.line("Checking Lua formatting...")
+        gate.run("stylua", "--check", *LUA_PATHS)
+
+    # A kanata config that does not parse leaves the keyboard unmapped, and the
+    # failure only shows up when the service restarts. --check parses without
+    # touching any device. Never escalated: it is package-specific software.
+    kanata_cfg = repo.root / "config/kanata/kanata.kbd"
+    if kanata_cfg.is_file():
+        if shutil.which("kanata"):
+            out.line("Checking kanata configuration...")
+            gate.run("kanata", "--cfg", str(kanata_cfg), "--check", quiet=True)
+        else:
+            out.line("Skipping kanata config check (kanata not installed).")
+
+    python_paths = [p for p in PYTHON_PATHS if (repo.root / p).exists()]
+    if python_paths and gate.have("ruff"):
+        out.line("Checking Python lint and formatting...")
+        gate.run("ruff", "check", "--quiet", *python_paths)
+        gate.run("ruff", "format", "--check", "--quiet", *python_paths)
+
+    if (repo.root / "tests").is_dir():
+        out.line("Running tests...")
+        gate.run(sys.executable, "-m", "unittest", "discover", "--quiet", "-s", "tests")
+
+    if gate.failed:
+        err("repository checks failed")
+        return 1
+    out.line("Repository checks passed.")
+    return 0
 
 
 def installers(repo: Repo) -> list[str]:
@@ -560,7 +723,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    root = (args.repo or Path(__file__).resolve().parent.parent).resolve()
+    root = (args.repo or Path(__file__).resolve().parent).resolve()
     repo = Repo(root, dict(os.environ))
     out = Out()
     try:

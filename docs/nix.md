@@ -66,7 +66,7 @@ what deploys the conf, so the very first command carries the opt-in inline:
 
 ```bash
 nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
-python3 _dots/dots.py apply      # from here on, plain `dots`
+python3 dots.py apply            # from here on, plain `dots`
 ```
 
 Every command after that is plain.
@@ -241,7 +241,7 @@ other on `PATH` and the one you get depends on shell startup order.
   `cf`, which nixpkgs does not have; taking half the pair put two wranglers on
   `PATH` with the npm one shadowing the Nix one.
 
-The payoff is more than tidiness: `_dots/checks/check-repo.sh` runs `shfmt` and
+The payoff is more than tidiness: `dots check` runs `shfmt` and
 `shellcheck`, so the editor and the repo gate now run the *same pinned
 binaries*.
 

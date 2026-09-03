@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # dots - this repository's deployer and health checks, from anywhere.
 #
-# The implementation is _dots/dots.py. This wrapper only finds the repo, so
+# The implementation is dots.py at the repo root. This wrapper only finds the repo, so
 # `dots status`, `dots apply`, `dots doctor` work from any directory. It is
 # deployed to ~/.local/bin by the `scripts` package. Override the repo location
 # with DOTS_REPO.
@@ -15,9 +15,9 @@ if ! command -v python3 >/dev/null 2>&1; then
     exit 1
 fi
 
-if [[ ! -f "$REPO/_dots/dots.py" ]]; then
-    printf 'error: no _dots/dots.py under %s (set DOTS_REPO to override)\n' "$REPO" >&2
+if [[ ! -f "$REPO/dots.py" ]]; then
+    printf 'error: no dots.py under %s (set DOTS_REPO to override)\n' "$REPO" >&2
     exit 1
 fi
 
-exec python3 "$REPO/_dots/dots.py" --repo "$REPO" "$@"
+exec python3 "$REPO/dots.py" --repo "$REPO" "$@"

@@ -107,7 +107,7 @@
               # PyPI-only tools; see docs/nix.md.
               uv
               # The machine-level interpreter, for this repo's own tooling
-              # (_dots/dots.py) and nothing else: it exists before `dots apply`
+              # (dots.py) and nothing else: it exists before `dots apply`
               # has ever run, and is the same version on every distro. Project
               # Pythons are uv's. uv's `--default` symlinks in ~/.local/bin
               # were removed because that directory precedes this profile and

@@ -25,4 +25,4 @@ jobs:
         run: >
           nix shell --inputs-from .
           nixpkgs#shellcheck nixpkgs#shfmt nixpkgs#stylua nixpkgs#ruff nixpkgs#python3 nixpkgs#lua5_4 nixpkgs#kanata
-          -c bash _dots/checks/check-repo.sh
+          -c python3 dots.py check

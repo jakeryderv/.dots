@@ -12,9 +12,8 @@ be a downgrade. See [Why these stay scripts](#why-these-stay-scripts).
 which is the only thing that makes anything deployable.
 
 Everything here provisions software on the machine. The repo's own validation
-scripts — `check-repo.sh`, `verify-readmes.sh` — live
-in [`_dots/checks/`](../_dots/README.md) alongside the deployer they validate,
-so this directory has exactly one job.
+is `dots check` in [`dots.py`](../dots.py), so this directory has exactly one
+job.
 
 ## Assumptions
 

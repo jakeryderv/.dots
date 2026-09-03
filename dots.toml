@@ -1,4 +1,4 @@
-# dots.toml -- what deploys where. Read by _dots/dots.py; see config/README.md.
+# dots.toml -- what deploys where. Read by dots.py; see config/README.md.
 #
 # [packages.<name>]
 #   mode   = "link" | "tree"   required, never inferred

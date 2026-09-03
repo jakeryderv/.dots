@@ -1,4 +1,4 @@
-"""Behaviour tests for _dots/dots.py, against a throwaway fixture repo.
+"""Behaviour tests for dots.py, against a throwaway fixture repo.
 
 The CLI is driven through subprocess with --repo pointing at the fixture and
 HOME at a scratch directory, so every test exercises the real entry point.
@@ -88,6 +88,7 @@ class Fixture:
             "XDG_DATA_HOME": str(self.home / ".local/share"),
             "NO_COLOR": "1",
         }
+        env.pop("REQUIRE_LINTERS", None)
         return subprocess.run(
             [sys.executable, str(DOTS), "--repo", str(self.repo), *args],
             env=env,
@@ -120,6 +121,21 @@ class DeployTests(unittest.TestCase):
 
     def test_validate_passes_on_the_fixture(self) -> None:
         self.assert_rc(self.fx.run("validate"), 0)
+
+    def test_check_passes_on_the_fixture(self) -> None:
+        # The fixture has no bash, lua or python, so only the manifest, doc
+        # link and parse steps have work; missing linters are skipped, not
+        # required, because REQUIRE_LINTERS is not set here.
+        result = self.fx.run("check")
+        self.assert_rc(result, 0)
+        self.assertIn("Repository checks passed.", result.stdout)
+
+    def test_check_reports_a_broken_doc_link(self) -> None:
+        (self.fx.repo / "docs/alpha.md").write_text("see [x](nowhere.md)\n")
+        git(self.fx.repo, "add", "-A")
+        result = self.fx.run("check")
+        self.assert_rc(result, 1)
+        self.assertIn("broken doc link: docs/alpha.md -> nowhere.md", result.stderr)
 
     def test_apply_deploys_every_mode(self) -> None:
         self.assert_rc(self.fx.run("apply"), 0)

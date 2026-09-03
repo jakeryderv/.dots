@@ -1,7 +1,7 @@
 # dotfiles
 
 My personal dotfiles for Pop!_OS / bash. Configuration is deployed as symlinks
-from a declarative [`dots.toml`](dots.toml) by [`dots`](_dots/dots.py); the
+from a declarative [`dots.toml`](dots.toml) by [`dots`](dots.py); the
 software that configuration describes is declared in [`flake.nix`](flake.nix)
 and installed by Nix.
 
@@ -87,7 +87,8 @@ recorded. See [`docs/nix.md`](docs/nix.md).
 | [`docs/`](docs/README.md) | One file per package |
 | [`flake.nix`](flake.nix) | The toolchain, pinned by `flake.lock` |
 | [`shell/`](shell/README.md) | Modular bash config, *sourced* from `~/.bashrc`, not linked |
-| [`_dots/`](_dots/README.md) | The `dots` tool, the repo gate, and tests |
+| [`dots.py`](dots.py) | The `dots` tool: deployer, validator, gate, doctor |
+| [`tests/`](tests/README.md) | Behaviour tests for `dots.py` |
 | [`tools/`](tools/README.md) | Installers for what nixpkgs cannot supply (`dots tools`) |
 | [`_wallpapers/`](_wallpapers/README.md) | Wallpaper / terminal background images |
 
@@ -126,7 +127,7 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
   [`editorconfig`](docs/editorconfig.md) package deploys the same rules to
   `~/.editorconfig` as a fallback for projects that ship no config of their own.
 - **[`.shellcheckrc`](.shellcheckrc) configures ShellCheck once**, for both the
-  editor (via bash-language-server) and CI (`_dots/checks/check-repo.sh`), so
+  editor (via bash-language-server) and CI (`dots check`), so
   diagnostics match what the gate enforces.
 - **Formatting is enforced in CI, per language, with no flags.** `shfmt` for
   bash, `stylua` for Lua, `ruff` for Python; each reads the same config the
@@ -161,8 +162,8 @@ cd ~/.dots
 # to ~/.config/nix/nix.conf, so it is typed exactly once.
 nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
 
-python3 _dots/dots.py plan       # preview every link
-python3 _dots/dots.py apply      # deploy; from here on, plain `dots`
+python3 dots.py plan             # preview every link
+python3 dots.py apply            # deploy; from here on, plain `dots`
 
 # shell/ is sourced, not linked — wire it into ~/.bashrc by hand. Use the
 # snippet in shell/README.md, which warns instead of failing silently if the
@@ -181,6 +182,44 @@ own `docs/<pkg>.md`.
 Nix itself is the one bootstrap this repo does not manage, alongside the daemon
 settings in `/etc/nix/nix.conf` — [`docs/nix.md`](docs/nix.md) has both, per
 distro. `dots deps` reports what is missing.
+
+## The `dots` tool
+
+[`dots.py`](dots.py) is one standard-library Python file: the deployer, the
+validator, the repository gate, and the machine doctor, behind one CLI. The
+`dots` on `PATH` is [`config/scripts/dots`](config/scripts/dots), a wrapper
+that finds the repo and execs it, so every command works from any directory.
+
+```bash
+dots status          # every entry: does the target resolve into the repo?
+dots plan            # dry-run every entry (never mutates)
+dots apply           # create or repoint symlinks
+dots plan vim        # scope any of these to one package
+dots diff            # content differences for targets that drifted
+dots unlink          # remove symlinks that resolve into this repo
+dots validate        # dots.toml and the documentation rules (repo only)
+dots check           # the full gate CI runs: validate, linters, formatters, tests
+dots doctor          # health checks against this machine
+dots deps            # required/optional external command check
+dots packages        # package names dots.toml knows about
+dots tools           # installers under tools/
+dots install NAME    # run tools/install-NAME.sh
+```
+
+The line between `check` and `doctor` is what they may look at: `check` reads
+only the repository, so CI runs it on a bare checkout; `doctor` inspects the
+live machine — `$HOME`, shell wiring, deployed links, flake binaries shadowed
+on `PATH` — and runs `check` as one of its steps.
+
+Two behaviours are enforced rather than documented. A real file at a target is
+a conflict: `apply` reports it and moves on, never overwrites; a stale symlink
+is repointed, because a symlink carries no content to lose. An unknown package
+name is an error: filtering to a name that matches nothing would turn any
+command into a silent no-op, so it exits 2 instead.
+
+Tests live in [`tests/`](tests/README.md) and drive the real CLI against a
+fixture repo; `dots check` runs them, and `ruff` gates the Python from
+[`ruff.toml`](ruff.toml), the one config the editor reads too.
 
 ## Adding a package
 
