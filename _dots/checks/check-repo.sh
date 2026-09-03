@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Portable repository validation. Unlike `just doctor`, this does not inspect
+# Portable repository validation. Unlike `dots doctor`, this does not inspect
 # the caller's shell wiring or live dotfile targets, so it is safe to run in CI.
 # Requires python3 >= 3.11 (tomllib); flake.nix provides it.
 

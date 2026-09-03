@@ -79,7 +79,7 @@ afterward.
 
 ```bash
 nix profile add ~/.dots   # direnv and nix-direnv both come from flake.nix
-just apply direnv
+dots apply direnv
 ```
 
 Then, for gh multi-account use: `gh auth login` for each account (tokens go to

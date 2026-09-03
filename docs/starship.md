@@ -14,7 +14,7 @@ See the root [README](../README.md) for shared deployment mechanics.
 ## Activate
 
 ```bash
-just apply starship
+dots apply starship
 ```
 
 Nothing else. The binary comes from [`flake.nix`](../flake.nix) and

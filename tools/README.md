@@ -101,8 +101,8 @@ capability the system install has.
 ## Usage
 
 ```bash
-just tools               # list the installers
-just install npm-globals # run tools/install-npm-globals.sh
+dots tools               # list the installers
+dots install npm-globals # run tools/install-npm-globals.sh
 ```
 
 Or run any of them directly:

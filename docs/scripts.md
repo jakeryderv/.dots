@@ -7,7 +7,7 @@ See the root [README](../README.md) for shared deployment mechanics.
 ## Activate
 
 ```bash
-cd ~/.dots && just apply scripts
+cd ~/.dots && dots apply scripts
 ```
 
 The row is `tree` mode, which matters here. A single symlink at `~/.local/bin`

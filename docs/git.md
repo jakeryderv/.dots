@@ -9,7 +9,7 @@ See the root [README](../README.md) for shared deployment mechanics.
 | File | Role |
 |------|------|
 | `.gitconfig` | Shared Git behavior, aliases, and defaults. |
-| `.gitconfig.local.example` | Template for untracked identity, credentials, and machine-specific overrides. Not a manifest row, so never deployed. |
+| `.gitconfig.local.example` | Template for untracked identity, credentials, and machine-specific overrides. The `git` entry in `dots.toml` names `gitconfig` alone, so this is never deployed. |
 
 The tracked config includes `~/.gitconfig.local` last, so local scalar values
 can override shared defaults. A missing local file is allowed.
@@ -21,7 +21,7 @@ Create the local config before deploying on a new machine:
 ```bash
 cp ~/.dots/pkgs/git/gitconfig.local.example ~/.gitconfig.local
 nvim ~/.gitconfig.local
-just apply git
+dots apply git
 ```
 
 Because `~/.gitconfig` is a symlink into this repository, ordinary

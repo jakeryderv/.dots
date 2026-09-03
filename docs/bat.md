@@ -37,7 +37,7 @@ the theme as `carbonfox`. Re-check them if you ever regenerate the file.
 
 ```bash
 cd ~/.dots
-just apply bat
+dots apply bat
 bat cache --build        # required: compiles themes/ into ~/.cache/bat
 ```
 

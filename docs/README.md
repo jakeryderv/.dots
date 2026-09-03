@@ -2,11 +2,11 @@
 
 Per-package documentation, one file per package: `docs/<pkg>.md`.
 
-These live here rather than beside the config they describe because source
-directories under [`config/`](../pkgs/README.md), `home/`, `data/`, and `bin/`
-contain **only deployable content** — a `README.md` inside `pkgs/alacritty/`
-would be enumerated by `git ls-files` and deployed to
-`~/.config/alacritty/README.md`.
+These live here rather than beside the config they describe because package
+directories under [`pkgs/`](../pkgs/README.md) contain **only deployable
+content** — a `README.md` inside `pkgs/alacritty/` would be enumerated by
+`git ls-files` and deployed to `~/.config/alacritty/README.md`. `dots validate`
+refuses one.
 
 Keeping docs out of the source trees is what lets the deployer run with zero
 exclusion rules.

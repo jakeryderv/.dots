@@ -25,7 +25,7 @@ its default value commented out — with `herdr --default-config`.
 ## Activate
 
 ```bash
-just apply herdr
+dots apply herdr
 herdr server reload-config   # a running server re-reads config.toml
 ```
 
@@ -208,9 +208,9 @@ in-app toast instead, or `"off"` to leave state in the sidebar only.
 
 That command backs up `config.toml` and writes a fresh one. If it replaces the
 file rather than editing it in place, it will clobber the symlink and leave a
-real file at `~/.config/herdr/config.toml` — `just status herdr` then reports a
+real file at `~/.config/herdr/config.toml` — `dots status herdr` then reports a
 conflict. Adopt any wanted changes back into `pkgs/herdr/config.toml` and
-re-run `just apply herdr`.
+re-run `dots apply herdr`.
 
 ## Updates
 

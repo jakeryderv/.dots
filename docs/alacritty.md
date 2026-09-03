@@ -14,7 +14,7 @@ See the root [README](../README.md) for shared deployment mechanics.
 ## Activate
 
 ```bash
-just apply alacritty
+dots apply alacritty
 ```
 
 Alacritty live-reloads the config on save — no restart needed.

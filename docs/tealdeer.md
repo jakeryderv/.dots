@@ -29,7 +29,7 @@ sync with the four terminal configs, for no gain.
 ## Activate
 
 ```bash
-just apply tealdeer
+dots apply tealdeer
 ```
 
 Seed the page cache once after installing the binary:
@@ -39,7 +39,7 @@ tldr --update
 ```
 
 Subsequent refreshes are automatic (`auto_update = true`, every 720 hours). To
-remove the symlink: `cd ~/.dots && just unlink tealdeer`.
+remove the symlink: `cd ~/.dots && dots unlink tealdeer`.
 
 ## Verify
 

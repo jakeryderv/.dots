@@ -14,7 +14,7 @@ See the root [README](../README.md) for shared deployment mechanics.
 ## Activate
 
 ```bash
-just apply kitty
+dots apply kitty
 ```
 
 Reload a running instance with `ctrl+shift+f5`.

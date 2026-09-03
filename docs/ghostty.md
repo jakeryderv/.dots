@@ -22,7 +22,7 @@ Only `config.ghostty` is read directly by Ghostty; it pulls in the other two via
 ## Activate
 
 ```bash
-just apply ghostty
+dots apply ghostty
 ```
 
 Reload a running instance with the config-reload keybind (default

@@ -141,14 +141,15 @@ id -nG | tr ' ' '\n' | grep -x input
 ## Activate
 
 ```bash
-just install kanata      # binary → /usr/local/bin (see tools/README.md)
-just apply kanata        # link the config and the unit file
+# kanata itself comes from flake.nix (nix profile add ~/.dots); the unit
+# execs ~/.nix-profile/bin/kanata.
+dots apply kanata        # link the config and the unit file, each where it belongs
 # ...permissions, then log out and back in...
 systemctl --user daemon-reload
 systemctl --user enable --now kanata.service
 ```
 
-To remove the symlinks: `cd ~/.dots && just unlink kanata`. Disable the service
+To remove the symlinks: `cd ~/.dots && dots unlink kanata`. Disable the service
 first, or systemd keeps running the last-loaded unit until it is stopped.
 
 The service starts at login, not at boot, so caps and escape are unswapped at
@@ -157,10 +158,10 @@ changes that if it matters.
 
 ## Verify
 
-`just check` parses the config with `kanata --check` whenever kanata is
-installed, and `just doctor` reports whether the service is running and the
-`input` group took. Neither is escalated by `REQUIRE_LINTERS`, since CI runs on
-a machine with no reason to install kanata.
+`dots check` parses the config with `kanata --check` whenever kanata is
+installed, and `dots doctor` reports whether the service is running and the
+`input` group took. The config check is not escalated by `REQUIRE_LINTERS`,
+but CI pulls kanata from the flake's nixpkgs anyway, so it runs there too.
 
 By hand:
 

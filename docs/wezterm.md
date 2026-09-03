@@ -13,7 +13,7 @@ See the root [README](../README.md) for shared deployment mechanics.
 ## Activate
 
 ```bash
-just apply wezterm
+dots apply wezterm
 ```
 
 WezTerm live-reloads the config on save — no restart needed.

@@ -31,13 +31,13 @@ any more. Recommended sequence on a fresh machine:
 
 Split deliberately: Mason owns the language servers, which churn fastest and
 benefit from its auto-install; the flake owns everything else, which is stable
-and is also run by `just check`, so pinning it keeps the editor
+and is also run by `dots check`, so pinning it keeps the editor
 and CI on one version.
 
 | Tool | Owner | Notes |
 |------|-------|-------|
 | LSP servers: `lua_ls`, `bashls`, `pyright`, `html`, `cssls`, `emmet_language_server`, `vtsls` | Mason (`mason-lspconfig`) | auto-installed |
-| Formatters: `stylua`, `shfmt`, `prettierd` | [`flake.nix`](../flake.nix) | same binaries `just check` uses |
+| Formatters: `stylua`, `shfmt`, `prettierd` | [`flake.nix`](../flake.nix) | same binaries `dots check` uses |
 | Linters: `shellcheck`, `eslint_d` | [`flake.nix`](../flake.nix) | `.shellcheckrc` is read by both |
 | `tree-sitter` CLI | [`flake.nix`](../flake.nix) | builds every parser; was Mason's, but Mason's remit here is language servers |
 | **`ruff`** (Python format + lint) | [`flake.nix`](../flake.nix) | was a `uv tool` install; moved so all six formatters/linters share one owner |

@@ -18,7 +18,7 @@ runtime files can coexist without being written into this repository.
 ## Activate
 
 ```bash
-just apply vim
+dots apply vim
 ```
 
 This is a `tree` row, so `~/.vim/` stays a real directory holding one symlink

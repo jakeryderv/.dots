@@ -3,8 +3,8 @@
 Modular bash configuration. `_init_.sh` sources each module in a defined
 order; `~/.bashrc` just sources `_init_.sh`.
 
-**Sourced, not deployed.** This is the only part of the repo that `just apply`
-cannot install or repair — `~/.bashrc` lives outside the manifest, so the wiring
+**Sourced, not deployed.** This is the only part of the repo that `dots apply`
+cannot install or repair — `~/.bashrc` is not a `dots` package, so the wiring
 below is a manual step on each machine.
 
 ## Wiring
@@ -22,7 +22,7 @@ fi
 
 The `else` branch matters. With a bare `[ -f ]` test, moving or renaming this
 directory does not fail — the shell simply starts with no aliases, exports,
-functions, or keybinds, and says nothing about why. `just doctor` also checks
+functions, or keybinds, and says nothing about why. `dots doctor` also checks
 that `~/.bashrc` references this loader.
 
 ## Load order

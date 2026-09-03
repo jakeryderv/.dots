@@ -51,9 +51,6 @@
               # one apt copy of a flake tool left, besides fd-find (pop-launcher).
               git
               glow
-              # This repo's own task runner, so `just apply` works on a machine
-              # where the only bootstrap step was installing Nix. apt has 1.42.
-              just
               # Default build is compiled without `cmd` support, which is the
               # property the old installer went out of its way to preserve. Do not
               # swap this for kanata-with-cmd.
@@ -78,7 +75,7 @@
               # 10.33.0 under nvm. Same major keeps existing lockfiles predictable.
               pnpm_10
               yarn # 1.22.22, identical to what nvm had
-              # Formatters and linters nvim shells out to, and that `just check`
+              # Formatters and linters nvim shells out to, and that `dots check`
               # also runs. Previously split across apt and mason for no reason --
               # shfmt and shellcheck were installed by both.
               eslint_d

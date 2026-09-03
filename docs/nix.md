@@ -3,15 +3,15 @@
 [`flake.nix`](../flake.nix) + [`flake.lock`](../flake.lock) — the **software**
 half of this repo.
 
-The [`manifest`](../dots.toml) declares where config goes. The flake declares
+[`dots.toml`](../dots.toml) declares where config goes. The flake declares
 what binaries exist. Both are pinned in git, both are applied by one command,
 and neither infers anything:
 
 | | Config | Software |
 | --- | --- | --- |
-| Declared in | [`manifest`](../dots.toml) | [`flake.nix`](../flake.nix) |
+| Declared in | [`dots.toml`](../dots.toml) | [`flake.nix`](../flake.nix) |
 | Pinned by | git | [`flake.lock`](../flake.lock) |
-| Applied by | `just apply` | `nix profile add ~/.dots` |
+| Applied by | `dots apply` | `nix profile add ~/.dots` |
 | Lands in | `~/.config`, `~`, `~/.local` | `~/.nix-profile/bin` |
 
 The flake builds the same list for `x86_64-linux` and `aarch64-linux`. Only
@@ -22,22 +22,22 @@ missing binary cache entry at worst, not on a missing attribute at
 This replaced eight per-tool installers in [`tools/`](../tools/README.md), which
 fetched releases at HEAD and so could not reproduce a version on a second
 machine. Committing `flake.lock` is what makes them reproducible, the same way
-committing the manifest makes the symlinks reproducible.
+committing `dots.toml` makes the symlinks reproducible.
 
-**Never deployed.** `flake.nix` is a root-level file, not a manifest source, so
-`just apply` does not touch it. `nix profile` owns the install.
+**Never deployed.** `flake.nix` is a root-level file, not a package, so
+`dots apply` does not touch it. `nix profile` owns the install.
 
 ## Prerequisites
 
-Nix itself is **not** managed by this repo — it is the one bootstrap step, like
-`just`. This host runs the multi-user daemon install (`nix-daemon.service`,
+Nix itself is **not** managed by this repo — it is the one bootstrap step.
+This host runs the multi-user daemon install (`nix-daemon.service`,
 `/nix/var/nix/profiles/default`).
 
 Nix reads two config files in layers: `/etc/nix/nix.conf`, then
 `~/.config/nix/nix.conf` on top of it. They have different owners, and that
 split decides what this repo can manage.
 
-**`~/.config/nix/nix.conf` is a manifest package** — the `nix` row deploys
+**`~/.config/nix/nix.conf` is a package** — the `nix` table in `dots.toml` deploys
 [`pkgs/nix/nix.conf`](../pkgs/nix/nix.conf), which holds the flakes opt-in:
 
 ```
@@ -61,12 +61,12 @@ beside installing Nix, not deployed:
 
 Then `nix store optimise` once, to hardlink what the store already holds.
 
-**Bootstrap order.** `just` comes from the flake, but `just apply` is what
-deploys the conf, so the very first command carries the opt-in inline:
+**Bootstrap order.** `dots` runs on the flake's python3, and `dots apply` is
+what deploys the conf, so the very first command carries the opt-in inline:
 
 ```bash
 nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
-just apply
+python3 _dots/dots.py apply      # from here on, plain `dots`
 ```
 
 Every command after that is plain.
@@ -98,14 +98,14 @@ the reason it is pinned that way, inline. Broadly:
   `ripgrep`, `tealdeer`
 - **Editor** — `neovim`, plus the formatters and linters it shells out to
   (`stylua`, `shfmt`, `shellcheck`, `prettierd`, `eslint_d`)
-- **Shell environment** — `git`, `gh`, `tmux`, `just`, `starship`, `direnv`
+- **Shell environment** — `git`, `gh`, `tmux`, `starship`, `direnv`
   (with `nix-direnv`, so host and plugin share one owner)
 - **Node** — `nodejs`, `pnpm_10`, `yarn`, replacing nvm
 - **Toolchain managers** — `uv`, `rustup`, `go`, `bun`; what each of them
   manages stays outside the store, see [below](#machine-versions-vs-project-versions)
 - **Python** — `ruff`, beside uv
 - **Other** — `kanata` (the systemd unit execs `~/.nix-profile/bin/kanata`),
-  `qmk`, `nix-direnv`
+  `qmk`, `nix-direnv`, and `python3`, which `dots` itself runs on
 
 ## Machine versions vs project versions
 
@@ -183,8 +183,8 @@ the only survivor -- was in nixpkgs, so it moved here. `uv tool list` is now
 empty. uv keeps the project layer it is good at, and this table lost a row.
 
 The narrower version of it — a flake binary that another `PATH` entry provides
-first — is automated. `just doctor` reports it, because that one is invisible
-otherwise: the package installs, `nix profile list` and `just deps` both look
+first — is automated. `dots doctor` reports it, because that one is invisible
+otherwise: the package installs, `nix profile list` and `dots deps` both look
 healthy, and the shell keeps running the other copy.
 
 ## Packaging something nixpkgs does not have

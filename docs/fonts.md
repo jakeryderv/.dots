@@ -20,7 +20,7 @@ Every config in this repo that sets a font uses `0xProto Nerd Font Mono`.
 ## Activate
 
 ```bash
-just apply fonts
+dots apply fonts
 fc-cache -f ~/.local/share/fonts     # refresh the font cache
 fc-match '0xProto Nerd Font Mono'    # confirm it resolves
 ```

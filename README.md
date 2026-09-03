@@ -1,38 +1,53 @@
 # dotfiles
 
-My personal dotfiles for Pop!_OS / bash, deployed from a declarative
-[`manifest`](dots.toml) by [`_dots/bin/link.sh`](_dots/dots.py) and driven
-through [`just`](https://github.com/casey/just).
+My personal dotfiles for Pop!_OS / bash. Configuration is deployed as symlinks
+from a declarative [`dots.toml`](dots.toml) by [`dots`](_dots/dots.py); the
+software that configuration describes is declared in [`flake.nix`](flake.nix)
+and installed by Nix.
 
 ```bash
-just status          # what is deployed, and does it match the manifest
-just plan            # preview link changes (never mutates)
-just apply           # create or repoint symlinks
-just check           # the repository gate CI runs
+dots status          # what is deployed, and does it match dots.toml
+dots plan            # preview link changes (never mutates)
+dots apply           # create or repoint symlinks
+dots check           # the repository gate CI runs
+dots doctor          # health checks against this machine
 ```
 
 ## How it works
 
-The [`manifest`](dots.toml) is the single source of truth. Each row declares a
-package, a link mode, a repo-relative source, and a target:
+[`dots.toml`](dots.toml) is the single source of truth for what deploys where.
+One table per package, each declaring a mode and a target:
 
+```toml
+[packages.nvim]
+mode = "link"
+target = "~/.config/nvim"
+
+[packages.claude]
+mode = "tree"
+target = "~/.claude"
+
+[packages.kanata]                 # one package, two places
+mode = "link"
+links = [
+  { source = "kanata.kbd",     target = "~/.config/kanata/kanata.kbd" },
+  { source = "kanata.service", target = "~/.config/systemd/user/kanata.service" },
+]
 ```
-PKG          MODE   SOURCE                TARGET
-nvim         link   pkgs/nvim           $XDG_CONFIG_HOME/nvim
-scripts      tree   bin                   $HOME/.local/bin
-claude       tree   pkgs/claude           $HOME/.claude
-```
+
+The source is `pkgs/<name>/` unless the table says otherwise.
 
 **`link`** places one symlink at the target, so new files inside the source
 appear automatically. Use it when the directory is exclusively ours.
 
 **`tree`** creates real directories and links each tracked file individually.
 Use it when the tool writes state into the same directory it reads config from
-(`~/.config/herdr` also holds sockets and `session-history.json`), or when the target is shared
-with other installers (most of `~/.local/bin` belongs to other tools).
+(`~/.config/herdr` also holds sockets and `session-history.json`), or when the
+target is shared with other installers (most of `~/.local/bin` belongs to other
+tools).
 
-Nothing is inferred. Both the package name and the link shape are declared,
-because both were previously inferred and both were wrong.
+Nothing is inferred. The mode is declared, and the package name is the table
+key, because both were once derived from paths and both were wrong.
 
 ### Files are enumerated with `git ls-files`
 
@@ -40,23 +55,23 @@ This is the load-bearing decision. `.gitignore` is the repo's **only** ignore
 list: an untracked file is never deployed, and there is no second ignore syntax
 to keep in sync.
 
-The consequence is a rule that applies to every source directory:
+The consequence is a rule that applies to every package directory:
 
-> **A source directory contains only deployable content.**
+> **A package directory contains only deployable content.**
 
 Documentation therefore lives in [`docs/`](docs/README.md) as `docs/<pkg>.md`,
-never inside a source. A `README.md` in `pkgs/nvim/` would deploy to
-`~/.config/nvim/README.md`.
+never inside a package. A `README.md` in `pkgs/nvim/` would deploy to
+`~/.config/nvim/README.md`, and `dots validate` refuses one.
 
 ### Config is linked; software comes from a flake
 
-The manifest only ever moves configuration. The binaries that configuration
-describes are declared in [`flake.nix`](flake.nix) and pinned by a committed
+`dots` only ever moves configuration. The binaries that configuration describes
+are declared in [`flake.nix`](flake.nix) and pinned by a committed
 `flake.lock` — same idea, other half of the machine:
 
 ```bash
 nix profile add ~/.dots      # install the toolchain
-just apply                   # link the config
+dots apply                   # link the config
 ```
 
 Neither one is optional on a fresh machine, and neither infers anything. What
@@ -65,32 +80,23 @@ recorded. See [`docs/nix.md`](docs/nix.md).
 
 ## Layout
 
-| Directory | Deploys to | Contents |
-| --- | --- | --- |
-| [`config/`](pkgs/README.md) | `$XDG_CONFIG_HOME` (`~/.config`) | Tools that respect XDG |
-| [`home/`](pkgs/README.md) | `$HOME` | Tools that don't — stored undotted (`pkgs/git/gitconfig` → `~/.gitconfig`) |
-| [`data/`](pkgs/README.md) | `$XDG_DATA_HOME` (`~/.local/share`) | Fonts |
-| `bin/` | `~/.local/bin` | Personal scripts (a manifest source, so no README inside — see [`docs/scripts.md`](docs/scripts.md)) |
-| [`docs/`](docs/README.md) | — | One file per package |
-
-The size of `home/` measures how much of the toolchain still ignores XDG. It
-should shrink, not grow.
-
-The rest is repo infrastructure. None of it is named in the manifest, which is
-what makes it undeployable — the `_` prefix is a readability convention, not a
-mechanism:
-
-| Dir | Purpose |
+| Path | Purpose |
 | --- | --- |
-| [`shell`](shell/README.md) | Modular bash config, *sourced* not linked |
-| [`_dots`](_dots/README.md) | The deployer, the repo gate, health checks, and tests |
-| [`tools`](tools/README.md) | Install/update scripts for third-party software (`just tools`) |
-| [`_wallpapers`](_wallpapers/README.md) | Wallpaper / terminal background images |
+| [`dots.toml`](dots.toml) | What deploys where |
+| [`pkgs/`](pkgs/README.md) | One directory per package, deployable content only |
+| [`docs/`](docs/README.md) | One file per package |
+| [`flake.nix`](flake.nix) | The toolchain, pinned by `flake.lock` |
+| [`shell/`](shell/README.md) | Modular bash config, *sourced* from `~/.bashrc`, not linked |
+| [`_dots/`](_dots/README.md) | The `dots` tool, the repo gate, and tests |
+| [`tools/`](tools/README.md) | Installers for what nixpkgs cannot supply (`dots tools`) |
+| [`_wallpapers/`](_wallpapers/README.md) | Wallpaper / terminal background images |
+
+Only `pkgs/` is ever deployed, and only the parts `dots.toml` names. The `_`
+prefix on the rest is a readability convention, not a mechanism.
 
 ## Packages
 
-20 packages across 22 manifest rows. `just packages` lists them; each is
-documented in [`docs/`](docs/README.md).
+`dots packages` lists them; each is documented in [`docs/`](docs/README.md).
 
 **Terminals** — [ghostty](docs/ghostty.md) (daily driver),
 [alacritty](docs/alacritty.md), [kitty](docs/kitty.md),
@@ -116,22 +122,23 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
   4-space default, 2 for lua/web/markdown, tabs for Makefiles. Neovim reads it
   natively, and so do the formatters conform runs (`stylua`, `prettierd`,
   `shfmt`), so the editor and the formatters can't drift apart. It is a
-  root-level file, not a manifest source, so it is never deployed. The
+  root-level file, not a package, so it is never deployed. The
   [`editorconfig`](docs/editorconfig.md) package deploys the same rules to
   `~/.editorconfig` as a fallback for projects that ship no config of their own.
 - **[`.shellcheckrc`](.shellcheckrc) configures ShellCheck once**, for both the
   editor (via bash-language-server) and CI (`_dots/checks/check-repo.sh`), so
   diagnostics match what the gate enforces.
-- **Bash formatting is enforced in CI** — `check-repo.sh` runs `shfmt --diff`
-  with no flags, so it reads the same `.editorconfig` as format-on-save. If it
-  fails, `shfmt -w <file>` fixes it. Bulk reformats belong in their own commit,
-  listed in [`.git-blame-ignore-revs`](.git-blame-ignore-revs).
-- **CI runs the flake's binaries.** The workflow pulls `shfmt`, `shellcheck`,
-  `stylua`, and `kanata` from the nixpkgs revision `flake.lock` pins, via
-  `nix shell --inputs-from .`, so the gate cannot drift from the editor.
+- **Formatting is enforced in CI, per language, with no flags.** `shfmt` for
+  bash, `stylua` for Lua, `ruff` for Python; each reads the same config the
+  editor's format-on-save reads, so the two cannot disagree. Bulk reformats
+  belong in their own commit, listed in
+  [`.git-blame-ignore-revs`](.git-blame-ignore-revs).
+- **CI runs the flake's binaries.** The workflow pulls every gate tool from the
+  nixpkgs revision `flake.lock` pins, via `nix shell --inputs-from .`, so the
+  gate cannot drift from the editor.
 - **Every package is documented** in `docs/<pkg>.md`, covering what it is, where
   it deploys, how to activate it, and any external dependencies.
-  `_dots/checks/verify-readmes.sh` enforces this against the manifest.
+  `dots validate` enforces this against `dots.toml`.
 
 ## Setup on a new machine
 
@@ -149,22 +156,22 @@ fallback for a machine without the flake, not the mechanism.
 git clone <repo> ~/.dots
 cd ~/.dots
 
-# The toolchain first — `just` itself comes from the flake, so this is the only
-# ordering that works. The flag is the flakes opt-in; `just apply` then deploys
-# the same setting to ~/.config/nix/nix.conf, so it is typed exactly once.
+# The toolchain first: python3, which `dots` runs on, comes from the flake.
+# The flag is the flakes opt-in; `dots apply` then deploys the same setting
+# to ~/.config/nix/nix.conf, so it is typed exactly once.
 nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
 
-just plan            # preview every link
-just apply           # deploy
+python3 _dots/dots.py plan       # preview every link
+python3 _dots/dots.py apply      # deploy; from here on, plain `dots`
 
 # shell/ is sourced, not linked — wire it into ~/.bashrc by hand. Use the
 # snippet in shell/README.md, which warns instead of failing silently if the
-# loader ever goes missing. This is the one step `just apply` cannot do.
+# loader ever goes missing. This is the one step `dots apply` cannot do.
 cp shell/local.sh.example shell/local.sh   # then edit for this machine
 cp pkgs/git/gitconfig.local.example ~/.gitconfig.local
 ```
 
-`just apply` refuses to overwrite an existing real file, reporting it as a
+`dots apply` refuses to overwrite an existing real file, reporting it as a
 conflict rather than clobbering it. Back it up and remove it, then re-run.
 
 Packages needing activation beyond linking (starship enablement, `fc-cache` for
@@ -173,22 +180,24 @@ own `docs/<pkg>.md`.
 
 Nix itself is the one bootstrap this repo does not manage, alongside the daemon
 settings in `/etc/nix/nix.conf` — [`docs/nix.md`](docs/nix.md) has both, per
-distro. `just deps` reports what is missing.
+distro. `dots deps` reports what is missing.
 
 ## Adding a package
 
-1. Create the source directory under `config/`, `home/`, `data/`, or `bin/`,
-   containing **only** deployable content.
-2. Add a manifest row, choosing `link` or `tree` (see the manifest header).
-3. Write `docs/<pkg>.md`.
-4. `just plan <pkg>` to preview, then `just apply <pkg>`.
-5. `just check` to confirm the gate stays green.
+1. `mkdir pkgs/<name>/` and put the files in it — **only** deployable content.
+2. Add `[packages.<name>]` to [`dots.toml`](dots.toml), choosing `link` or
+   `tree` (see the header there).
+3. Write `docs/<name>.md`.
+4. `dots plan <name>` to preview, then `dots apply <name>`.
+5. `dots check` to confirm the gate stays green.
 
 ## History
 
-This repo used GNU Stow until August 2026. Most of the design here — the
-explicit manifest, `git ls-files` enumeration, nothing inferred — is a reaction
-to a specific failure of Stow's implicit behaviour.
+This repo used GNU Stow until August 2026, then a bash deployer driven by a
+whitespace-column manifest, then the Python `dots` and `dots.toml` in September.
+Most of the design — explicit modes, `git ls-files` enumeration, nothing
+inferred — is a reaction to a specific failure of Stow's implicit behaviour,
+and survived both rewrites.
 
 ## Implement next/later
 

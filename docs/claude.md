@@ -1,6 +1,6 @@
 # claude
 
-Claude Code global configuration, managed as a the manifest deployer package. Tracks the
+Claude Code global configuration, managed as a `dots` package. Tracks the
 user-authored config files under `~/.claude/`; everything else there is
 tool-managed state (sessions, history, plugin cache, credentials) and stays
 untracked, with `.gitignore` guards in the repo root as a safety net.

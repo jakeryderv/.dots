@@ -47,7 +47,7 @@ spaces are a hard line break.
 
 ```bash
 cd ~/.dots
-just apply editorconfig
+dots apply editorconfig
 ```
 
 ## Caveats

@@ -20,7 +20,7 @@ A reference for planning, tracking, organizing, developing, operating, and autom
 - `LICENSE`
 - Lockfile and pinned toolchain
 - `justfile` exposing `setup`, `test`, `check`
-- CI that runs `just check`
+- CI that runs `dots check`
 - `tests/`
 
 **Add when the trigger appears:**
@@ -191,7 +191,7 @@ Expose one project interface via `just` (or `make`):
 just setup
 just dev
 just test
-just check
+dots check
 just build
 just run
 just release
