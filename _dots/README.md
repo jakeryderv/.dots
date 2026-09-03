@@ -3,7 +3,7 @@
 Repo-local tooling for managing this dotfiles repository.
 
 **Not a manifest package.** This directory is underscore-prefixed by convention
-and, more to the point, is not named in the [`manifest`](../manifest) — so
+and, more to the point, is not named in the [`manifest`](../dots.toml) — so
 nothing here is ever deployed.
 
 ## Contents
@@ -25,7 +25,7 @@ The line between `checks/` and `bin/doctor.sh` is what they are allowed to look
 at: `checks/` reads only the repo, so CI can run it on a bare checkout, while
 `doctor.sh` inspects the live machine — `$HOME`, shell wiring, deployed links.
 
-The user-facing entrypoint is the repo-root [`justfile`](../justfile). The
+The user-facing entrypoint is the repo-root [`justfile`](../_dots/dots.py). The
 `dots` command in [`pkgs/scripts/`](../pkgs/scripts) is a thin wrapper that points `just` back at
 it, so the commands below work from any directory.
 

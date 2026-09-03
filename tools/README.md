@@ -8,7 +8,7 @@ declares it in one place and pins it with a committed `flake.lock`. What is left
 here is what nixpkgs cannot supply, plus the GUI apps where a Nix build would
 be a downgrade. See [Why these stay scripts](#why-these-stay-scripts).
 
-**Never deployed.** This directory is not named in the [`manifest`](../manifest),
+**Never deployed.** This directory is not named in the [`manifest`](../dots.toml),
 which is the only thing that makes anything deployable.
 
 Everything here provisions software on the machine. The repo's own validation

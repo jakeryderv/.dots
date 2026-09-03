@@ -1,0 +1,8 @@
+# Gates _dots/dots.py and its tests, in the editor (conform runs ruff) and in
+# check-repo.sh. Line length matches the prose width the repo already uses in
+# shell scripts; the target is the oldest Python the tooling must run on.
+line-length = 120
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]

@@ -1,7 +1,7 @@
 # pkgs/
 
 One directory per package. Where each one deploys is stated in the repo-root
-[`manifest`](../manifest), never inferred from the path: `pkgs/nvim` goes to
+[`manifest`](../dots.toml), never inferred from the path: `pkgs/nvim` goes to
 `~/.config/nvim` and `pkgs/git/gitconfig` to `~/.gitconfig` because the
 manifest says so.
 

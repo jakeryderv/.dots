@@ -1,0 +1,122 @@
+# dots.toml -- what deploys where. Read by _dots/dots.py; see pkgs/README.md.
+#
+# [packages.<name>]
+#   mode   = "link" | "tree"   required, never inferred
+#   target = "~/..."           where the package lands
+#   source = "pkgs/<name>"     the default; may also name a single file
+#   links  = [{ source = "<path under pkgs/<name>>", target = "~/..." }, ...]
+#            instead of target, when one package fans out to several places
+#
+# link  One symlink at target pointing at source. New files inside source show
+#       up automatically. For directories that are exclusively ours.
+# tree  Real directories at target, one symlink per tracked file. For targets
+#       the tool writes state into, or that other installers also use.
+#
+# Files are enumerated with `git ls-files`: an untracked file is never
+# deployed, and .gitignore is the only ignore list. Targets may use ~ and the
+# $XDG_CONFIG_HOME / $XDG_DATA_HOME variables.
+
+# --- ~/.config, directories that are exclusively ours ------------------------
+
+[packages.alacritty]
+mode = "link"
+target = "~/.config/alacritty"
+
+[packages.nvim]
+mode = "link"
+target = "~/.config/nvim"
+
+[packages.ghostty]
+mode = "link"
+target = "~/.config/ghostty"
+
+[packages.bat]
+mode = "link"
+target = "~/.config/bat"
+
+[packages.kitty]
+mode = "link"
+target = "~/.config/kitty"
+
+[packages.wezterm]
+mode = "link"
+target = "~/.config/wezterm"
+
+[packages.direnv]
+mode = "link"
+target = "~/.config/direnv"
+
+[packages.tealdeer]
+mode = "link"
+target = "~/.config/tealdeer"
+
+[packages.starship]
+mode = "link"
+source = "pkgs/starship/starship.toml"
+target = "~/.config/starship.toml"
+
+# kanata's config and its systemd unit land in two places, and
+# ~/.config/systemd/user is systemd's tree, so each file is linked on its own.
+[packages.kanata]
+mode = "link"
+links = [
+  { source = "kanata.kbd", target = "~/.config/kanata/kanata.kbd" },
+  { source = "kanata.service", target = "~/.config/systemd/user/kanata.service" },
+]
+
+# --- ~/.config, the tool writes into its own directory -----------------------
+
+# herdr keeps sockets, logs and session-history.json beside config.toml.
+[packages.herdr]
+mode = "tree"
+target = "~/.config/herdr"
+
+# nix writes registry.json beside nix.conf.
+[packages.nix]
+mode = "tree"
+target = "~/.config/nix"
+
+# --- shared targets, other installers write here too -------------------------
+
+[packages.fonts]
+mode = "tree"
+target = "~/.local/share/fonts"
+
+[packages.scripts]
+mode = "tree"
+target = "~/.local/bin"
+
+# --- $HOME, tools that ignore XDG --------------------------------------------
+
+[packages.git]
+mode = "link"
+source = "pkgs/git/gitconfig"
+target = "~/.gitconfig"
+
+[packages.tmux]
+mode = "link"
+source = "pkgs/tmux/tmux.conf"
+target = "~/.tmux.conf"
+
+[packages.editorconfig]
+mode = "link"
+source = "pkgs/editorconfig/editorconfig"
+target = "~/.editorconfig"
+
+[packages.vim]
+mode = "tree"
+target = "~/.vim"
+
+[packages.claude]
+mode = "tree"
+target = "~/.claude"
+
+# Skills shared by every coding agent. ~/.agents/skills is also written by
+# skill installers, so the skill is linked, not the directory. Claude Code reads
+# ~/.claude/skills; the second link mirrors the installer's own per-skill links.
+[packages.agent-skills]
+mode = "link"
+links = [
+  { source = "project-practices", target = "~/.agents/skills/project-practices" },
+  { source = "project-practices", target = "~/.claude/skills/project-practices" },
+]

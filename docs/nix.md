@@ -3,13 +3,13 @@
 [`flake.nix`](../flake.nix) + [`flake.lock`](../flake.lock) — the **software**
 half of this repo.
 
-The [`manifest`](../manifest) declares where config goes. The flake declares
+The [`manifest`](../dots.toml) declares where config goes. The flake declares
 what binaries exist. Both are pinned in git, both are applied by one command,
 and neither infers anything:
 
 | | Config | Software |
 | --- | --- | --- |
-| Declared in | [`manifest`](../manifest) | [`flake.nix`](../flake.nix) |
+| Declared in | [`manifest`](../dots.toml) | [`flake.nix`](../flake.nix) |
 | Pinned by | git | [`flake.lock`](../flake.lock) |
 | Applied by | `just apply` | `nix profile add ~/.dots` |
 | Lands in | `~/.config`, `~`, `~/.local` | `~/.nix-profile/bin` |

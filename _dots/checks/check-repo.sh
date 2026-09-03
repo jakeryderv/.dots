@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Portable repository validation. Unlike `just doctor`, this does not inspect
 # the caller's shell wiring or live dotfile targets, so it is safe to run in CI.
-# Requires python3 >= 3.11 (tomllib) for the config-parsing step.
+# Requires python3 >= 3.11 (tomllib); flake.nix provides it.
 
 set -euo pipefail
 
@@ -9,42 +9,10 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 # The manifest drives deployment, so a typo in it is a silent no-op at apply
-# time: a SOURCE that does not exist simply contributes zero files. Validate it
-# here, where the failure is loud and does not require a deployed machine.
-echo 'Validating manifest...'
-manifest_errors=0
-while read -r pkg mode src dst _; do
-    [[ -z "$pkg" || "$pkg" == \#* ]] && continue
-    case "$mode" in
-    link | tree) ;;
-    *)
-        echo "error: unknown mode '$mode' for package '$pkg'" >&2
-        manifest_errors=1
-        ;;
-    esac
-    if [[ ! -e "$src" ]]; then
-        echo "error: manifest source does not exist: $src (package '$pkg')" >&2
-        manifest_errors=1
-    elif [[ -z "$(git ls-files -- "$src")" ]]; then
-        echo "error: manifest source has no tracked files: $src (package '$pkg')" >&2
-        manifest_errors=1
-    fi
-    # These are literal manifest prefixes, not shell variables.
-    # shellcheck disable=SC2016
-    case "$dst" in
-    '$HOME'/* | '$XDG_CONFIG_HOME'/* | '$XDG_DATA_HOME'/*) ;;
-    *)
-        echo "error: target must start with \$HOME, \$XDG_CONFIG_HOME, or \$XDG_DATA_HOME: $dst" >&2
-        manifest_errors=1
-        ;;
-    esac
-done <manifest
-if ((manifest_errors)); then
-    exit 1
-fi
-
-echo 'Checking package documentation...'
-bash _dots/checks/verify-readmes.sh >/dev/null
+# time. dots validate checks it -- and the documentation rules -- here, where
+# the failure is loud and needs no deployed machine.
+echo 'Validating manifest and documentation rules...'
+python3 _dots/dots.py validate >/dev/null
 
 # Relative links between docs rot silently when files move -- the stow-to-
 # manifest migration broke 29 of them in one commit. Nothing renders this repo's
@@ -75,9 +43,7 @@ BASH_PATHS=(
     shell
     tools
     pkgs
-    _dots/bin
     _dots/checks
-    _dots/tests
 )
 
 LUA_PATHS=(
@@ -204,7 +170,21 @@ else
     echo 'Skipping kanata config check (kanata not installed).'
 fi
 
-echo 'Running behavior tests...'
-bash _dots/tests/run.sh
+# The deployer and its tests are Python. ruff gates them the way shfmt and
+# stylua gate the other languages: no flags, so ruff.toml is the one config
+# the editor's format-on-save also reads.
+if command -v ruff >/dev/null 2>&1; then
+    echo 'Checking Python lint and formatting...'
+    ruff check --quiet _dots
+    ruff format --check --quiet _dots
+elif [[ "${REQUIRE_LINTERS:-0}" == 1 ]]; then
+    echo 'error: ruff is required but unavailable' >&2
+    exit 1
+else
+    echo 'Skipping Python checks (ruff not installed).'
+fi
+
+echo 'Running deployer tests...'
+python3 -m unittest discover --quiet -s _dots/tests
 
 echo 'Repository checks passed.'

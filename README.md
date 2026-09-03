@@ -1,7 +1,7 @@
 # dotfiles
 
 My personal dotfiles for Pop!_OS / bash, deployed from a declarative
-[`manifest`](manifest) by [`_dots/bin/link.sh`](_dots/bin/link.sh) and driven
+[`manifest`](dots.toml) by [`_dots/bin/link.sh`](_dots/dots.py) and driven
 through [`just`](https://github.com/casey/just).
 
 ```bash
@@ -13,7 +13,7 @@ just check           # the repository gate CI runs
 
 ## How it works
 
-The [`manifest`](manifest) is the single source of truth. Each row declares a
+The [`manifest`](dots.toml) is the single source of truth. Each row declares a
 package, a link mode, a repo-relative source, and a target:
 
 ```

@@ -14,7 +14,7 @@ jobs:
       - uses: cachix/install-nix-action@v31
       # The gate's tools come from the same nixpkgs revision flake.lock pins,
       # not from apt: --inputs-from resolves `nixpkgs#` to the locked input, so
-      # shfmt, shellcheck, stylua and kanata here are byte-identical to the
+      # shfmt, shellcheck, stylua, ruff, python3 and kanata here are identical to the
       # ones the editor and `just check` run locally. Only the gate's tools are
       # pulled, not the whole profile -- neovim, nodejs and qmk would add
       # minutes of download for nothing. lua5_4 is CI-only: `luac -p` needs it,
@@ -24,5 +24,5 @@ jobs:
           REQUIRE_LINTERS: "1"
         run: >
           nix shell --inputs-from .
-          nixpkgs#shellcheck nixpkgs#shfmt nixpkgs#stylua nixpkgs#lua5_4 nixpkgs#kanata
+          nixpkgs#shellcheck nixpkgs#shfmt nixpkgs#stylua nixpkgs#ruff nixpkgs#python3 nixpkgs#lua5_4 nixpkgs#kanata
           -c bash _dots/checks/check-repo.sh
