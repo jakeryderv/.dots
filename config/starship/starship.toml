@@ -1,5 +1,9 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# Two lines. Line one is every piece of information: where, git, the active
+# environment, and -- right-aligned by $fill -- what just happened and which
+# shell this is. Line two is the prompt symbol alone, so the input never
+# shares its line with anything.
 format = """
 $username\
 $hostname\
@@ -7,11 +11,17 @@ $directory\
 $git_branch\
 $git_state\
 $git_status\
-$cmd_duration\
-$line_break\
-$shell\
 $python\
+$nix_shell\
+$fill\
+$status\
+$cmd_duration\
+$shell\
+$line_break\
 $character"""
+
+[fill]
+symbol = " "
 
 [directory]
 style = "blue"
@@ -23,7 +33,25 @@ style = "blue"
 disabled = false
 bash_indicator = "bash"
 zsh_indicator = "zsh"
-format = "[$indicator]($style) "
+format = "[$indicator]($style)"
+style = "bright-black"
+
+# The exit code of the last command, only when non-zero. The red ❯ already
+# says something failed; this says what, which matters for 130 vs 1 vs 127.
+[status]
+disabled = false
+format = "[$status]($style) "
+style = "red"
+
+# Inside a `nix develop` or a nix-direnv `use flake` project, IN_NIX_SHELL is
+# set and this shows it -- the toolchain in front of you is the project's, not
+# the profile's, which is worth knowing at a glance.
+[nix_shell]
+format = "[$symbol$state]($style) "
+symbol = "❄ "
+impure_msg = "nix"
+pure_msg = "nix"
+unknown_msg = "nix"
 style = "bright-black"
 
 [character]
@@ -53,6 +81,8 @@ style = "bright-black"
 [cmd_duration]
 format = "[$duration]($style) "
 style = "yellow"
+# The default threshold; short commands do not earn a number.
+min_time = 2000
 
 [python]
 format = "[$virtualenv]($style) "
