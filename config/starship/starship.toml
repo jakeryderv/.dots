@@ -9,11 +9,22 @@ $git_state\
 $git_status\
 $cmd_duration\
 $line_break\
+$shell\
 $python\
 $character"""
 
 [directory]
 style = "blue"
+
+# Which shell this prompt belongs to, while zsh is under evaluation beside
+# bash (docs/zsh.md). Off by default in starship; delete this table once one
+# shell has won and the reminder is noise.
+[shell]
+disabled = false
+bash_indicator = "bash"
+zsh_indicator = "zsh"
+format = "[$indicator]($style) "
+style = "bright-black"
 
 [character]
 success_symbol = "[❯](purple)"
