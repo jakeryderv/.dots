@@ -23,8 +23,13 @@ $character"""
 [fill]
 symbol = " "
 
+# Colours are ANSI names, so the terminal theme (carbonfox in all four) sets
+# the real values, and each kind of information gets its own: where is blue,
+# git is purple with pink for dirty, environments are green (venv) and cyan
+# (nix), outcomes are red (exit code) and yellow (duration), and the shell
+# name stays dim grey because it is metadata, not information.
 [directory]
-style = "blue"
+style = "bold blue"
 
 # Which shell this prompt belongs to, while zsh is under evaluation beside
 # bash (docs/zsh.md). Off by default in starship; delete this table once one
@@ -41,7 +46,7 @@ style = "bright-black"
 [status]
 disabled = false
 format = "[$status]($style) "
-style = "red"
+style = "bold red"
 
 # Inside a `nix develop` or a nix-direnv `use flake` project, IN_NIX_SHELL is
 # set and this shows it -- the toolchain in front of you is the project's, not
@@ -52,7 +57,7 @@ symbol = "❄ "
 impure_msg = "nix"
 pure_msg = "nix"
 unknown_msg = "nix"
-style = "bright-black"
+style = "cyan"
 
 [character]
 success_symbol = "[❯](purple)"
@@ -60,8 +65,9 @@ error_symbol = "[❯](red)"
 vimcmd_symbol = "[❮](green)"
 
 [git_branch]
-format = "[$branch]($style)"
-style = "bright-black"
+format = "[$symbol$branch]($style)"
+symbol = " "
+style = "purple"
 
 [git_status]
 format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](#ff7eb6) ($ahead_behind$stashed)]($style)"
@@ -85,7 +91,8 @@ style = "yellow"
 min_time = 2000
 
 [python]
-format = "[$virtualenv]($style) "
-style = "bright-black"
+format = "[$symbol$virtualenv]($style) "
+symbol = " "
+style = "green"
 detect_extensions = []
 detect_files = []
