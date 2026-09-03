@@ -209,7 +209,7 @@ in-app toast instead, or `"off"` to leave state in the sidebar only.
 That command backs up `config.toml` and writes a fresh one. If it replaces the
 file rather than editing it in place, it will clobber the symlink and leave a
 real file at `~/.config/herdr/config.toml` — `dots status herdr` then reports a
-conflict. Adopt any wanted changes back into `pkgs/herdr/config.toml` and
+conflict. Adopt any wanted changes back into `config/herdr/config.toml` and
 re-run `dots apply herdr`.
 
 ## Updates

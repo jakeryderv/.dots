@@ -113,7 +113,7 @@ def load_manifest(root: Path) -> list[Link]:
         has_target, has_links = "target" in spec, "links" in spec
         if has_target == has_links:
             raise DotsError(f"{name}: give exactly one of target or links")
-        base = Path(spec.get("source", f"pkgs/{name}"))
+        base = Path(spec.get("source", f"config/{name}"))
         if has_target:
             links.append(Link(name, mode, base, str(spec["target"])))
             continue
@@ -444,12 +444,12 @@ def cmd_doctor(repo: Repo, links: list[Link], out: Out) -> int:
     dirty = subprocess.run(git_status, capture_output=True, text=True).stdout
     out.ok("git working tree clean") if not dirty else out.warn("git working tree has changes")
 
-    expected = repo.root / "pkgs/scripts/dots"
+    expected = repo.root / "config/scripts/dots"
     deployed = repo.home / ".local/bin/dots"
     if same_path(deployed, expected):
-        out.ok("~/.local/bin/dots points at pkgs/scripts/dots")
+        out.ok("~/.local/bin/dots points at config/scripts/dots")
     else:
-        out.warn("~/.local/bin/dots is not linked to pkgs/scripts/dots; run: dots apply scripts")
+        out.warn("~/.local/bin/dots is not linked to config/scripts/dots; run: dots apply scripts")
         fail = 1
 
     bashrc = repo.home / ".bashrc"

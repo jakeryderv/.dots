@@ -23,7 +23,7 @@ at: the gate reads only the repo, so CI can run it on a bare checkout, while
 `doctor` inspects the live machine — `$HOME`, shell wiring, deployed links,
 flake binaries shadowed on `PATH`.
 
-The `dots` command on `PATH` is [`pkgs/scripts/dots`](../pkgs/scripts/dots), a
+The `dots` command on `PATH` is [`config/scripts/dots`](../config/scripts/dots), a
 three-line wrapper that finds the repo and execs `dots.py`, so every command
 below works from any directory. On a fresh machine, before that link exists,
 `python3 _dots/dots.py <command>` is the same thing.

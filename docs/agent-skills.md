@@ -3,7 +3,7 @@
 Skills authored here and shared by every coding agent (Claude Code, pi, and
 anything else that reads `~/.agents/skills/`). Third-party skills installed
 into `~/.agents/skills/` by skills.sh or a vendor CLI stay untracked; only
-skills written in this repo live under `pkgs/agent-skills/`.
+skills written in this repo live under `config/agent-skills/`.
 
 ## Linking
 
@@ -13,7 +13,7 @@ package. Claude Code reads `~/.claude/skills/`, so every skill gets a second
 entry linking it there — the same per-skill symlink the installer creates for
 third-party skills. Pi reads `~/.agents/skills/` directly.
 
-Adding a skill: create `pkgs/agent-skills/<name>/SKILL.md`, add both `links`
+Adding a skill: create `config/agent-skills/<name>/SKILL.md`, add both `links`
 entries to the `agent-skills` table, `dots apply agent-skills`.
 
 ## Tracked

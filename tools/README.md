@@ -53,7 +53,7 @@ one to revisit if a Nix browser is ever shown to work on this host.
 **Different upstream** — `tmux-sessionizer` was here until its script was
 vendored into [`bin/`](../docs/scripts.md). nixpkgs packages jrmoulton's Rust
 rewrite, whose binary is `tms` and whose config format differs; this repo uses
-ThePrimeagen's shell script, which `pkgs/tmux/tmux.conf` and `shell/keybinds.sh` call
+ThePrimeagen's shell script, which `config/tmux/tmux.conf` and `shell/keybinds.sh` call
 by name. Same name, different project.
 
 **Self-updating** — `herdr` is installed by its own installer to

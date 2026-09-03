@@ -69,7 +69,7 @@
               nodejs
               # Caches `use flake` evaluations for direnv and keeps the resulting
               # store paths alive as GC roots; without it every cd re-evaluates.
-              # Hooked up in pkgs/direnv/direnvrc; direnv itself is above.
+              # Hooked up in config/direnv/direnvrc; direnv itself is above.
               nix-direnv
               # pnpm_10, not pnpm: the unversioned attr is 11.x, and these were on
               # 10.33.0 under nvm. Same major keeps existing lockfiles predictable.

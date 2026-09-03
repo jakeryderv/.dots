@@ -35,7 +35,7 @@ links = [
 ]
 ```
 
-The source is `pkgs/<name>/` unless the table says otherwise.
+The source is `config/<name>/` unless the table says otherwise.
 
 **`link`** places one symlink at the target, so new files inside the source
 appear automatically. Use it when the directory is exclusively ours.
@@ -60,7 +60,7 @@ The consequence is a rule that applies to every package directory:
 > **A package directory contains only deployable content.**
 
 Documentation therefore lives in [`docs/`](docs/README.md) as `docs/<pkg>.md`,
-never inside a package. A `README.md` in `pkgs/nvim/` would deploy to
+never inside a package. A `README.md` in `config/nvim/` would deploy to
 `~/.config/nvim/README.md`, and `dots validate` refuses one.
 
 ### Config is linked; software comes from a flake
@@ -83,7 +83,7 @@ recorded. See [`docs/nix.md`](docs/nix.md).
 | Path | Purpose |
 | --- | --- |
 | [`dots.toml`](dots.toml) | What deploys where |
-| [`pkgs/`](pkgs/README.md) | One directory per package, deployable content only |
+| [`config/`](config/README.md) | One directory per package, deployable content only |
 | [`docs/`](docs/README.md) | One file per package |
 | [`flake.nix`](flake.nix) | The toolchain, pinned by `flake.lock` |
 | [`shell/`](shell/README.md) | Modular bash config, *sourced* from `~/.bashrc`, not linked |
@@ -91,7 +91,7 @@ recorded. See [`docs/nix.md`](docs/nix.md).
 | [`tools/`](tools/README.md) | Installers for what nixpkgs cannot supply (`dots tools`) |
 | [`_wallpapers/`](_wallpapers/README.md) | Wallpaper / terminal background images |
 
-Only `pkgs/` is ever deployed, and only the parts `dots.toml` names. The `_`
+Only `config/` is ever deployed, and only the parts `dots.toml` names. The `_`
 prefix on the rest is a readability convention, not a mechanism.
 
 ## Packages
@@ -168,7 +168,7 @@ python3 _dots/dots.py apply      # deploy; from here on, plain `dots`
 # snippet in shell/README.md, which warns instead of failing silently if the
 # loader ever goes missing. This is the one step `dots apply` cannot do.
 cp shell/local.sh.example shell/local.sh   # then edit for this machine
-cp pkgs/git/gitconfig.local.example ~/.gitconfig.local
+cp config/git/gitconfig.local.example ~/.gitconfig.local
 ```
 
 `dots apply` refuses to overwrite an existing real file, reporting it as a
@@ -184,7 +184,7 @@ distro. `dots deps` reports what is missing.
 
 ## Adding a package
 
-1. `mkdir pkgs/<name>/` and put the files in it — **only** deployable content.
+1. `mkdir config/<name>/` and put the files in it — **only** deployable content.
 2. Add `[packages.<name>]` to [`dots.toml`](dots.toml), choosing `link` or
    `tree` (see the header there).
 3. Write `docs/<name>.md`.

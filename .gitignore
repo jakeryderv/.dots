@@ -15,44 +15,44 @@ shell/local.sh
 shell/local.sh.bak*
 
 # Git — machine-specific identity, credentials, and overrides
-pkgs/git/gitconfig.local
+config/git/gitconfig.local
 
 # Claude Code — track user-authored config; ignore secrets + tool-managed state.
-pkgs/claude/.credentials.json
-pkgs/claude/settings.local.json
-pkgs/claude/history.jsonl
-pkgs/claude/projects/
-pkgs/claude/sessions/
-pkgs/claude/session-env/
-pkgs/claude/plugins/
-pkgs/claude/shell-snapshots/
-pkgs/claude/file-history/
-pkgs/claude/paste-cache/
-pkgs/claude/telemetry/
-pkgs/claude/tasks/
-pkgs/claude/jobs/
-pkgs/claude/todos/
-pkgs/claude/backups/
-pkgs/claude/cache/
-pkgs/claude/daemon/
-pkgs/claude/daemon*.log
-pkgs/claude/stats-cache.json
-pkgs/claude/ide/
-pkgs/claude/debug/
-pkgs/claude/downloads/
-pkgs/claude/chrome/
-pkgs/claude/statsig/
+config/claude/.credentials.json
+config/claude/settings.local.json
+config/claude/history.jsonl
+config/claude/projects/
+config/claude/sessions/
+config/claude/session-env/
+config/claude/plugins/
+config/claude/shell-snapshots/
+config/claude/file-history/
+config/claude/paste-cache/
+config/claude/telemetry/
+config/claude/tasks/
+config/claude/jobs/
+config/claude/todos/
+config/claude/backups/
+config/claude/cache/
+config/claude/daemon/
+config/claude/daemon*.log
+config/claude/stats-cache.json
+config/claude/ide/
+config/claude/debug/
+config/claude/downloads/
+config/claude/chrome/
+config/claude/statsig/
 
 # herdr — track config.toml; ignore the sockets, logs, and session state it
 # keeps in the same directory.
-pkgs/herdr/*.sock
-pkgs/herdr/*.log
-pkgs/herdr/session-history.json
-pkgs/herdr/.plugins.lock
-pkgs/herdr/config.toml.bak*
+config/herdr/*.sock
+config/herdr/*.log
+config/herdr/session-history.json
+config/herdr/.plugins.lock
+config/herdr/config.toml.bak*
 
 # nix — track nix.conf; ignore the flake registry it writes beside it.
-pkgs/nix/registry.json
+config/nix/registry.json
 
 # Python build cruft
 **/__pycache__/

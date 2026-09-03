@@ -1,10 +1,10 @@
-# dots.toml -- what deploys where. Read by _dots/dots.py; see pkgs/README.md.
+# dots.toml -- what deploys where. Read by _dots/dots.py; see config/README.md.
 #
 # [packages.<name>]
 #   mode   = "link" | "tree"   required, never inferred
 #   target = "~/..."           where the package lands
-#   source = "pkgs/<name>"     the default; may also name a single file
-#   links  = [{ source = "<path under pkgs/<name>>", target = "~/..." }, ...]
+#   source = "config/<name>"     the default; may also name a single file
+#   links  = [{ source = "<path under config/<name>>", target = "~/..." }, ...]
 #            instead of target, when one package fans out to several places
 #
 # link  One symlink at target pointing at source. New files inside source show
@@ -52,7 +52,7 @@ target = "~/.config/tealdeer"
 
 [packages.starship]
 mode = "link"
-source = "pkgs/starship/starship.toml"
+source = "config/starship/starship.toml"
 target = "~/.config/starship.toml"
 
 # kanata's config and its systemd unit land in two places, and
@@ -90,17 +90,17 @@ target = "~/.local/bin"
 
 [packages.git]
 mode = "link"
-source = "pkgs/git/gitconfig"
+source = "config/git/gitconfig"
 target = "~/.gitconfig"
 
 [packages.tmux]
 mode = "link"
-source = "pkgs/tmux/tmux.conf"
+source = "config/tmux/tmux.conf"
 target = "~/.tmux.conf"
 
 [packages.editorconfig]
 mode = "link"
-source = "pkgs/editorconfig/editorconfig"
+source = "config/editorconfig/editorconfig"
 target = "~/.editorconfig"
 
 [packages.vim]

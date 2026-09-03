@@ -42,13 +42,13 @@ PY
 BASH_PATHS=(
     shell
     tools
-    pkgs
+    config
     _dots/checks
 )
 
 LUA_PATHS=(
-    pkgs/nvim
-    pkgs/wezterm
+    config/nvim
+    config/wezterm
 )
 
 # `find` reports a missing path on stderr and keeps going, and these traversals
@@ -141,8 +141,8 @@ fi
 
 # Lua was the last language whose formatter ran only on save. shfmt has gated
 # Bash here for a while; stylua now gates Lua the same way, so the editor and
-# this check run the same pinned binary from flake.nix. pkgs/nvim has its own
-# .stylua.toml; pkgs/wezterm falls back to .editorconfig. Blocks that are
+# this check run the same pinned binary from flake.nix. config/nvim has its own
+# .stylua.toml; config/wezterm falls back to .editorconfig. Blocks that are
 # aligned or grouped by hand carry `-- stylua: ignore`.
 if command -v stylua >/dev/null 2>&1; then
     echo 'Checking Lua formatting...'
@@ -165,7 +165,7 @@ fi
 # too, but a local machine without the package still passes the gate.
 if command -v kanata >/dev/null 2>&1; then
     echo 'Checking kanata configuration...'
-    kanata --cfg pkgs/kanata/kanata.kbd --check >/dev/null
+    kanata --cfg config/kanata/kanata.kbd --check >/dev/null
 else
     echo 'Skipping kanata config check (kanata not installed).'
 fi

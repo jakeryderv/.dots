@@ -27,7 +27,7 @@ target = "$XDG_CONFIG_HOME/beta"
 
 [packages.gitcfg]
 mode = "link"
-source = "pkgs/gitcfg/gitconfig"
+source = "config/gitcfg/gitconfig"
 target = "~/.gitconfig"
 
 [packages.tools]
@@ -54,14 +54,14 @@ class Fixture:
         self.home = self.tmp / "home"
         self.home.mkdir()
         for rel, text in {
-            "pkgs/alpha/alpha.conf": "alpha\n",
-            "pkgs/beta/beta.conf": "beta\n",
-            "pkgs/beta/nested/deep.conf": "nested\n",
-            "pkgs/gitcfg/gitconfig": "[user]\n\tname = fixture\n",
-            "pkgs/tools/tool": "#!/bin/sh\n",
-            "pkgs/fanout/one.conf": "one\n",
-            "pkgs/fanout/two.service": "[Unit]\n",
-            "pkgs/README.md": "# pkgs\n",
+            "config/alpha/alpha.conf": "alpha\n",
+            "config/beta/beta.conf": "beta\n",
+            "config/beta/nested/deep.conf": "nested\n",
+            "config/gitcfg/gitconfig": "[user]\n\tname = fixture\n",
+            "config/tools/tool": "#!/bin/sh\n",
+            "config/fanout/one.conf": "one\n",
+            "config/fanout/two.service": "[Unit]\n",
+            "config/README.md": "# config\n",
             "docs/alpha.md": "a\n",
             "docs/beta.md": "b\n",
             "docs/gitcfg.md": "g\n",
@@ -78,7 +78,7 @@ class Fixture:
         git(self.repo, "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "init")
         # Created after the commit and never added: the git ls-files enumerator
         # must skip it. This is what makes .gitignore the only ignore list.
-        (self.repo / "pkgs/beta/untracked.conf").write_text("untracked\n")
+        (self.repo / "config/beta/untracked.conf").write_text("untracked\n")
 
     def run(self, *args: str) -> subprocess.CompletedProcess[str]:
         env = {
@@ -127,7 +127,7 @@ class DeployTests(unittest.TestCase):
         # link mode: one symlink at the target
         alpha = self.home / ".config/alpha"
         self.assertTrue(alpha.is_symlink())
-        self.assertEqual(os.readlink(alpha), str(self.repo / "pkgs/alpha"))
+        self.assertEqual(os.readlink(alpha), str(self.repo / "config/alpha"))
         # tree mode: real directories, one symlink per tracked file
         beta = self.home / ".config/beta"
         self.assertTrue(beta.is_dir() and not beta.is_symlink())
@@ -135,7 +135,7 @@ class DeployTests(unittest.TestCase):
         self.assertTrue((beta / "nested/deep.conf").is_symlink())
         self.assertFalse((beta / "untracked.conf").exists(), "untracked file was deployed")
         # single-file source, and a tree row into a shared directory
-        self.assertEqual(os.readlink(self.home / ".gitconfig"), str(self.repo / "pkgs/gitcfg/gitconfig"))
+        self.assertEqual(os.readlink(self.home / ".gitconfig"), str(self.repo / "config/gitcfg/gitconfig"))
         self.assertTrue((self.home / ".local/bin/tool").is_symlink())
         # links: one package, two places, real parent directories
         self.assertTrue((self.home / ".config/one/one.conf").is_symlink())
@@ -183,7 +183,7 @@ class DeployTests(unittest.TestCase):
         result = self.fx.run("apply", "gitcfg")
         self.assert_rc(result, 0)
         self.assertIn("relink", result.stdout)
-        self.assertEqual(os.readlink(target), str(self.repo / "pkgs/gitcfg/gitconfig"))
+        self.assertEqual(os.readlink(target), str(self.repo / "config/gitcfg/gitconfig"))
 
     def test_unlink_removes_only_links_into_the_repo(self) -> None:
         self.assert_rc(self.fx.run("apply"), 0)
@@ -217,8 +217,8 @@ class ValidateTests(unittest.TestCase):
         self.assertIn("exactly one of target or links", result.stderr)
 
     def test_untracked_source_and_missing_doc_are_errors(self) -> None:
-        (self.fx.repo / "pkgs/ghost").mkdir()
-        (self.fx.repo / "pkgs/ghost/x").write_text("x\n")
+        (self.fx.repo / "config/ghost").mkdir()
+        (self.fx.repo / "config/ghost/x").write_text("x\n")
         self.rewrite_manifest('[packages.ghost]\nmode = "link"\ntarget = "~/.config/ghost"\n')
         result = self.fx.run("validate")
         self.assertEqual(result.returncode, 1)
@@ -226,13 +226,13 @@ class ValidateTests(unittest.TestCase):
         self.assertIn("no docs/ghost.md", result.stderr)
 
     def test_relative_target_is_an_error(self) -> None:
-        self.rewrite_manifest('[packages.rel]\nmode = "link"\nsource = "pkgs/alpha"\ntarget = "config/alpha"\n')
+        self.rewrite_manifest('[packages.rel]\nmode = "link"\nsource = "config/alpha"\ntarget = "config/alpha"\n')
         result = self.fx.run("validate")
         self.assertEqual(result.returncode, 1)
         self.assertIn("must start with ~/", result.stderr)
 
     def test_readme_inside_a_package_is_an_error(self) -> None:
-        (self.fx.repo / "pkgs/alpha/README.md").write_text("no\n")
+        (self.fx.repo / "config/alpha/README.md").write_text("no\n")
         git(self.fx.repo, "add", "-A")
         result = self.fx.run("validate")
         self.assertEqual(result.returncode, 1)
