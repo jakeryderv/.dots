@@ -128,9 +128,9 @@ fact about the repository you are standing in, and the global profile can only
 hold one. Those go in the project, via [`use flake`](#per-project-toolchains).
 
 `nodejs` is here despite being a language toolchain, and it is worth being
-honest about why: in practice there was exactly one version. When
-`pi-cli-tools` needed 22 against a global 24, it got a project flake — which is
-the rule working, not an exception to it.
+honest about why: in practice there was exactly one version. A project that
+needs a different one gets a project flake, which is the rule working, not an
+exception to it.
 
 The corollary is that **the managers belong here and what they manage does
 not.** `uv`, `rustup`, `go` and `bun` are all flake entries; the Pythons in

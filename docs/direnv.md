@@ -28,8 +28,8 @@ A project pins its own toolchain with a `flake.nix` plus a one-line `.envrc`:
 echo 'use flake' > .envrc && direnv allow
 ```
 
-`pi-cli-tools` uses this to get Node 22 where the global toolchain ships 24.
-Add `.direnv/` to the project's `.gitignore` - it holds the GC roots.
+That is how a project gets a Node or a Python the global toolchain does not
+ship. Add `.direnv/` to the project's `.gitignore` - it holds the GC roots.
 
 The guard around the source means a machine without nix-direnv still loads
 `direnvrc`; only `use flake` is unavailable.
