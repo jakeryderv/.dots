@@ -29,6 +29,11 @@ with pkgs;
   # one apt copy of a flake tool left, besides fd-find (pop-launcher).
   git
   glow
+  # A task runner in daily use, so a new machine needs it: one version is
+  # correct everywhere. It was here once as this repo's own runner and left
+  # with the justfile in 05b4562, but `dots` replacing that role says
+  # nothing about whether the machine wants the tool. apt has 1.42.
+  just
   # Default build is compiled without `cmd` support, which is the
   # property the old installer went out of its way to preserve. Do not
   # swap this for kanata-with-cmd.

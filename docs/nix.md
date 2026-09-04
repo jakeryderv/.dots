@@ -94,8 +94,8 @@ as one unit. `nix profile rollback` undoes a bad update wholesale.
 Read [`nix/tools.nix`](../nix/tools.nix) for the list — every non-obvious entry
 carries the reason it is pinned that way, inline. Broadly:
 
-- **CLI tools** — `ast-grep`, `bat`, `delta`, `fd`, `fzf`, `glow`, `lazygit`,
-  `ripgrep`, `tealdeer`
+- **CLI tools** — `ast-grep`, `bat`, `delta`, `fd`, `fzf`, `glow`, `just`,
+  `lazygit`, `ripgrep`, `tealdeer`
 - **Editor** — `neovim`, plus the formatters and linters it shells out to
   (`stylua`, `shfmt`, `shellcheck`, `prettierd`, `eslint_d`)
 - **Shell environment** — `git`, `gh`, `tmux`, `starship`, `direnv`
