@@ -113,10 +113,14 @@ resize_pane_right = "ctrl+shift+alt+right"
 # A floating terminal on the prefix, the way tmux binds Alt+` to toggle-popup.
 # 80%x80% matches the tmux popup dimensions. `popup` is session-modal and leaves
 # the tab layout alone; it closes when the command exits.
+#
+# Named, unlike the panes: `terminal.default_shell` is left empty so panes
+# inherit $SHELL, but a popup runs a command rather than a shell, and there is
+# no $SHELL placeholder to give it. Keep in step with `chsh` (docs/zsh.md).
 [[keys.command]]
 key = "prefix+backtick"
 type = "popup"
-command = "bash"
+command = "zsh"
 width = "80%"
 height = "80%"
 

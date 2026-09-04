@@ -76,6 +76,25 @@ with pkgs;
   # installer with nothing tracking it. starship.toml was a manifest
   # package whose binary had no provenance at all -- the tmux case.
   starship
+  # zsh plugins, sourced from the profile by config/zsh/zshrc in the order
+  # their READMEs require; the rc file falls back to plain zsh when they
+  # are absent. Here rather than a plugin manager for the usual reason:
+  # one manager, one lock. zsh-completions is the odd one, installing into
+  # share/zsh/site-functions where fpath already looks, so zshrc has no
+  # line for it.
+  zsh-autosuggestions
+  zsh-completions
+  # Without its optional C module: nixpkgs compiles it against its own
+  # zsh and glibc, and the apt zsh that sources the plugin cannot dlopen
+  # it -- the linker boundary in docs/nix.md, seen from the other side.
+  # Left in place, the plugin prompts to rebuild the module at every
+  # startup. Without it, fzf-tab colours entries with its pure-zsh
+  # fallback, which is what every non-Nix install of it runs.
+  (zsh-fzf-tab.overrideAttrs {
+    postInstall = "rm -r $out/share/fzf-tab/modules";
+  })
+  zsh-history-substring-search
+  zsh-syntax-highlighting
   tealdeer # ships the `tldr` binary
   # The project-layer Python manager, itself a machine-level tool. The
   # hand-downloaded ~/.local/bin/uv must go: that directory precedes

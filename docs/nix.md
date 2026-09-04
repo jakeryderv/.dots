@@ -99,7 +99,8 @@ carries the reason it is pinned that way, inline. Broadly:
 - **Editor** — `neovim`, plus the formatters and linters it shells out to
   (`stylua`, `shfmt`, `shellcheck`, `prettierd`, `eslint_d`)
 - **Shell environment** — `git`, `gh`, `tmux`, `starship`, `direnv`
-  (with `nix-direnv`, so host and plugin share one owner)
+  (with `nix-direnv`, so host and plugin share one owner), and the five zsh
+  plugins [`docs/zsh.md`](zsh.md) lists
 - **Node** — `nodejs`, `pnpm_10`, `yarn`, replacing nvm
 - **Toolchain managers** — `uv`, `rustup`, `go`, `bun`; what each of them
   manages stays outside the store, see [below](#machine-versions-vs-project-versions)
@@ -271,6 +272,12 @@ This is the mechanism behind every Nix breakage seen here so far.
   measured details, including why the NVIDIA dGPU stays unreachable, are in
   [`tools/README.md`](../tools/README.md). Three GUI apps were tested and all
   three were worse under Nix.
+- The same boundary from the other side: `zsh-fzf-tab` ships a C module built
+  against nixpkgs' zsh and glibc, and the apt zsh that sources the plugin
+  cannot `dlopen` it (`GLIBC_ABI_DT_X86_64_PLT` not found). Left in place, the
+  plugin prompts to rebuild it at every startup, so
+  [`nix/tools.nix`](../nix/tools.nix) overrides the package to drop the module
+  and the plugin uses its pure-zsh fallback.
 
 ### Debian renames things
 

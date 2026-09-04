@@ -21,7 +21,6 @@ working-directory = home
 window-inherit-working-directory = false
 
 # --- Shell ---
-# zsh under evaluation (docs/zsh.md). The login shell stays bash, so this is
-# the one place that starts zsh; delete the line to go back. Once zsh sticks,
-# `chsh -s /usr/bin/zsh` and delete this anyway, since ghostty then inherits it.
-command = zsh
+# No `command` on purpose: ghostty inherits the login shell (docs/zsh.md), so
+# it and herdr start the same shell without either naming it. Set `command =
+# zsh` here to try a shell before `chsh`; it starts zsh in this terminal alone.

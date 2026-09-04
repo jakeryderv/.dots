@@ -166,6 +166,18 @@ Ignore the word and match the glyph — `|` is side by side and `-` is stacked i
 both tools, which is the point of binding them this way. The CLI is unambiguous
 where the config is not: `herdr pane split --direction right|down`.
 
+## Shell
+
+`terminal.default_shell` is left empty, which means `$SHELL`, then `/bin/sh`.
+Panes therefore run the login shell, the same as [`ghostty`](ghostty.md) and
+[`tmux`](tmux.md), and switching shells is `chsh` (see [`zsh`](zsh.md)) plus a
+server restart: the server reads `$SHELL` once at startup, so `herdr server
+reload-config` is not enough.
+
+The `` prefix + ` `` popup is the exception. It runs a command rather than a
+shell, and there is no `$SHELL` placeholder to give it, so `config.toml` names
+`zsh` explicitly and has to move with `chsh`.
+
 ## Theme
 
 `theme.name = "terminal"` inherits the host terminal palette rather than using a

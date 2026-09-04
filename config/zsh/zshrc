@@ -2,8 +2,10 @@
 # config/zsh/zshrc. Everything both shells share -- environment, aliases,
 # functions, the machine-specific local.sh -- is in ~/.config/shell
 # (config/shell in the repo); this file is history, completion, keybindings,
-# and the --zsh flavour of each tool's shell hook. It mirrors config/bash/bashrc
-# section for section, so the two shells behave the same where they can.
+# the --zsh flavour of each tool's shell hook, and the plugins from flake.nix.
+# It mirrors config/bash/bashrc section for section, so the two shells behave
+# the same where they can; the plugins section is the one bash has no
+# counterpart for.
 
 shell_config="$HOME/.config/shell"
 if [[ ! -r $shell_config/env.sh ]]; then
@@ -25,22 +27,23 @@ setopt INTERACTIVE_COMMENTS
 # --- completion and keymap ---------------------------------------------------
 # The flake's tools ship zsh completions under the profile's site-functions
 # (gh, rg, fd, bat, uv, cargo, ...); putting that on fpath is the whole wiring.
+# zsh-completions (flake.nix) installs there too, so it needs no line of
+# its own.
 fpath=("$HOME/.nix-profile/share/zsh/site-functions" $fpath)
 autoload -Uz compinit && compinit
-# Tab cycles through matches, case-insensitively, with colours -- the readline
-# settings in bashrc, in zsh terms.
-zstyle ':completion:*' menu select
+# Case-insensitive, coloured, as the readline settings in bashrc. `menu no`
+# is what fzf-tab asks for: it draws the menu itself, and reads the
+# descriptions format for its group headers. Without fzf-tab, Tab and
+# Shift-Tab below cycle matches the plain way, which is what bashrc does.
+zstyle ':completion:*' menu no
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*:descriptions' format '[%d]'
 bindkey -e # emacs keymap, the same base as bash's readline
 bindkey '^I' menu-complete
 bindkey '^[[Z' reverse-menu-complete
-# Up/Down search history by what is already typed, as bashrc binds them.
-autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
-bindkey '^[[A' up-line-or-beginning-search
-bindkey '^[[B' down-line-or-beginning-search
+# Up/Down are bound in the plugins section: history-substring-search owns
+# them when it is present, and the builtin prefix search when it is not.
 
 # --- shared ------------------------------------------------------------------
 [[ -r $shell_config/functions.sh ]] && source "$shell_config/functions.sh"
@@ -69,6 +72,36 @@ fi
 command -v fzf >/dev/null 2>&1 && source <(fzf --zsh)
 command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+
+# --- plugins -----------------------------------------------------------------
+# All from flake.nix, with the same guards as the hooks: absent, the shell is
+# plainer, not broken. The order is the one the READMEs require. fzf-tab
+# after compinit and before the two that wrap widgets; syntax-highlighting
+# before history-substring-search. zsh-completions is on fpath above.
+plugins="$HOME/.nix-profile/share"
+# Tab completes through fzf: it takes over ^I from menu-complete above.
+[[ -r $plugins/fzf-tab/fzf-tab.zsh ]] && source "$plugins/fzf-tab/fzf-tab.zsh"
+# The rest of the last matching history line, greyed, after the cursor;
+# Right or End accepts it.
+[[ -r $plugins/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &&
+    source "$plugins/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+[[ -r $plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] &&
+    source "$plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+# Up/Down search history by what is already typed, as bashrc binds them.
+# The plugin matches the text anywhere in the line; the builtin fallback
+# matches it as a prefix, which is exactly bash's behaviour.
+if [[ -r $plugins/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh ]]; then
+    source "$plugins/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh"
+    bindkey '^[[A' history-substring-search-up
+    bindkey '^[[B' history-substring-search-down
+else
+    autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+    zle -N up-line-or-beginning-search
+    zle -N down-line-or-beginning-search
+    bindkey '^[[A' up-line-or-beginning-search
+    bindkey '^[[B' down-line-or-beginning-search
+fi
+unset plugins
 
 # --- machine-specific, untracked ---------------------------------------------
 [[ -r $shell_config/local.sh ]] && source "$shell_config/local.sh"
