@@ -226,7 +226,7 @@ remains available on `Alt+a`, then `g`.
 ### PR status
 
 [gh-pr](https://github.com/wyattjoh/herdr-plugin-gh-pr) writes the `$pr` metadata
-token used in both the generic and Claude-specific agent sidebar rows. A label
+token used in the shared agent sidebar layout. A label
 such as `#123 ✓` reports the current branch's PR and CI state. No PR means no
 label. Automatic refresh happens on pane focus and worktree open/create events,
 throttled to once per pane per 30 seconds; it is **not continuous CI polling**.
