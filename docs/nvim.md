@@ -65,6 +65,29 @@ Everything else a plugin shells out to is already declared in
 (telescope auto-detects both -- the reason `fd` is in the flake at all),
 `lazygit`, `tmux` for vim-tmux-navigator, and `git` for lazy.nvim's clones.
 
+## Multiplexer navigation
+
+`Ctrl+h/j/k/l` moves between Neovim splits and the surrounding multiplexer.
+Outside Herdr the existing `vim-tmux-navigator` mappings remain unchanged,
+including `Ctrl+\` for the previous window/pane.
+
+Inside a Herdr pane, `lua/plugins/vim-tmux-navigator.lua` asks
+`herdr plugin list --plugin vim-herdr-navigation --json` for the installed
+plugin root and loads its `editor/nvim.lua`. It uses `HERDR_BIN_PATH` when
+provided, otherwise `herdr` on `PATH`. This shares the pinned Herdr checkout
+rather than maintaining a second clone/version in lazy.nvim. The lookup has a
+two-second timeout and warns if the bridge is missing or disabled.
+
+The tmux plugin loads eagerly with its automatic mappings disabled: the spec
+provides the original tmux mappings, then the Herdr bridge replaces only the
+four directional mappings inside Herdr. `Ctrl+\` is not remapped by the bridge.
+There is no lazy key handler left to replace those mappings on first use.
+
+Install both halves using the [Herdr plugin setup](herdr.md#plugins), then
+restart Neovim. Verify movement within an editor split, across an editor edge
+to another Herdr pane, and in the separate tmux tab. Bridge mappings are
+normal-mode only; insert-mode and Telescope mappings stay unchanged.
+
 ## Health checks
 
 ```vim

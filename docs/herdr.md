@@ -70,8 +70,9 @@ Ghostty ─┬─ tab 1 ─ tmux  (prefix Alt+a)
          └─ tab 2 ─ herdr (prefix Alt+a)
 ```
 
-`Ctrl+tab` switches between them; each tab names itself, so they are tellable
-apart at a glance. Two tabs is the entire Ghostty layout — splits and panes
+`Ctrl+tab` switches between them. Herdr keeps its default outer-terminal title,
+`{hostname}: {workspace}`, so the host remains visible over SSH; tmux uses
+`tmux: {session}`. Two tabs is the entire Ghostty layout — splits and panes
 belong to the layer inside each tab, which is why
 [`ghostty`](ghostty.md) gave up its split bindings and the `ctrl+alt` and
 `alt+digit` namespaces.
@@ -102,7 +103,8 @@ tab all along.
 
 | Namespace | Owner |
 |-----------|-------|
-| `Ctrl+h/j/k/l`, `Ctrl+\` | vim-tmux-navigator, in the tmux tab |
+| `Ctrl+h/j/k/l` | Vim-aware pane navigation: vim-tmux-navigator in tmux, vim-herdr-navigation in Herdr |
+| `Ctrl+\` | vim-tmux-navigator's previous pane/window, in the tmux tab |
 | `Ctrl+b` | nothing — returned to readline (`backward-char`) |
 | `Alt+a` | **both** — tmux in tab 1, herdr in tab 2 |
 | `ctrl+alt+*`, `alt+1..9` | released by Ghostty for herdr's use |
@@ -126,15 +128,21 @@ What `config.toml` changes or adds:
 | `prefix + ,` | Rename tab | tmux's rename-window key; default was `shift+t` |
 | `prefix + d` | Detach | tmux's detach key; default was `q` |
 | `prefix + ;` | Last pane | tmux's last-pane key; unbound upstream |
+| `Ctrl+h/j/k/l` | Navigate Neovim splits / Herdr panes | vim-herdr-navigation plugin; no prefix |
+| `prefix + f` | Picker with terminal previews | herdr-picker plugin; built-in `prefix+g` is unchanged |
+| `prefix + u` | Open current branch's PR in browser | gh-pr plugin |
+| `prefix + i` | Refresh current pane's PR status | gh-pr plugin |
 
 The side-by-side split key is **pipe** (`|`), usually typed with
 **Shift+backslash**, not bare backslash. With this config, press `Alt+a`, then
 `|`. Herdr 0.8.2 defaults to `prefix+v` for side-by-side splits and
 `prefix+minus` for stacked splits.
 
-`Ctrl+h/j/k/l` is left unbound here on purpose: herdr forwards it to the focused
-pane, so nvim inside a herdr pane keeps its own window navigation. Pane
-movement is on the prefix instead.
+`Ctrl+h/j/k/l` uses the [Vim navigation plugin](#plugins) to move within Neovim
+first, crossing to another Herdr pane at an editor split's edge. In other
+processes it moves Herdr focus directly. `prefix+hjkl` remains the explicit
+Herdr-only fallback. The direct bindings shadow shell readline shortcuts such
+as `Ctrl+k` (kill line) and `Ctrl+l` (clear screen), just as they do in tmux.
 
 ### Parity with tmux, and its limits
 
@@ -148,16 +156,12 @@ c  new tab       x  close pane      n/p  next/prev tab
 ,  rename        d  detach          ;    last pane
 ```
 
-Two deliberately stay different, because matching them would cost more than the
-muscle memory is worth:
+Pane focus also matches now: `Ctrl+hjkl` uses a Vim-aware bridge in either
+multiplexer. Scrollback still differs: tmux's `prefix+v` enters copy mode,
+while Herdr's `prefix+e` opens scrollback in the editor.
 
-| Verb | tmux | herdr | Why not |
-|------|------|-------|---------|
-| Focus pane | `Ctrl+hjkl`, no prefix | `prefix+hjkl` | vim-tmux-navigator inspects the pane process and hands the key to Vim when Vim is running. herdr has no such bridge, so binding `ctrl+hjkl` there would take those keys from nvim inside herdr panes permanently. Binding `prefix+hjkl` in tmux instead would clobber `prefix+l` (last window). |
-| Scrollback | `v` — copy mode | `e` — opens in nvim | Different mechanisms, not different keys for one thing. herdr has no copy mode. |
-Only two, since the shared prefix made the third worth fixing: tmux's
-synchronize-panes moved off `a` to `*`, so `prefix+a` means "agent" everywhere
-it means anything.
+Tmux's synchronize-panes moved off `a` to `*`, so `prefix+a` means "agent"
+everywhere it means anything.
 
 **Split naming is inverted from tmux.** Herdr names a split after the divider's
 orientation; tmux names it after the flag:
@@ -170,6 +174,76 @@ orientation; tmux names it after the flag:
 Ignore the word and match the glyph — `|` is side by side and `-` is stacked in
 both tools, which is the point of binding them this way. The CLI is unambiguous
 where the config is not: `herdr pane split --direction right|down`.
+
+## Plugins
+
+Three third-party plugins extend the config. They run as your user, are **not
+sandboxed**, and are not installed by `dots apply`. Review changes before
+updating a pin; the commands below install the reviewed revisions rather than
+following each repository's default branch.
+
+Requirements: Herdr **0.8.2+**, Git, Bash, `jq`, Go **1.24+** (picker build),
+Bun, and authenticated GitHub CLI (`gh auth status`). Go, Bun, Git, and `gh`
+come from the flake; `jq` is currently supplied by the host system. No new
+GitHub credentials or permissions are needed when `gh` is already logged in.
+
+```bash
+herdr plugin install paulbkim-dev/vim-herdr-navigation --ref 79679dacc791f70fc34de8b29a3cf9706c0f5b2f
+herdr plugin install bkarpinos/herdr-picker --ref 73c345789370e029db587cf859bb442177a177b2
+herdr plugin install wyattjoh/herdr-plugin-gh-pr --ref 6fe22de9a90c569f2186595cfddc3707f55ba1bd
+herdr plugin list
+herdr config check
+herdr server reload-config
+```
+
+Installation previews the manifest and commands before confirmation. The picker
+builds with Go; the other two run scripts directly. Plugin checkouts, registry,
+logs, and state remain outside this repo. Re-run an install with a newly
+reviewed `--ref` to update; record that revision here too.
+
+### Vim-aware navigation
+
+[vim-herdr-navigation](https://github.com/paulbkim-dev/vim-herdr-navigation)
+provides the Herdr actions; the [Neovim config](nvim.md#multiplexer-navigation)
+loads its editor integration from the installed checkout. Restart Neovim after
+installation or an update. Both halves are needed: without the editor half,
+Vim receives the keys but cannot cross a split edge into Herdr.
+
+Other TUIs receive no special passthrough by default. If needed, set
+`HERDR_NAV_PASSTHROUGH_RE` in the environment that starts the Herdr server
+(e.g. `^(lazygit|k9s)$`) and restart the server when convenient. Such apps do
+not cross pane edges automatically; use `prefix+hjkl` to leave them.
+
+### Preview picker
+
+[herdr-picker](https://github.com/bkarpinos/herdr-picker) opens with
+`Alt+a`, then `f`. Type to filter workspaces, agents, and tabs; the selected
+result shows a live terminal preview. Use arrows or `Ctrl+n/p` to select,
+`Tab` / `Shift+Tab` to change scope, and `Enter` to focus the result. `Esc`
+clears a query, then closes; `Ctrl+c` closes directly. The native Goto picker
+remains available on `Alt+a`, then `g`.
+
+### PR status
+
+[gh-pr](https://github.com/wyattjoh/herdr-plugin-gh-pr) writes the `$pr` metadata
+token used in both the generic and Claude-specific agent sidebar rows. A label
+such as `#123 ✓` reports the current branch's PR and CI state. No PR means no
+label. Automatic refresh happens on pane focus and worktree open/create events,
+throttled to once per pane per 30 seconds; it is **not continuous CI polling**.
+Use `Alt+a`, then `i` to force a refresh, or `Alt+a`, then `u` to open the PR.
+
+### Verify or disable
+
+```bash
+herdr plugin action list
+herdr plugin log list --plugin gh-pr
+herdr plugin disable gh-pr   # example: disable its automatic hooks
+```
+
+Remove/comment the corresponding `[[keys.command]]` blocks when disabling a
+plugin so they do not point at unavailable actions. Remove `$pr` from the
+sidebar rows if removing gh-pr. Without the Vim bridge, remove its direct
+Herdr bindings too; `prefix+hjkl` still works.
 
 ## Shell
 
