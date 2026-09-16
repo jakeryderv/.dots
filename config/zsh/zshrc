@@ -40,6 +40,9 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*:descriptions' format '[%d]'
 bindkey -e # emacs keymap, the same base as bash's readline
+# Alt+Left/Right: move by word.
+bindkey '^[[1;3D' backward-word
+bindkey '^[[1;3C' forward-word
 bindkey '^I' menu-complete
 bindkey '^[[Z' reverse-menu-complete
 # Up/Down are bound in the plugins section: history-substring-search owns
