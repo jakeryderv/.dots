@@ -182,6 +182,12 @@ description = "refresh PR status"
 # ============================================
 
 [ui]
+# Collapsing the sidebar hides it completely; keep it expanded at startup.
+sidebar_collapsed_mode = "hidden"
+
+# Identify agent panes at a glance. Manual pane names still take precedence.
+show_agent_labels_on_pane_borders = true
+
 # Attention queue rather than sidebar order: with desktop notifications on, the
 # agent that needs input should be the one at the top. Use "spaces" to group by
 # workspace instead.
@@ -223,9 +229,13 @@ tab_bar_right = [
 #                          drag release.
 
 # Use the same two-row layout for every agent. gh-pr supplies the optional $pr
-# metadata token; it is empty for branches without a PR.
+# metadata token; it is empty for branches without a PR. Emphasize workspace
+# names and dim agent names without changing state icons or PR metadata.
 [ui.sidebar.agents]
-rows = [["state_icon", "workspace", "tab"], ["agent", "$pr"]]
+rows = [
+    ["state_icon", { token = "workspace", bold = true }, "tab"],
+    [{ token = "agent", dim = true }, "$pr"],
+]
 
 [ui.toast]
 # Desktop notification when a background agent finishes or blocks. A deliberate
