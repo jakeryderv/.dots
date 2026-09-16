@@ -88,7 +88,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "fable",
   "hooks": {
     "SessionStart": [
       {
@@ -109,7 +109,6 @@
   },
   "enabledPlugins": {
     "codex@openai-codex": true,
-    "agy@jakeryderv": true,
     "cloudflare@cloudflare": true,
     "runpod@runpod": true,
     "i-have-adhd@i-have-adhd": true,
