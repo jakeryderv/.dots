@@ -67,7 +67,7 @@ nested. tmux keeps the sessions and the layout; herdr drives agent work.
 
 ```
 Ghostty ─┬─ tab 1 ─ tmux  (prefix Alt+a)
-         └─ tab 2 ─ herdr (prefix Ctrl+b)
+         └─ tab 2 ─ herdr (prefix Alt+a)
 ```
 
 `Ctrl+tab` switches between them; each tab names itself, so they are tellable
@@ -113,7 +113,7 @@ What `config.toml` changes or adds:
 
 | Key | Action | Why |
 |-----|--------|-----|
-| `prefix + \` | Split side by side | Matches tmux's `\|` |
+| `prefix + \|` | Split side by side | Matches tmux's `\|`; Herdr's default is `prefix+v` |
 | `prefix + -` | Split stacked | Default; already matches |
 | `prefix + ↑` / `↓` | Previous / next workspace | Unbound upstream; sidebar stacks vertically |
 | `prefix + Shift+1..9` | Switch workspace | Unbound upstream |
@@ -126,6 +126,11 @@ What `config.toml` changes or adds:
 | `prefix + ,` | Rename tab | tmux's rename-window key; default was `shift+t` |
 | `prefix + d` | Detach | tmux's detach key; default was `q` |
 | `prefix + ;` | Last pane | tmux's last-pane key; unbound upstream |
+
+The side-by-side split key is **pipe** (`|`), usually typed with
+**Shift+backslash**, not bare backslash. With this config, press `Alt+a`, then
+`|`. Herdr 0.8.2 defaults to `prefix+v` for side-by-side splits and
+`prefix+minus` for stacked splits.
 
 `Ctrl+h/j/k/l` is left unbound here on purpose: herdr forwards it to the focused
 pane, so nvim inside a herdr pane keeps its own window navigation. Pane
