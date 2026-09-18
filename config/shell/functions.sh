@@ -23,3 +23,9 @@ up() {
     done
     cd "$target" || return 1
 }
+
+daily() {
+    local dir="$HOME/daily-dev/log/$(date +%F)"
+    mkdir -p "$dir"
+    cd "$dir" || return
+}
