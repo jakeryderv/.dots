@@ -39,8 +39,8 @@ daily() {
         cat >"$readme" <<EOF
 ---
 date: $today
-projects: []
 tags: []
+projects: []
 ---
 
 # $today
