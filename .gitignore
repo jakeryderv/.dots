@@ -51,6 +51,16 @@ config/herdr/session-history.json
 config/herdr/.plugins.lock
 config/herdr/config.toml.bak*
 
+# OpenCode — dependencies and Herdr-generated integrations stay machine-local.
+config/opencode/.gitignore
+config/opencode/node_modules/
+config/opencode/package.json
+config/opencode/package-lock.json
+config/opencode/bun.lock
+config/opencode/bun.lockb
+config/opencode/herdr-tui-session.js
+config/opencode/plugins/herdr-agent-state.js
+
 # nix — track nix.conf; ignore the flake registry it writes beside it.
 config/nix/registry.json
 

@@ -109,7 +109,7 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 [bat](docs/bat.md), [direnv](docs/direnv.md),
 [editorconfig](docs/editorconfig.md), [tealdeer](docs/tealdeer.md).
 
-**Coding agents** — [claude](docs/claude.md),
+**Coding agents** — [claude](docs/claude.md), [opencode](docs/opencode.md),
 [agent-skills](docs/agent-skills.md) (skills shared by every agent),
 [herdr](docs/herdr.md) (terminal workspace manager).
 

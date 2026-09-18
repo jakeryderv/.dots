@@ -36,6 +36,7 @@ this repo is applied.
 | [`kitty.md`](kitty.md) | `config/kitty` | `~/.config/kitty/` |
 | [`nix.md`](nix.md) | `config/nix`; `flake.nix`, `flake.lock` | `~/.config/nix/`; the flake via `nix profile`, not a link |
 | [`nvim.md`](nvim.md) | `config/nvim` | `~/.config/nvim/` |
+| [`opencode.md`](opencode.md) | `config/opencode` | `~/.config/opencode/` |
 | [`scripts.md`](scripts.md) | `bin` | `~/.local/bin/` |
 | [`shell.md`](shell.md) | `config/shell` | `~/.config/shell/` |
 | [`starship.md`](starship.md) | `config/starship/starship.toml` | `~/.config/starship.toml` |

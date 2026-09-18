@@ -77,6 +77,11 @@ target = "~/.config/shell"
 mode = "tree"
 target = "~/.config/herdr"
 
+# OpenCode installs dependencies here; Herdr also owns its integration scripts.
+[packages.opencode]
+mode = "tree"
+target = "~/.config/opencode"
+
 # nix writes registry.json beside nix.conf.
 [packages.nix]
 mode = "tree"
