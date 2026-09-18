@@ -33,6 +33,10 @@ panel_bg = "reset"
 # the current window in the status bar.
 accent = "#78a9ff"
 
+# Muted gray for inactive pane borders and labels. This shared theme token also
+# colors other secondary UI elements.
+overlay0 = "#525252"
+
 # ============================================
 # Keys
 # ============================================
@@ -208,6 +212,9 @@ confirm_close = false
 # tmux overrides the wheel to a smooth 1-line scroll; Ghostty's discrete:3
 # applies to the outer terminal, not to the panes herdr draws itself.
 mouse_scroll_lines = 1
+
+# Hide the tab row, including its right-side status, when there is only one tab.
+hide_tab_bar_when_single_tab = true
 
 # The tmux status-right analogue. tmux carries window count, pane count, date,
 # and time; herdr has no count entries, so this is the zoom badge plus the same
