@@ -14,10 +14,9 @@ and neither infers anything:
 | Applied by | `dots apply` | `nix profile add ~/.dots` |
 | Lands in | `~/.config`, `~`, `~/.local` | `~/.nix-profile/bin` |
 
-The flake builds the same list for `x86_64-linux` and `aarch64-linux`. Only
-x86_64 has ever been installed; the second exists so an ARM machine fails on a
-missing binary cache entry at worst, not on a missing attribute at
-`nix profile add`.
+The flake declares the same list for `x86_64-linux` and `aarch64-linux`. Only
+x86_64 has been installed and is built by CI. ARM remains unverified: an output
+attribute alone does not establish package availability or a successful build.
 
 This replaced eight per-tool installers in [`tools/`](../tools/README.md), which
 fetched releases at HEAD and so could not reproduce a version on a second
@@ -32,6 +31,26 @@ committing `dots.toml` makes the symlinks reproducible.
 Nix itself is **not** managed by this repo — it is the one bootstrap step.
 This host runs the multi-user daemon install (`nix-daemon.service`,
 `/nix/var/nix/profiles/default`).
+
+On a fresh Pop!_OS / Debian machine, install the distro prerequisites from the
+[setup guide](../README.md#setup-on-a-new-machine), then follow the official
+[multi-user Nix installation](https://nix.dev/install-nix):
+
+```bash
+curl -L https://nixos.org/nix/install | sh -s -- --daemon
+```
+
+Open a new terminal and verify `nix --version`. If the shell has not picked up
+the multi-user installation, load its environment before continuing:
+
+```bash
+. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+nix --version
+```
+
+Use an existing working Nix installation as-is; this installer step is only
+for machines without Nix. Return to the [setup guide](../README.md#setup-on-a-new-machine)
+to clone the repo, install the profile, and link the configuration.
 
 Nix reads two config files in layers: `/etc/nix/nix.conf`, then
 `~/.config/nix/nix.conf` on top of it. They have different owners, and that
@@ -66,28 +85,95 @@ deploys the conf, so the very first command carries the opt-in inline:
 
 ```bash
 nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
-dots apply
+~/.nix-profile/bin/dots apply
 ```
 
 Every command after that is plain.
 
 ## Usage
 
+For a first install, follow the [setup guide](../README.md#setup-on-a-new-machine).
+For an update, start with a clean checkout and record the current Git revision
+and profile generation so both halves can be recovered:
+
 ```bash
-nix profile add ~/.dots            # first install (see Bootstrap order above)
-nix flake update --flake ~/.dots   # bump flake.lock (commit the result)
-nix profile upgrade --all          # rebuild the profile from the new lock
+cd ~/.dots
+git status --short
+git rev-parse HEAD
+nix profile history
+nix profile list
 ```
 
-`--all` is deliberate. The entry is not named `dots-tools` — that is the
-`buildEnv` name inside the derivation — and `nix profile` names it by its flake
-URL, which `nix profile list` prints in full. Upgrading by the wrong name warns
-that nothing matched rather than failing, a silent no-op; `--all` sidesteps the
-question because this profile holds exactly one entry. Run it from a clean tree:
-a dirty checkout evaluates, but locks the entry without a revision.
+Update the lock, evaluate and build the complete bundle, then run the repository
+gate with the proposed tool versions. None of these commands switches the
+installed profile. `lua5_4` supplies the gate's additional `luac` check.
 
-Everything installs as a single `buildEnv` package, so it upgrades or rolls back
-as one unit. `nix profile rollback` undoes a bad update wholesale.
+```bash
+nix flake update
+nix flake check --no-build --no-update-lock-file
+nix build .#default --no-link --no-update-lock-file
+REQUIRE_LINTERS=1 nix shell --inputs-from . .#default nixpkgs#lua5_4 -c dots check
+git diff -- flake.lock
+```
+
+If the checks pass, commit the reviewed lockfile and any related configuration
+changes together. Then, from the clean checkout, activate the tools:
+
+```bash
+nix profile upgrade --all
+dots plan
+dots apply
+```
+
+`--all` assumes `nix profile list` shows only this repo's entry, as it does on
+the maintained machine. If other entries have been added, use this repo's name
+from that list instead. `dots-tools` is the derivation's name, not necessarily
+the profile entry's name. A clean checkout lets the profile record a Git
+revision rather than a dirty source snapshot.
+
+Open a fresh shell, restart affected applications or services, and run
+`dots doctor`. Configuration is linked to the live checkout, so edits to it
+can take effect before the profile upgrade; the build step only stages tools.
+
+### Continuous validation
+
+The [Nix workflow](../.github/workflows/nix.yml) runs the evaluation and build
+commands above on Linux x86_64 when `flake.nix`, `flake.lock`, `nix/**`, or the
+workflow changes. It can also be run manually. Evaluation catches invalid
+flake outputs; building `.#default` additionally checks package builds and
+file collisions in the combined profile. See the
+[Nix flake check reference](https://nix.dev/manual/nix/2.35/command-ref/new-cli/nix3-flake-check).
+
+The existing [repository workflow](../.github/workflows/ci.yml) still runs
+`dots check` on every pull request and push to main, using the pinned gate
+tools. It does not need to build the entire profile on configuration-only edits.
+
+### Recovery
+
+The tools form one profile entry. To return to the previous profile generation:
+
+```bash
+nix profile history
+nix profile rollback
+```
+
+If other profile changes happened since the update, select the recorded
+generation with `nix profile rollback --to GENERATION` instead. Retain the old
+generations until the update is verified. See the
+[Nix rollback reference](https://nix.dev/manual/nix/2.35/command-ref/new-cli/nix3-profile-rollback).
+
+This restores **packaged tools only**. It does not restore the Git checkout,
+linked configuration, or `dots.py`: the Nix wrapper still executes the live
+script. npm globals, plugins, credentials, and ignored local files are outside
+the profile too.
+
+For a coordinated tool-and-config recovery, preserve any uncommitted work and
+restore the matching known-good Git revision as well (for example, revert the
+update commit). If deployment targets or package membership changed, remove
+the affected links with `dots unlink PACKAGE` while the newer manifest still
+describes them, then restore the older revision and run `dots plan` and
+`dots apply`. Applying an older manifest alone does not remove retired links.
+Restart affected applications or services and run `dots doctor` again.
 
 ## What is in it
 
@@ -255,7 +341,8 @@ Anything that wants to write into its own install directory does not fit.
 
 - `npm install -g` cannot write to the store, so `~/.npmrc` sets
   `prefix=~/.npm-global` and [`config/shell/env.sh`](../config/shell/env.sh) puts its
-  `bin/` on `PATH`.
+  `bin/` on `PATH`. The [npm setup steps](../tools/README.md#usage) create this
+  user setting; the flake and `dots apply` do not.
 - Self-updating apps are disqualified outright — see
   [`tools/README.md`](../tools/README.md).
 

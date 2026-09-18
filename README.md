@@ -146,6 +146,18 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 Written for **Pop!_OS / Debian** (apt, GNU coreutils, Linux x86_64). Helper
 scripts assume Linux x86_64 + apt/sudo.
 
+Install the distro prerequisites first. Git is needed before cloning; the C
+compiler and make are needed by Neovim's plugin/parser builds and are not in
+the flake. `xz-utils` is needed by the Nix installer.
+
+```bash
+sudo apt update
+sudo apt install git curl ca-certificates xz-utils tar build-essential
+```
+
+Then [install Nix](docs/nix.md#prerequisites), open a new terminal, and confirm
+`nix --version` works before continuing.
+
 Debian renames two of these — `fd-find` provides `fdfind`, `bat` provides
 `batcat` — which is why both come from [`flake.nix`](flake.nix) under their
 canonical names instead. apt's `bat` was removed along with every other apt
@@ -154,7 +166,7 @@ the names do not collide. The guarded alias in `config/shell/aliases.sh` is the
 fallback for a machine without the flake, not the mechanism.
 
 ```bash
-git clone <repo> ~/.dots
+git clone https://github.com/jakeryderv/.dots.git ~/.dots
 cd ~/.dots
 
 # The toolchain first; `dots` itself is in it. The flag is the flakes opt-in;
@@ -162,24 +174,47 @@ cd ~/.dots
 # is typed exactly once.
 nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
 
-mv ~/.bashrc ~/.bashrc.pre-dots     # the distro's; ~/.bashrc is a package now
-dots plan            # preview every link
-dots apply           # deploy
+# Use the installed path until the new shell configuration has loaded.
+~/.nix-profile/bin/dots plan       # preview links and existing-file conflicts
+```
+
+Back up existing files reported as conflicts before applying. For example,
+on a fresh distro installation, move its Bash configuration aside (the `-i`
+prompts before replacing an existing backup):
+
+```bash
+mv -i ~/.bashrc ~/.bashrc.pre-dots
+~/.nix-profile/bin/dots apply
 
 cp config/shell/local.sh.example config/shell/local.sh   # then edit for this machine
 cp config/git/gitconfig.local.example ~/.gitconfig.local
 ```
 
-`dots apply` refuses to overwrite an existing real file, reporting it as a
-conflict rather than clobbering it. Back it up and remove it, then re-run.
+Edit both copied files for this machine, including your Git identity. On an
+existing machine, preserve and review any local files instead of replacing
+them with the examples. `dots apply` refuses to overwrite a real file; resolve
+any remaining conflicts and re-run it.
 
-Packages needing activation beyond linking (starship enablement, `fc-cache` for
-fonts, TPM for tmux, first-run order for nvim) document it in their
-own `docs/<pkg>.md`.
+Open a new Bash or Zsh session to load the shared environment and its PATH.
+Finish the setup steps for the tools you use:
+
+- [npm globals](tools/README.md#usage): create the writable npm prefix, then
+  run the installer. These tools are not installed by the flake.
+- [Zsh](docs/zsh.md): install the distro shell and select it with `chsh` if
+  desired; the flake supplies its plugins, not the shell itself.
+- [Neovim](docs/nvim.md#first-run-order), [tmux](docs/tmux.md#external-dependencies),
+  and [fonts](docs/fonts.md): install plugins and refresh the font cache.
+- [Kanata](docs/kanata.md): review the machine's keyboard configuration and
+  complete the permissions and service setup before enabling it.
+- GUI applications and standalone agent CLIs remain separate installs; see
+  the relevant [package docs](docs/README.md). Authentication is per machine.
 
 Nix itself is the one bootstrap this repo does not manage, alongside the daemon
 settings in `/etc/nix/nix.conf` — [`docs/nix.md`](docs/nix.md) has both, per
-distro. `dots deps` reports what is missing.
+distro. Run `dots deps` to inventory commands and `dots doctor` after activation
+to check the deployed links, PATH, and machine setup. These checks do not
+install missing software. Toolchain updates and recovery are documented in
+[`docs/nix.md`](docs/nix.md#usage).
 
 ## The `dots` tool
 

@@ -15,9 +15,9 @@ jobs:
       # The gate's tools come from the same nixpkgs revision flake.lock pins,
       # not from apt: --inputs-from resolves `nixpkgs#` to the locked input, so
       # shfmt, shellcheck, stylua, ruff and kanata here are identical to the
-      # ones the editor and `just check` run locally. Only the gate's tools are
-      # pulled, not the whole profile -- neovim, nodejs and qmk would add
-      # minutes of download for nothing. lua5_4 is CI-only: `luac -p` needs it,
+      # ones the editor and `dots check` run locally. Only the gate's tools are
+      # pulled here; nix.yml builds the whole profile when its inputs change.
+      # lua5_4 is CI-only: `luac -p` needs it,
       # and it is not a machine tool, so it is not in flake.nix.
       - name: Run the gate
         env:

@@ -99,6 +99,22 @@ capability the system install has.
 
 ## Usage
 
+After installing the Nix profile and loading the shared shell configuration,
+set up npm's writable global prefix once per machine:
+
+```bash
+mkdir -p "$HOME/.npm-global"
+npm config set prefix "$HOME/.npm-global" --location=user
+npm config get prefix             # should print /home/<user>/.npm-global
+```
+
+This writes the prefix setting to the user npm configuration; it does not
+replace the rest of that file. The shared shell configuration already adds
+`~/.npm-global/bin` to PATH. Open a new shell if it has not loaded yet. See
+[npm's configuration command](https://docs.npmjs.com/cli/v11/commands/npm-config/).
+
+Then install the npm tools as your user, without `sudo`:
+
 ```bash
 dots tools               # list the installers
 dots install npm-globals # run tools/install-npm-globals.sh

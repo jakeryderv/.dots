@@ -15,10 +15,10 @@ Personal Neovim config (Lua, `lazy.nvim`). Deployed to `~/.config/nvim/`.
 ## First-run order
 
 Plugins install on first launch via `lazy.nvim`; Mason then installs the
-language servers. Everything the parser build needs -- `tree-sitter`, plus a C
-compiler -- comes from outside nvim and is already present once
-`nix profile add ~/.dots` has run, so there is no ordering constraint around it
-any more. Recommended sequence on a fresh machine:
+language servers. Install the [distro prerequisites](../README.md#setup-on-a-new-machine)
+and the Nix profile first: `tree-sitter` comes from the flake, while the C
+compiler and make come from the distro's `build-essential`. Recommended
+sequence on a fresh machine:
 
 1. `nvim` — let `lazy.nvim` finish installing plugins, then quit.
 2. `nvim` again — Mason auto-installs the LSP servers listed below. Wait for
