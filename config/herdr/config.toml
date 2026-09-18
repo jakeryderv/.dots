@@ -25,7 +25,7 @@ onboarding = false
 name = "terminal"
 
 [theme.custom]
-# Let Ghostty's wallpaper show through pane backgrounds. "reset" emits no
+# Inherit Ghostty's solid background in panes. "reset" emits no
 # background color at all rather than painting one over it.
 panel_bg = "reset"
 

@@ -45,8 +45,8 @@ beside them instead of landing in the repo.
   Without it Vim uses its own defaults, which are unrelated to carbonfox (blue
   comments, yellow keywords) and come from two places: compiled into the binary
   for UI groups, and `$VIMRUNTIME/syntax/syncolor.vim` for syntax groups.
-  `Normal` is deliberately left cleared so the terminal background — and
-  Ghostty's background image — still shows through. `cterm` values use
+  `Normal` is deliberately left cleared so the terminal background shows
+  through. `cterm` values use
   carbonfox's ANSI slot numbers rather than 256-colour approximations, since
   the terminal palette is itself carbonfox.
 - `Ctrl-h/j/k/l` and `Ctrl-\` navigation across Vim splits and tmux panes,
@@ -57,4 +57,3 @@ beside them instead of landing in the repo.
 - Vim with `+persistent_undo` and `+termguicolors` (the repository's target
   Vim 9.1 build provides both).
 - tmux is optional; navigation falls back to Vim splits outside tmux.
-

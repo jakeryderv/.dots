@@ -57,8 +57,8 @@ mentions them.
 - **Startup directory** — new windows always open in `$HOME`
   (`working-directory = home`, `window-inherit-working-directory = false`);
   tabs and splits still inherit the current dir.
-- **Background image** — pulls from `~/.dots/_wallpapers/` (not deployed; see
-  [`_wallpapers`](../_wallpapers/README.md)).
+- **Solid background** — carbonfox's `#161616`, fully opaque, gives tmux,
+  Herdr, and coding-agent interfaces a consistent backdrop.
 - **No window decorations** + zero padding, matching the kitty/alacritty setups.
 - **Keybinds — tabs yes, splits no.** Ghostty runs exactly two tabs, one for
   [`tmux`](tmux.md) and one for [`herdr`](herdr.md). That separation is the whole

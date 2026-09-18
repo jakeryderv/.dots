@@ -22,34 +22,14 @@ config-file = carbonfox.ghostty
 #  theme value it must live in an include that comes after the theme include.)
 config-file = overrides.ghostty
 
-# --- Background image ---
-# Dark-space wallpaper (tracked in ~/.dots/_wallpapers, never deployed)
-background-image = ~/.dots/_wallpapers/black_2560x1600.png
-
-# Fill the window, preserving aspect ratio (may clip edges)
-background-image-fit = cover
-
-# Anchor point for the image (this is the default; here for clarity)
-background-image-position = center
-
-# Don't tile the image (irrelevant when fit = cover, but documents intent)
-background-image-repeat = false
-
-# Image visibility, relative to background-opacity. Raise toward 1.0 for a
-# more prominent wallpaper; lower it if text over the bright nebula is hard to read.
-background-image-opacity = 0.5
+# --- Background ---
+# Solid #161616 from carbonfox. Default background-opacity = 1 keeps the window
+# opaque and gives tmux, Herdr, and agent interfaces a consistent backdrop.
 
 # Force a minimum text/background contrast ratio (WCAG scale: 1 = off … 21 = max)
-# so text stays legible over the brighter parts of the wallpaper. 1.1 just
-# prevents invisible text while preserving carbonfox's colors; raise toward 3 for
+# to prevent invisible text while preserving carbonfox's colors. Raise toward 3 for
 # stronger readability (pushes text toward black/white). Ignores emoji & images.
 minimum-contrast = 1.1
-
-# Related window-transparency options (left at defaults; uncomment to change):
-#   background-opacity keeps the window solid (1) so the image sits on the carbonfox bg
-#   background-blur blurs the desktop behind the window, and only applies when opacity < 1
-# background-opacity = 1
-# background-blur = 20
 
 # --- Window ---
 # Remove title bar and borders (matches kitty's hide_window_decorations and
@@ -64,8 +44,7 @@ window-padding-y = 0
 # across all four edges instead of piling them on one side
 window-padding-balance = true
 
-# Extend the wallpaper/edge color into the padding area so it reaches the window
-# edge (default "background" shows a flat #161616 border around the image)
+# Extend the terminal edge color into the padding area.
 window-padding-color = extend
 
 # Don't show the dimensions popup when resizing the window

@@ -265,8 +265,8 @@ built-in, so carbonfox is defined once in
 over SSH, where the remote server picks up whatever the local terminal uses.
 
 `panel_bg = "reset"` emits no background color for panes rather than painting
-one, which lets Ghostty's `background-image` wallpaper show through. Set it to a
-hex value to paint solid panels instead.
+one, so they inherit Ghostty's solid carbonfox background (`#161616`). Set it
+to a hex value to give panels their own background color instead.
 
 ## Mouse and clipboard
 
