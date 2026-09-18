@@ -25,7 +25,9 @@ up() {
 }
 
 daily() {
-    local dir="$HOME/daily-dev/log/$(date +%F)"
+    local dir
+    dir="$HOME/daily-dev/log/$(date +%F)"
+
     mkdir -p "$dir"
     cd "$dir" || return
 }
