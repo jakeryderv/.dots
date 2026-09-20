@@ -9,37 +9,26 @@ this package.
 
 | File | Purpose |
 | --- | --- |
-| `.config/direnv/direnvrc` | `use_gh_account` - pin the gh CLI to a specific GitHub account per directory tree; sources `nix-direnv` for `use flake` |
+| `.config/direnv/direnvrc` | `use_gh_account` - pin the gh CLI to a specific GitHub account per directory tree |
 
 `direnvrc` is sourced before every `.envrc`, so its functions need no
 `source_env`. direnv watches the file: editing it invalidates cached
 environments, and the next `cd` into a direnv directory re-evaluates.
 
-## Per-project toolchains with `use flake`
+## Nix integration retired
 
-`direnvrc` sources [nix-direnv](https://github.com/nix-community/nix-direnv)
-(installed by [`flake.nix`](../flake.nix)), which adds `use flake`, caches the
-evaluation so a `cd` is not a full re-eval, and registers the resulting store
-paths as GC roots so `nix store gc` cannot collect a shell still in use.
-
-A project pins its own toolchain with a `flake.nix` plus a one-line `.envrc`:
-
-```bash
-echo 'use flake' > .envrc && direnv allow
-```
-
-That is how a project gets a Node or a Python the global toolchain does not
-ship. Add `.direnv/` to the project's `.gitignore` - it holds the GC roots.
-
-The guard around the source means a machine without nix-direnv still loads
-`direnvrc`; only `use flake` is unavailable.
+The global nix-direnv source hook has been removed. The work projects found
+using direnv rely on `use_gh_account`, not Nix. Node projects use nvm and
+`.nvmrc`; Python projects use uv. Upstream plugin checkouts can still contain
+Nix development files, but loading those plugins does not evaluate their
+`.envrc` or flakes.
 
 ## `use_gh_account`
 
-The direnv and gh binaries both come from [`flake.nix`](../flake.nix). direnv
-was previously apt's 2.32.1 while nix-direnv — a direnv plugin — came from the
-flake, so host and plugin sat under different managers. gh's tokens live in the
-system keyring, so it is unaffected by where gh itself is installed.
+direnv uses an [official release binary](software.md#editor-and-shell-tools).
+GitHub CLI uses its [official apt repository](software.md#everyday-cli-tools).
+Its existing system-keyring credentials are independent of the binary's
+installation source.
 
 Two GitHub accounts are logged in (`gh auth status`): `jakeryderv` (default,
 personal) and `ah-jakev` (work). Tokens live in the system keyring, not in
@@ -69,7 +58,7 @@ authenticate over SSH via the `github.com-work` host alias in `~/.ssh/config`
 
 | Repo | Account |
 | --- | --- |
-| `~/dev/arrow/gh/winchsim` | `ah-jakev` |
+| `~/dev/arrow/gh/winch-cad` | `ah-jakev` |
 | `~/dev/arrow/gh/winch-lab` | `ah-jakev` |
 
 Editing a `.envrc` revokes direnv's approval - run `direnv allow` in that repo
@@ -77,8 +66,10 @@ afterward.
 
 ## Fresh machine
 
+Install direnv using the [software inventory](software.md#editor-and-shell-tools),
+then deploy its configuration:
+
 ```bash
-nix profile add ~/.dots   # direnv and nix-direnv both come from flake.nix
 dots apply direnv
 ```
 

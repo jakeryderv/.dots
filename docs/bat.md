@@ -3,11 +3,10 @@
 Configuration and carbonfox theme for [bat](https://github.com/sharkdp/bat).
 Deployed to `~/.config/bat/`.
 
-The binary comes from [`flake.nix`](../flake.nix) under its canonical name.
-apt's copy is `batcat` (Debian renames it because another package owns `bat`)
-and stays installed but shadowed; the guarded alias in `config/shell/aliases.sh` is now
-a no-op, kept as the fallback for a machine without the flake. The config
-directory is `~/.config/bat` either way.
+The binary comes from an [official upstream .deb](software.md#everyday-cli-tools)
+as `/usr/bin/bat`. The guarded `batcat` alias in `config/shell/aliases.sh` is
+only a fallback for machines using Debian's renamed distro package. The
+configuration directory is `~/.config/bat` either way.
 
 ## Why this package exists
 

@@ -2,8 +2,12 @@
 
 My personal dotfiles for Pop!_OS / bash. Configuration is deployed as symlinks
 from a declarative [`dots.toml`](dots.toml) by [`dots`](dots.py); the
-software that configuration describes is declared in [`flake.nix`](flake.nix)
-and installed by Nix.
+software sources and install methods are recorded in
+[`docs/software.md`](docs/software.md). Language runtimes and package managers
+use upstream installations; formatters and linters use uv, Cargo, apt and npm.
+Everyday CLI tools use official apt repositories and release downloads.
+Editor and shell tools use upstream releases and plugin clones. Kanata uses
+its upstream release, QMK uses uv, and `dots` runs on system Python.
 
 ```bash
 dots status          # what is deployed, and does it match dots.toml
@@ -63,20 +67,12 @@ Documentation therefore lives in [`docs/`](docs/README.md) as `docs/<pkg>.md`,
 never inside a package. A `README.md` in `config/nvim/` would deploy to
 `~/.config/nvim/README.md`, and `dots validate` refuses one.
 
-### Config is linked; software comes from a flake
+### Config is linked; software sources are documented
 
-`dots` only ever moves configuration. The binaries that configuration describes
-are declared in [`flake.nix`](flake.nix) and pinned by a committed
-`flake.lock` — same idea, other half of the machine:
-
-```bash
-nix profile add ~/.dots      # install the toolchain
-dots apply                   # link the config
-```
-
-Neither one is optional on a fresh machine, and neither infers anything. What
-Nix cannot supply stays a script in [`tools/`](tools/README.md), with the reason
-recorded. See [`docs/nix.md`](docs/nix.md).
+`dots apply` links configuration and the `dots` command. Install software using
+[the software inventory](docs/software.md), which records each tool's official
+installation docs and update method. No package manager is required beyond
+those used by the tools you choose to install.
 
 ## Layout
 
@@ -85,10 +81,10 @@ recorded. See [`docs/nix.md`](docs/nix.md).
 | [`dots.toml`](dots.toml) | What deploys where |
 | [`config/`](config/README.md) | One directory per package, deployable content only |
 | [`docs/`](docs/README.md) | One file per package |
-| [`flake.nix`](flake.nix) | The toolchain and the `dots` package, pinned by `flake.lock`; pieces in [`nix/`](nix/README.md) |
 | [`dots.py`](dots.py) | The `dots` tool: deployer, validator, gate, doctor |
 | [`tests/`](tests/README.md) | Behaviour tests for `dots.py` |
-| [`tools/`](tools/README.md) | Installers for what nixpkgs cannot supply (`dots tools`) |
+| [`docs/software.md`](docs/software.md) | Tool sources, installation methods and local conventions |
+| [`tools/`](tools/README.md) | Historical packaging notes; no maintained installer scripts |
 | [`_wallpapers/`](_wallpapers/README.md) | Wallpaper / terminal background images |
 
 Only `config/` is ever deployed, and only the parts `dots.toml` names. The `_`
@@ -114,8 +110,8 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 [herdr](docs/herdr.md) (terminal workspace manager).
 
 **Desktop & misc** — [fonts](docs/fonts.md),
-[scripts](docs/scripts.md), [kanata](docs/kanata.md) (keyboard remapping),
-[nix](docs/nix.md) (the flakes opt-in; the flake itself is documented there).
+[scripts](docs/scripts.md), [dots](docs/dots.md),
+[kanata](docs/kanata.md) (keyboard remapping).
 
 ## Conventions
 
@@ -131,12 +127,13 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
   diagnostics match what the gate enforces.
 - **Formatting is enforced in CI, per language, with no flags.** `shfmt` for
   bash, `stylua` for Lua, `ruff` for Python; each reads the same config the
-  editor's format-on-save reads, so the two cannot disagree. Bulk reformats
-  belong in their own commit, listed in
+  editor's format-on-save reads. CI pins upstream Ruff and StyLua and uses
+  Ubuntu packages for ShellCheck/shfmt; verify changes with `dots check`.
+  Bulk reformats belong in their own commit, listed in
   [`.git-blame-ignore-revs`](.git-blame-ignore-revs).
-- **CI runs the flake's binaries.** The workflow pulls every gate tool from the
-  nixpkgs revision `flake.lock` pins, via `nix shell --inputs-from .`, so the
-  gate cannot drift from the editor.
+- **CI uses Ubuntu 24.04 and upstream releases.** The [workflow](.github/workflows/ci.yml)
+  installs only the gate's tools, then runs `python3 dots.py check`. Machine
+  software remains documented in the inventory, without custom installers.
 - **Every package is documented** in `docs/<pkg>.md`, covering what it is, where
   it deploys, how to activate it, and any external dependencies.
   `dots validate` enforces this against `dots.toml`.
@@ -144,38 +141,29 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 ## Setup on a new machine
 
 Written for **Pop!_OS / Debian** (apt, GNU coreutils, Linux x86_64). Helper
-scripts assume Linux x86_64 + apt/sudo.
+commands assume Linux x86_64 + apt/sudo.
 
 Install the distro prerequisites first. Git is needed before cloning; the C
-compiler and make are needed by Neovim's plugin/parser builds and are not in
-the flake. `xz-utils` is needed by the Nix installer.
+compiler and make are needed by Neovim's plugin/parser builds. Python 3.11+
+is needed by `dots.py`; Pop!_OS 24.04 supplies Python 3.12.
 
 ```bash
 sudo apt update
-sudo apt install git curl ca-certificates xz-utils tar build-essential
+sudo apt install git curl ca-certificates xz-utils tar unzip python3 build-essential
 ```
 
-Then [install Nix](docs/nix.md#prerequisites), open a new terminal, and confirm
-`nix --version` works before continuing.
-
-Debian renames two of these — `fd-find` provides `fdfind`, `bat` provides
-`batcat` — which is why both come from [`flake.nix`](flake.nix) under their
-canonical names instead. apt's `bat` was removed along with every other apt
-copy of a flake tool; `fd-find` stays because `pop-launcher` depends on it, and
-the names do not collide. The guarded alias in `config/shell/aliases.sh` is the
-fallback for a machine without the flake, not the mechanism.
+The [software inventory](docs/software.md#everyday-cli-tools) records the
+preferred upstream sources for Git and the other CLI tools. `bat` uses an
+official `.deb` under its canonical name; `fd` uses an upstream archive.
+The distro's `fd-find` stays for `pop-launcher` dependencies and provides the
+separate `fdfind` name. The guarded `batcat` alias is only a distro fallback.
 
 ```bash
 git clone https://github.com/jakeryderv/.dots.git ~/.dots
 cd ~/.dots
 
-# The toolchain first; `dots` itself is in it. The flag is the flakes opt-in;
-# `dots apply` then deploys the same setting to ~/.config/nix/nix.conf, so it
-# is typed exactly once.
-nix --extra-experimental-features 'nix-command flakes' profile add ~/.dots
-
-# Use the installed path until the new shell configuration has loaded.
-~/.nix-profile/bin/dots plan       # preview links and existing-file conflicts
+# Bootstrap directly with Python, before the dots command has been linked.
+python3 dots.py plan              # preview links and existing-file conflicts
 ```
 
 Back up existing files reported as conflicts before applying. For example,
@@ -184,7 +172,7 @@ prompts before replacing an existing backup):
 
 ```bash
 mv -i ~/.bashrc ~/.bashrc.pre-dots
-~/.nix-profile/bin/dots apply
+python3 dots.py apply
 
 cp config/shell/local.sh.example config/shell/local.sh   # then edit for this machine
 cp config/git/gitconfig.local.example ~/.gitconfig.local
@@ -198,32 +186,31 @@ any remaining conflicts and re-run it.
 Open a new Bash or Zsh session to load the shared environment and its PATH.
 Finish the setup steps for the tools you use:
 
-- [npm globals](tools/README.md#usage): create the writable npm prefix, then
-  run the installer. These tools are not installed by the flake.
+- [Language tools and npm CLIs](docs/software.md): install uv, rustup, Bun,
+  Go and nvm from upstream, then install Node and its global packages. Do not
+  configure an npm prefix; nvm owns the package location for each Node version.
 - [Zsh](docs/zsh.md): install the distro shell and select it with `chsh` if
-  desired; the flake supplies its plugins, not the shell itself.
+  desired; install its upstream plugin clones using the software inventory.
 - [Neovim](docs/nvim.md#first-run-order), [tmux](docs/tmux.md#external-dependencies),
-  and [fonts](docs/fonts.md): install plugins and refresh the font cache.
+  and [fonts](docs/fonts.md): install the upstream binaries, plugins and refresh
+  the font cache.
 - [Kanata](docs/kanata.md): review the machine's keyboard configuration and
   complete the permissions and service setup before enabling it.
 - GUI applications and standalone agent CLIs remain separate installs; see
   the relevant [package docs](docs/README.md). Authentication is per machine.
 
-Nix itself is the one bootstrap this repo does not manage, alongside the daemon
-settings in `/etc/nix/nix.conf` — [`docs/nix.md`](docs/nix.md) has both, per
-distro. Run `dots deps` to inventory commands and `dots doctor` after activation
+Run `dots deps` to inventory commands and `dots doctor` after activation
 to check the deployed links, PATH, and machine setup. These checks do not
-install missing software. Toolchain updates and recovery are documented in
-[`docs/nix.md`](docs/nix.md#usage).
+install missing software. Tool updates are documented in the software inventory.
 
 ## The `dots` tool
 
 [`dots.py`](dots.py) is one standard-library Python file: the deployer, the
 validator, the repository gate, and the machine doctor, behind one CLI. The
-`dots` on `PATH` comes from the flake ([`nix/dots.nix`](nix/dots.nix)): a
-wrapper that execs the live `dots.py` with a pinned python, so it exists
-before anything is linked and every command works from any directory. Without
-Nix, `python3 dots.py` is the same tool.
+`dots` on `PATH` is a symlink to the live script, deployed by the `dots`
+package. Its Python 3.11+ interpreter comes from `python3` on PATH. Every
+command works from any directory; `--repo` or `DOTS_REPO` can select another
+checkout. Before deployment, `python3 dots.py` is the same tool.
 
 ```bash
 dots status          # every entry: does the target resolve into the repo?
@@ -243,8 +230,8 @@ dots install NAME    # run tools/install-NAME.sh
 
 The line between `check` and `doctor` is what they may look at: `check` reads
 only the repository, so CI runs it on a bare checkout; `doctor` inspects the
-live machine — `$HOME`, shell wiring, deployed links, flake binaries shadowed
-on `PATH` — and runs `check` as one of its steps.
+live machine — `$HOME`, shell wiring, deployed links, and the command on
+`PATH` — and runs `check` as one of its steps.
 
 Two behaviours are enforced rather than documented. A real file at a target is
 a conflict: `apply` reports it and moves on, never overwrites; a stale symlink

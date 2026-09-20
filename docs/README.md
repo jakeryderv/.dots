@@ -1,6 +1,8 @@
 # docs/
 
 Per-package documentation, one file per package: `docs/<pkg>.md`.
+The [software inventory](software.md) records tool sources, installation methods
+and local conventions; official sites own the installation instructions.
 
 These live here rather than beside the config they describe because package
 directories under [`config/`](../config/README.md) contain **only deployable
@@ -14,11 +16,6 @@ exclusion rules.
 Each file should cover: what the tool is, where it deploys, how to activate it
 beyond linking, and any external dependencies.
 
-One file does double duty: [`nix.md`](nix.md) is the package doc for
-`config/nix` (the flakes opt-in) and also documents [`flake.nix`](../flake.nix),
-which provisions software rather than deploying config — the other half of how
-this repo is applied.
-
 | Doc | Source | Deploys to |
 | --- | --- | --- |
 | [`agent-skills.md`](agent-skills.md) | `config/agent-skills/project-practices` | `~/.agents/skills/`, `~/.claude/skills/` |
@@ -26,6 +23,7 @@ this repo is applied.
 | [`bash.md`](bash.md) | `config/bash/bashrc` | `~/.bashrc` |
 | [`bat.md`](bat.md) | `config/bat` | `~/.config/bat/` |
 | [`claude.md`](claude.md) | `config/claude` | `~/.claude/` |
+| [`dots.md`](dots.md) | `dots.py` | `~/.local/bin/dots` |
 | [`direnv.md`](direnv.md) | `config/direnv` | `~/.config/direnv/` |
 | [`editorconfig.md`](editorconfig.md) | `config/editorconfig/editorconfig` | `~/.editorconfig` |
 | [`fonts.md`](fonts.md) | `config/fonts` | `~/.local/share/fonts/` |
@@ -34,10 +32,9 @@ this repo is applied.
 | [`herdr.md`](herdr.md) | `config/herdr` | `~/.config/herdr/` |
 | [`kanata.md`](kanata.md) | `config/kanata`, `config/kanata` | `~/.config/kanata/`, `~/.config/systemd/user/` |
 | [`kitty.md`](kitty.md) | `config/kitty` | `~/.config/kitty/` |
-| [`nix.md`](nix.md) | `config/nix`; `flake.nix`, `flake.lock` | `~/.config/nix/`; the flake via `nix profile`, not a link |
 | [`nvim.md`](nvim.md) | `config/nvim` | `~/.config/nvim/` |
 | [`opencode.md`](opencode.md) | `config/opencode` | `~/.config/opencode/` |
-| [`scripts.md`](scripts.md) | `bin` | `~/.local/bin/` |
+| [`scripts.md`](scripts.md) | `config/scripts` | `~/.local/bin/` |
 | [`shell.md`](shell.md) | `config/shell` | `~/.config/shell/` |
 | [`starship.md`](starship.md) | `config/starship/starship.toml` | `~/.config/starship.toml` |
 | [`tealdeer.md`](tealdeer.md) | `config/tealdeer` | `~/.config/tealdeer/` |

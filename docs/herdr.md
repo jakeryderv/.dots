@@ -5,10 +5,8 @@
 Installed to `~/.local/bin/herdr` by its own installer from
 [herdr.dev](https://herdr.dev); config deployed to `~/.config/herdr/`.
 
-The binary stays outside [`flake.nix`](../flake.nix) deliberately, even though
-nixpkgs carries the same 0.8.2 that is running here: `herdr update` keeps it
-current on the `stable` channel (`herdr channel show`), and a Nix store is
-read-only. See [Why these stay scripts](../tools/README.md#why-these-stay-scripts).
+Install the upstream binary using Herdr's official instructions. `herdr update`
+keeps it current on the selected channel (`herdr channel show`).
 
 See the root [README](../README.md) for shared deployment mechanics.
 
@@ -183,8 +181,10 @@ updating a pin; the commands below install the reviewed revisions rather than
 following each repository's default branch.
 
 Requirements: Herdr **0.8.2+**, Git, Bash, `jq`, Go **1.24+** (picker build),
-Bun, and authenticated GitHub CLI (`gh auth status`). Go, Bun, Git, and `gh`
-come from the flake; `jq` is currently supplied by the host system. No new
+Bun, and authenticated GitHub CLI (`gh auth status`). Go and Bun use the
+[upstream installations](software.md); Git and `gh` use the
+[configured apt repositories](software.md#everyday-cli-tools).
+`jq` is currently supplied by the host system. No new
 GitHub credentials or permissions are needed when `gh` is already logged in.
 
 ```bash

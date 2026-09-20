@@ -30,27 +30,21 @@
 #     *) export PATH="$HOME/.local/some-tool/bin:$PATH" ;;
 # esac
 #
-# Do NOT re-add ~/.local/bin or ~/.npm-global/bin: env.sh already adds
-# both, guarded. Installers like to append an unguarded
+# Do NOT re-add ~/.local/bin: env.sh already adds it, guarded, and loads nvm
+# for Node and npm globals. Do not restore ~/.npm-global/bin or an npm prefix.
+# Installers like to append an unguarded
 # `export PATH="$HOME/.local/bin:$PATH"` here and to ~/.profile; delete those
 # rather than keeping them. ~/.profile's own stock block adds ~/.local/bin a
 # second time because Ubuntu sources ~/.bashrc before it, which is harmless
 # and left alone.
 
-# NOT here: fzf, starship and direnv. flake.nix guarantees all three, so their
-# shell integrations are in the rc file. Adding them here too would run each
-# hook twice.
+# NOT here: fzf, starship and direnv. Their guarded shell integrations are
+# already in the rc file. Adding them here too would run each hook twice.
 #
-# Also NOT here: `source ~/.cargo/env`, the bun installer's BUN_INSTALL block,
-# or a Go root. rustup, go and bun come from flake.nix. What their installers
-# append prepends ~/.cargo/bin or ~/.bun/bin *ahead* of the profile, which
-# shadows the flake's copies -- `just doctor` reports exactly that. The only
-# PATH entries they still need are for `cargo install` and `go install`
-# output, appended after the profile:
-# case ":$PATH:" in
-#     *":$HOME/.cargo/bin:"*) ;;
-#     *) export PATH="$PATH:$HOME/.cargo/bin" ;;
-# esac
+# Also NOT here: `source ~/.cargo/env`, the bun installer's PATH block, or a
+# Go root. See docs/software.md for upstream installation methods. env.sh adds
+# ~/.cargo/bin, ~/.bun/bin and ~/go/bin alongside ~/.local/bin. Skip redundant
+# installer-generated PATH blocks; no GOROOT override is needed.
 
 # --- CUDA toolkit (match the version installed on this machine) -------
 # export PATH="/usr/local/cuda-XX.X/bin:$PATH"

@@ -110,6 +110,34 @@ class DeployTests(unittest.TestCase):
     def assert_rc(self, result: subprocess.CompletedProcess[str], rc: int) -> None:
         self.assertEqual(result.returncode, rc, result.stdout + result.stderr)
 
+    def test_symlinked_command_finds_repo_from_another_directory(self) -> None:
+        shutil.copy2(DOTS, self.repo / "dots.py")
+        launcher = self.home / "dots"
+        launcher.symlink_to(self.repo / "dots.py")
+        env = {**os.environ, "HOME": str(self.home)}
+        env.pop("DOTS_REPO", None)
+        result = subprocess.run([str(launcher), "packages"], cwd=self.home, env=env, capture_output=True, text=True)
+        self.assert_rc(result, 0)
+        self.assertIn("alpha", result.stdout)
+
+    def test_repo_override_precedence(self) -> None:
+        env = {**os.environ, "DOTS_REPO": str(self.repo)}
+        result = subprocess.run(
+            [sys.executable, str(DOTS), "packages"], cwd=self.home, env=env, capture_output=True, text=True
+        )
+        self.assert_rc(result, 0)
+        self.assertIn("alpha", result.stdout)
+        env["DOTS_REPO"] = str(self.home / "does-not-exist")
+        result = subprocess.run(
+            [sys.executable, str(DOTS), "--repo", str(self.repo), "packages"],
+            cwd=self.home,
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+        self.assert_rc(result, 0)
+        self.assertIn("alpha", result.stdout)
+
     def test_plan_is_a_dry_run(self) -> None:
         self.assert_rc(self.fx.run("plan"), 0)
         self.assertFalse((self.home / ".config/alpha").exists())
@@ -136,6 +164,17 @@ class DeployTests(unittest.TestCase):
         result = self.fx.run("check")
         self.assert_rc(result, 1)
         self.assertIn("broken doc link: docs/alpha.md -> nowhere.md", result.stderr)
+
+    def test_check_handles_unstaged_document_additions_and_deletions(self) -> None:
+        retired = self.repo / "docs/retired.md"
+        retired.write_text("retired\n")
+        git(self.repo, "add", str(retired))
+        retired.unlink()
+        (self.repo / "docs/new.md").write_text("see [missing](nowhere.md)\n")
+        result = self.fx.run("check")
+        self.assert_rc(result, 1)
+        self.assertIn("broken doc link: docs/new.md -> nowhere.md", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
 
     def test_apply_deploys_every_mode(self) -> None:
         self.assert_rc(self.fx.run("apply"), 0)

@@ -130,13 +130,12 @@ return {
       end
 
       -- Install the servers (mason-lspconfig translates lspconfig -> mason
-      -- package names) plus the formatters/linters used by conform/nvim-lint.
+      -- package names).
       -- automatic_enable = false so ONLY the servers we vim.lsp.enable() below
       -- start -- this stops mason-lspconfig 2.x from auto-enabling extras like
       -- stylua's LSP mode.
-      -- Mason installs language servers and nothing else. Formatters, linters
-      -- and tree-sitter all come from flake.nix, so mason-tool-installer had
-      -- one entry left and is gone with it.
+      -- Mason installs language servers and nothing else. Global formatters,
+      -- linters and the Tree-sitter CLI follow docs/software.md.
       require('mason-lspconfig').setup({
         ensure_installed = vim.tbl_keys(servers),
         automatic_enable = false,

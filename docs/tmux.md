@@ -25,9 +25,11 @@ Reload a running server with `prefix + R` (prefix is `Alt+a`).
 
 ## External dependencies
 
-The **tmux binary** comes from [`flake.nix`](../flake.nix). It previously lived
-at `/usr/local/bin/tmux` as a hand-built copy that no package manager tracked;
-that file is left in place but shadowed. See [`nix.md`](nix.md).
+The **tmux binary** uses an official prebuilt Linux release at
+`~/.local/bin/tmux`; see [installation and updates](software.md#editor-and-shell-tools).
+TPM plugins remain under `~/.tmux/plugins`. An existing server keeps running
+its original binary until its sessions end; test upgrades on a separate socket
+before starting new normal sessions.
 
 Not a `dots` package — install separately:
 
@@ -42,8 +44,9 @@ Not a `dots` package — install separately:
   extrakto).
 - **fzf** and **tmux-sessionizer** — the generated cheatsheet (`prefix + ?`),
   session picker (`prefix + S`), and sessionizer (`prefix + f`) need these on
-  `PATH`. fzf comes from [`flake.nix`](../flake.nix); tmux-sessionizer is
-  vendored into [`scripts`](scripts.md), because nixpkgs packages a different
+  `PATH`. fzf comes from an [official release](software.md#everyday-cli-tools);
+  tmux-sessionizer is
+  vendored into [`scripts`](scripts.md), because other distributions package a different
   project of the same name.
 
 ## Links, mouse, and clipboard

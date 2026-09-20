@@ -7,10 +7,10 @@ wants, in the order it wants.
 
 | File | Sourced | Contents |
 | --- | --- | --- |
-| `env.sh` | first | The Nix profile if the shell did not inherit it, then PATH, EDITOR, MANPAGER, ls colours. POSIX sh, so both shells read one file. |
+| `env.sh` | first | PATH, EDITOR, MANPAGER, ls colours. POSIX sh, so both shells read one file. |
 | `functions.sh` | after the shell's own setup | `mkcd`, `up`. Written to run under both shells. |
 | `aliases.sh` | after functions | Aliases. Anything needing a bash-only builtin is in the rc file instead. |
-| `local.sh` | last | Machine-specific: CUDA, ROS, toolchain output dirs, secrets. **Untracked**; `local.sh.example` is the template. |
+| `local.sh` | last | Machine-specific: CUDA, ROS, secrets. **Untracked**; `local.sh.example` is the template. |
 
 `link` mode is deliberate. `local.sh` is untracked, so a `tree` entry would
 never deploy it; a directory symlink exposes whatever is in the directory,
@@ -38,4 +38,13 @@ Nothing here is loaded until an rc file does.
 Per-machine layer, not committed. Hardcoded paths (the CUDA version), tools
 that may be absent, secrets, or overrides of anything above. Installers like to
 append to it; audit it occasionally against `env.sh`, which already puts
-`~/.local/bin` and `~/.npm-global/bin` on `PATH` behind a duplication guard.
+`~/.local/bin`, `~/.cargo/bin`, `~/.bun/bin` and `~/go/bin`
+on `PATH` behind duplication guards. `CARGO_HOME` and `BUN_INSTALL`, if set,
+override the corresponding default directories. This shared configuration
+owns their PATH entries; avoid duplicate blocks from upstream installers.
+Installation methods and local conventions are in [`software.md`](software.md).
+
+`env.sh` also sources nvm from `${NVM_DIR:-~/.nvm}`. nvm selects the Node/npm
+version and its global package bin directory. Switching is explicit (`nvm use`);
+there is no directory-change hook. Do not set an npm `prefix` or add the retired
+`~/.npm-global/bin` path.

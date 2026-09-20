@@ -82,12 +82,12 @@ target = "~/.config/herdr"
 mode = "tree"
 target = "~/.config/opencode"
 
-# nix writes registry.json beside nix.conf.
-[packages.nix]
-mode = "tree"
-target = "~/.config/nix"
-
 # --- shared targets, other installers write here too -------------------------
+
+[packages.dots]
+mode = "link"
+source = "dots.py"
+target = "~/.local/bin/dots"
 
 [packages.fonts]
 mode = "tree"

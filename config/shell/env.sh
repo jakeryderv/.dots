@@ -3,35 +3,34 @@
 # its rc file, first, so everything after it sees the same PATH. POSIX sh on
 # purpose -- no bash-isms -- so bash and zsh read one file.
 
-# The Nix profile, if this shell did not inherit it. bash login shells get it
-# from /etc/profile.d/nix.sh, but zsh reads neither /etc/profile nor the
-# /etc/zshrc the installer writes (Debian's zsh reads /etc/zsh/zshrc), so a zsh
-# login shell would have no ~/.nix-profile/bin -- and so no starship, direnv,
-# fzf or nvim. Sourcing it here makes every shell self-sufficient on any
-# distro; the script guards itself against running twice, and it also sets
-# XDG_DATA_DIRS, which is how bash-completion finds the flake's completions.
-# Goes first so the prepends below still land ahead of the profile.
-nix_profile_sh=/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-if [ -r "$nix_profile_sh" ]; then
-    # shellcheck source=/dev/null
-    case ":$PATH:" in
-    *":$HOME/.nix-profile/bin:"*) ;;
-    *) . "$nix_profile_sh" ;;
-    esac
-fi
-unset nix_profile_sh
-
-# ~/.local/bin and the npm global prefix, guarded against duplication when a
-# subshell re-sources this. Node comes from flake.nix, whose store path is
-# read-only, so `npm install -g` needs the writable prefix ~/.npmrc names.
+# User-installed executables, guarded against duplication in subshells.
 case ":$PATH:" in
 *":$HOME/.local/bin:"*) ;;
 *) export PATH="$HOME/.local/bin:$PATH" ;;
 esac
+
+# Upstream language managers and their installed commands.
+for runtime_bin in "${CARGO_HOME:-$HOME/.cargo}/bin" "${BUN_INSTALL:-$HOME/.bun}/bin"; do
+    case ":$PATH:" in
+    *":$runtime_bin:"*) ;;
+    *) export PATH="$runtime_bin:$PATH" ;;
+    esac
+done
+unset runtime_bin
+# Binaries produced by go install; the Go runtime itself is in ~/.local/bin.
 case ":$PATH:" in
-*":$HOME/.npm-global/bin:"*) ;;
-*) export PATH="$HOME/.npm-global/bin:$PATH" ;;
+*":$HOME/go/bin:"*) ;;
+*) export PATH="$PATH:$HOME/go/bin" ;;
 esac
+
+# nvm owns Node, npm and each Node version's global packages. Do not set an
+# npm prefix or add the retired ~/.npm-global/bin; nvm selects the active bin.
+# Version switching is explicit (`nvm use`), with no directory-change hook.
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$NVM_DIR/nvm.sh"
+fi
 
 # ls colors
 if [ -x /usr/bin/dircolors ]; then

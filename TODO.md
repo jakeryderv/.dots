@@ -4,11 +4,6 @@ Next up / ideas for the dotfiles repo.
 
 - vscode
 - hermes
-- NixOS: `lib.tools` (nix/tools.nix) already exposes the package list as a
-  function for `environment.systemPackages` or home-manager. The open question
-  when a NixOS machine exists is which of `nix profile`, systemPackages and
-  home-manager to use there; home-manager would compete with dots.toml -- do
-  not pre-decide it. See docs/nix.md.
 
 ## Agent workflow — deferred items
 

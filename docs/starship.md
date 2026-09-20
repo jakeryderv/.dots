@@ -17,14 +17,11 @@ See the root [README](../README.md) for shared deployment mechanics.
 dots apply starship
 ```
 
-Nothing else. The binary comes from [`flake.nix`](../flake.nix) and
-[`config/bash/bashrc`](bash.md) runs `starship init bash`, so a machine
-that has run `nix profile add` and `dots apply` gets the
-prompt on the next shell.
-
-starship previously lived at `/usr/local/bin/starship`, put there by
-starship.rs' curl installer with nothing tracking it; that copy is left in
-place but shadowed. The init line used to be a manual step in `local.sh`.
+Install the binary using the [official installer](software.md#editor-and-shell-tools)
+with `--bin-dir "$HOME/.local/bin"`. The tracked Bash and Zsh rc files run
+`starship init` for their respective shells, so the prompt appears in a fresh
+shell after installation and `dots apply`. Do not add another init hook to
+`local.sh`.
 
 ## Notable choices
 

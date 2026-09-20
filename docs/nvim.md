@@ -7,7 +7,7 @@ Personal Neovim config (Lua, `lazy.nvim`). Deployed to `~/.config/nvim/`.
 - **Neovim ≥ 0.12** — the config uses modern APIs (`vim.lsp.config()` /
   `vim.lsp.enable()`, `vim.hl.on_yank()`, `vim.o.winborder`,
   `client:supports_method()`). It has a runtime fallback for `nvim-0.11`, but is
-  developed and tested against 0.12. Installed from [`flake.nix`](../flake.nix).
+  developed and tested against 0.12. Installed from an [official release archive](software.md#editor-and-shell-tools).
 - **git**, **curl** — plugin + tool fetching.
 - A **Nerd Font** (the repo ships `0xProto Nerd Font`; see root README for
   `fc-cache`/`fc-match`). Icons assume `vim.g.have_nerd_font`.
@@ -16,31 +16,33 @@ Personal Neovim config (Lua, `lazy.nvim`). Deployed to `~/.config/nvim/`.
 
 Plugins install on first launch via `lazy.nvim`; Mason then installs the
 language servers. Install the [distro prerequisites](../README.md#setup-on-a-new-machine)
-and the Nix profile first: `tree-sitter` comes from the flake, while the C
-compiler and make come from the distro's `build-essential`. Recommended
+and the [editor tools](software.md#editor-and-shell-tools) first. Neovim and
+`tree-sitter` use official releases; the C compiler and make come from the
+distro's `build-essential`. Recommended
 sequence on a fresh machine:
 
 1. `nvim` — let `lazy.nvim` finish installing plugins, then quit.
 2. `nvim` again — Mason auto-installs the LSP servers listed below. Wait for
-   `:Mason` / fidget to report done. Restart. (Formatters, linters and
-   `tree-sitter` are not Mason's; they come from
-   [`flake.nix`](../flake.nix).)
+   `:Mason` / fidget to report done. Restart. Install the separate
+   [formatters and linters](software.md#formatters-and-linters) too;
+   `tree-sitter` is installed from its official release too.
 3. `:TSUpdate` — build/refresh Treesitter parsers.
 
 ## Tooling ownership
 
-Split deliberately: Mason owns the language servers, which churn fastest and
-benefit from its auto-install; the flake owns everything else, which is stable
-and is also run by `dots check`, so pinning it keeps the editor
-and CI on one version.
+Mason owns language servers. Formatters and linters are global tools installed
+using the methods in [the software inventory](software.md#formatters-and-linters).
+Neovim and local `dots check` resolve the same tools through PATH. CI uses
+Ubuntu packages and pinned upstream releases; see the software inventory.
 
 | Tool | Owner | Notes |
 |------|-------|-------|
 | LSP servers: `lua_ls`, `bashls`, `pyright`, `html`, `cssls`, `emmet_language_server`, `vtsls` | Mason (`mason-lspconfig`) | auto-installed |
-| Formatters: `stylua`, `shfmt`, `prettierd` | [`flake.nix`](../flake.nix) | same binaries `dots check` uses |
-| Linters: `shellcheck`, `eslint_d` | [`flake.nix`](../flake.nix) | `.shellcheckrc` is read by both |
-| `tree-sitter` CLI | [`flake.nix`](../flake.nix) | builds every parser; was Mason's, but Mason's remit here is language servers |
-| **`ruff`** (Python format + lint) | [`flake.nix`](../flake.nix) | was a `uv tool` install; moved so all six formatters/linters share one owner |
+| `stylua` | Cargo | installed with the Lua syntax variants enabled |
+| `shfmt`, `shellcheck` | normal apt | shared by the editor and local `dots check` |
+| `prettierd`, `eslint_d` | npm under nvm | installed under both Node 24 and Node 22; install them for each Node version used to launch Neovim |
+| `tree-sitter` CLI | [official release](software.md#editor-and-shell-tools) | builds parsers; Mason owns language servers |
+| **`ruff`** (Python format + lint) | uv tool | `~/.local/bin/ruff` |
 
 ## External (non-Mason) dependencies
 
@@ -58,12 +60,13 @@ These features need system binaries and are **not** installed by Mason:
 - **`markdown-preview`** — hard-codes `firefox --new-window` (see
   `markdown-preview.lua`). Needs Firefox on `PATH`, or edit the `browserfunc`.
   Its `build` step also shells out to `node`/`yarn`, which come from
-  [`flake.nix`](../flake.nix).
+  [nvm and npm](software.md#node-and-npm-tools). Launch Neovim from a shell
+  with the intended Node version selected.
 
-Everything else a plugin shells out to is already declared in
-[`flake.nix`](../flake.nix) and needs no separate step: `rg` and `fd`
-(telescope auto-detects both -- the reason `fd` is in the flake at all),
-`lazygit`, `tmux` for vim-tmux-navigator, and `git` for lazy.nvim's clones.
+Other plugin dependencies include `rg` and `fd` for Telescope, `lazygit`,
+and `git` for lazy.nvim clones; these use the
+[official CLI installations](software.md#everyday-cli-tools). `tmux` for
+vim-tmux-navigator uses an [official prebuilt release](software.md#editor-and-shell-tools).
 
 ## Multiplexer navigation
 

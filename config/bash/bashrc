@@ -39,10 +39,9 @@ shopt -s checkwinsize
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # --- completion and readline -------------------------------------------------
-# bash-completion loads a command's completion on first Tab. It searches
-# $XDG_DATA_DIRS/bash-completion/completions, and the Nix profile script puts
-# ~/.nix-profile/share there, so every flake tool that ships a completion
-# (gh, rg, fd, bat, uv, ...) gets it with nothing listed here.
+# bash-completion loads completions from user and system data directories.
+# Official apt/.deb packages provide system completions; release archives
+# and generated completions use ~/.local/share/bash-completion/completions.
 if ! shopt -oq posix; then
     if [ -f /usr/share/bash-completion/bash_completion ]; then
         . /usr/share/bash-completion/bash_completion
@@ -50,6 +49,9 @@ if ! shopt -oq posix; then
         . /etc/bash_completion
     fi
 fi
+# nvm is loaded by env.sh; its Bash completion is installed with nvm itself.
+# shellcheck source=/dev/null
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 bind '"\t": menu-complete'
 bind '"\e[Z": menu-complete-backward'
 bind "set completion-ignore-case on"
@@ -80,8 +82,8 @@ if command -v tmux-sessionizer >/dev/null 2>&1; then
 fi
 
 # --- tool hooks --------------------------------------------------------------
-# All three come from flake.nix; the guards keep a machine without the flake
-# usable, just plainer. Hooks that install their own bindings go after ours.
+# These tools use upstream installations; see docs/software.md.
+# Guards keep missing tools optional. Hooks with bindings go after ours.
 command -v fzf >/dev/null 2>&1 && eval "$(fzf --bash)"
 command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook bash)"

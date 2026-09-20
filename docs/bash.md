@@ -27,9 +27,14 @@ real file: move the distro's aside first (`mv ~/.bashrc ~/.bashrc.pre-dots`).
 `~/.profile` stays the distro's and untracked — it sources `~/.bashrc` for
 login shells and gives the graphical session its `PATH`.
 
-## Completions from the flake
+## Completions
 
-bash-completion loads a command's completion on first Tab from
-`$XDG_DATA_DIRS/bash-completion/completions`. The Nix profile script puts
-`~/.nix-profile/share` on `XDG_DATA_DIRS`, so every flake tool that ships a
-completion (gh, rg, fd, bat, uv, cargo, ...) is covered without being listed.
+bash-completion loads a command's completion on first Tab from user and system
+data directories. Official apt/.deb packages supply system completions;
+release archives and generated completions go under
+`${XDG_DATA_HOME:-~/.local/share}/bash-completion/completions`.
+See [the software inventory](software.md#completions-manuals-and-integrations)
+for the CLI completion sources.
+
+nvm is loaded by the shared environment file; its own `bash_completion` is
+sourced afterward by `bashrc`.

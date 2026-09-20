@@ -5,25 +5,40 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     name: Validate dotfiles repository
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
-      - uses: cachix/install-nix-action@v31
-      # The gate's tools come from the same nixpkgs revision flake.lock pins,
-      # not from apt: --inputs-from resolves `nixpkgs#` to the locked input, so
-      # shfmt, shellcheck, stylua, ruff and kanata here are identical to the
-      # ones the editor and `dots check` run locally. Only the gate's tools are
-      # pulled here; nix.yml builds the whole profile when its inputs change.
-      # lua5_4 is CI-only: `luac -p` needs it,
-      # and it is not a machine tool, so it is not in flake.nix.
+      - name: Install gate tools
+        # Keep upstream formatter versions explicit; see docs/software.md.
+        # A venv avoids modifying the runner's system Python packages.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck shfmt lua5.4 zsh python3-venv
+          python3 -m venv "$RUNNER_TEMP/gate-venv"
+          "$RUNNER_TEMP/gate-venv/bin/pip" install 'ruff==0.16.7'
+          echo "$RUNNER_TEMP/gate-venv/bin" >> "$GITHUB_PATH"
+          mkdir -p "$RUNNER_TEMP/gate-bin" "$RUNNER_TEMP/gate-downloads"
+          cd "$RUNNER_TEMP/gate-downloads"
+          curl -fsSL https://github.com/JohnnyMorganz/StyLua/releases/download/v2.5.2/stylua-linux-x86_64.zip -o stylua.zip
+          curl -fsSL https://github.com/jtroo/kanata/releases/download/v1.12.0/linux-binaries-x64.zip -o kanata.zip
+          curl -fsSL https://github.com/neovim/neovim/releases/download/v0.12.5/nvim-linux-x86_64.tar.gz -o nvim.tar.gz
+          echo 'bcb0d855e91f102f28a370e850f8566b3b44b79e6274d806ea5246837c0fd5ab  stylua.zip' | sha256sum -c -
+          echo '0bedd91567c5d7c54679061baadc37e4f83fb71750003999bc1d11f2c9754f36  kanata.zip' | sha256sum -c -
+          echo 'bce0f56eda1f1b1db6eee8f4133d7a38813ea07933837dd1777411ca384c6875  nvim.tar.gz' | sha256sum -c -
+          unzip -q stylua.zip stylua
+          unzip -q kanata.zip kanata_linux_x64
+          install -m 0755 stylua "$RUNNER_TEMP/gate-bin/stylua"
+          install -m 0755 kanata_linux_x64 "$RUNNER_TEMP/gate-bin/kanata"
+          tar -xzf nvim.tar.gz -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/gate-bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
       - name: Run the gate
         env:
           REQUIRE_LINTERS: "1"
-          DOTS_REPO: ${{ github.workspace }}
-        run: >
-          nix shell --inputs-from . .#dots
-          nixpkgs#shellcheck nixpkgs#shfmt nixpkgs#stylua nixpkgs#ruff nixpkgs#lua5_4 nixpkgs#kanata
-          -c dots check
+        run: python3 dots.py check

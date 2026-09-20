@@ -141,8 +141,7 @@ id -nG | tr ' ' '\n' | grep -x input
 ## Activate
 
 ```bash
-# kanata itself comes from flake.nix (nix profile add ~/.dots); the unit
-# execs ~/.nix-profile/bin/kanata.
+# Install the upstream non-cmd binary in ~/.local/bin first; see software.md.
 dots apply kanata        # link the config and the unit file, each where it belongs
 # ...permissions, then log out and back in...
 systemctl --user daemon-reload
@@ -161,7 +160,7 @@ changes that if it matters.
 `dots check` parses the config with `kanata --check` whenever kanata is
 installed, and `dots doctor` reports whether the service is running and the
 `input` group took. The config check is not escalated by `REQUIRE_LINTERS`,
-but CI pulls kanata from the flake's nixpkgs anyway, so it runs there too.
+but CI installs the upstream binary explicitly, so it runs there too.
 
 By hand:
 
@@ -213,7 +212,7 @@ is the reference for layers, aliases, and the tap-hold variants.
 - **`--no-wait` in the unit** — without it kanata stops at a "Press enter to
   exit" prompt on failure rather than exiting, so the process never dies and
   `Restart=on-failure` never fires.
-- **Non-`cmd` build** — the release zip ships two binaries; the installer takes
+- **Non-`cmd` build** — the release zip ships two binaries; install
   the one compiled without the `cmd` action, so a config can never execute shell
   commands from a process that sees every keystroke.
 - **No `f24` workaround** — many tap-hold configs wrap each action in
@@ -230,6 +229,6 @@ is the reference for layers, aliases, and the tap-hold variants.
 
 Not managed by this repo:
 
-- **kanata** — the binary. Declared in [`flake.nix`](../flake.nix); the
-  systemd unit execs it from `~/.nix-profile/bin/kanata`.
+- **kanata** — the [upstream binary](software.md#keyboard-tools-and-dots); the
+  systemd unit execs it from `~/.local/bin/kanata`.
 - **`input` group membership and the udev rule** — see [Permissions](#permissions).

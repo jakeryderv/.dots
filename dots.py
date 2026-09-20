@@ -49,7 +49,7 @@ OPTIONAL_TOOLS = [
     "shellcheck", "shfmt", "stylua", "prettierd", "eslint_d", "ruff", "luac", "fc-cache",
     "starship", "vim", "nvim", "tmux", "fzf", "bat", "rg", "fd", "ast-grep", "delta", "lazygit", "glow", "qmk",
     "git", "gh", "direnv", "uv", "rustup", "cargo", "go", "bun", "node", "npm", "pnpm", "yarn", "tldr",
-    "kanata", "pi", "claude", "agy", "cf", "wrangler", "herdr", "nix",
+    "kanata", "pi", "claude", "agy", "cf", "wrangler", "herdr",
 ]
 # fmt: on
 
@@ -444,25 +444,6 @@ def cmd_deps(repo: Repo, links: list[Link], out: Out) -> int:
     return missing
 
 
-def shadowed_flake_binaries(repo: Repo) -> list[str]:
-    """Flake binaries that an earlier PATH entry provides first.
-
-    Installed but never run is silent: `nix profile list` and `dots deps` both
-    look healthy. ~/.local/bin sits ahead of the profile and cannot be reordered
-    from this repo, so detect it and delete the older copy when it shows up.
-    """
-    profile = repo.home / ".nix-profile/bin"
-    found = []
-    if profile.is_dir():
-        for binary in sorted(profile.iterdir()):
-            if binary.is_dir() or not os.access(binary, os.X_OK):
-                continue
-            resolved = shutil.which(binary.name)
-            if resolved and resolved.startswith("/") and resolved != str(binary):
-                found.append(f"{binary.name}: {resolved}")
-    return found
-
-
 def cmd_doctor(repo: Repo, links: list[Link], out: Out) -> int:
     """Live-machine health: shell wiring, the deployed entrypoint, link state."""
     fail = 0
@@ -472,13 +453,13 @@ def cmd_doctor(repo: Repo, links: list[Link], out: Out) -> int:
     dirty = subprocess.run(git_status, capture_output=True, text=True).stdout
     out.ok("git working tree clean") if not dirty else out.warn("git working tree has changes")
 
-    # `dots` on PATH is the flake's wrapper (nix/dots.nix), which execs this
-    # file. Anything else resolving first is a stale copy of the old wrapper.
+    # The deployed command links to the live script, so edits take effect
+    # immediately and the repository can be found from any working directory.
     found = shutil.which("dots")
-    if found and same_path(Path(found), repo.home / ".nix-profile/bin/dots"):
-        out.ok("dots on PATH is the flake's wrapper")
+    if found and same_path(Path(found), repo.root / "dots.py"):
+        out.ok("dots on PATH resolves to this repository's dots.py")
     else:
-        out.warn(f"dots on PATH is {found or 'missing'}; expected ~/.nix-profile/bin/dots (nix profile add ~/.dots)")
+        out.warn(f"dots on PATH is {found or 'missing'}; deploy with python3 dots.py apply dots")
         fail = 1
 
     if (repo.root / "config/shell/local.sh").is_file():
@@ -503,15 +484,6 @@ def cmd_doctor(repo: Repo, links: list[Link], out: Out) -> int:
             fail = 1
     else:
         out.warn("kanata unavailable; skipping keyboard remapper checks")
-
-    shadowed = shadowed_flake_binaries(repo)
-    if shadowed:
-        out.warn("flake binaries shadowed by an earlier PATH entry (delete the older copy):")
-        for line in shadowed:
-            out.line(f"    {line}")
-        fail = 1
-    else:
-        out.ok("no flake binary is shadowed on PATH")
 
     gate_log = io.StringIO()
     if cmd_check(repo, links, Out(stream=gate_log)) == 0:
@@ -556,7 +528,7 @@ def broken_doc_links(repo: Repo) -> list[str]:
     someone follows it; the stow-to-manifest migration broke 29 in one commit.
     """
     broken = []
-    for f in repo.tracked(Path(".")):
+    for f in repo.candidates():
         if f.suffix != ".md":
             continue
         for m in re.finditer(r"\[[^\]]*\]\(([^)#][^)]*)\)", (repo.root / f).read_text()):
@@ -707,7 +679,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="dots", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("--repo", type=Path, help="repository root (default: the one this script lives in)")
+    parser.add_argument("--repo", type=Path, help="repository root (default: DOTS_REPO or this script's directory)")
     sub = parser.add_subparsers(dest="command", metavar="command")
     for name, doc in (
         ("status", "what is deployed, and does it match the manifest"),
@@ -730,7 +702,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    root = (args.repo or Path(__file__).resolve().parent).resolve()
+    root = (args.repo or Path(os.environ.get("DOTS_REPO") or Path(__file__).resolve().parent)).resolve()
     repo = Repo(root, dict(os.environ))
     out = Out()
     try:

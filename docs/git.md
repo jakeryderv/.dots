@@ -49,16 +49,16 @@ The explicit `--includes` makes `git config --global` show entries loaded from
 
 ## External dependencies
 
-The **git binary** comes from [`flake.nix`](../flake.nix); apt's `/usr/bin/git`
-stays installed for system packages that depend on it, and is shadowed on
-`PATH`. See [`nix.md`](nix.md).
+The **Git binary** comes from the `git-core/ppa` apt repository recommended by
+Git's official Ubuntu installation guide. GitHub CLI uses its official apt
+repository, and Delta uses its official `.deb` release. See the
+[software inventory](software.md#everyday-cli-tools) for setup and updates.
 
-Not managed by this repo:
+Other dependencies:
 
 - **Git LFS** — needed by the tracked `filter.lfs` configuration when working
-  with repositories that use LFS.
-- **Neovim** — configured as the Git editor.
+  with repositories that use LFS; remains a system package.
+- **Neovim** — configured as the Git editor; installed from an official release.
 - **GitHub CLI** — needed when the local config uses `gh auth git-credential`.
-  Comes from [`flake.nix`](../flake.nix). The helper must invoke bare `gh`, not
-  an absolute path: a hardcoded `/usr/bin/gh` keeps resolving to an apt copy and
-  silently pins Git auth to it.
+  Keep the helper as bare `gh` so PATH selects the installed copy. Existing
+  credentials stay in their normal locations and do not need reauthorization.

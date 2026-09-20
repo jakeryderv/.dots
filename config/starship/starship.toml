@@ -12,7 +12,6 @@ $git_branch\
 $git_state\
 $git_status\
 $python\
-$nix_shell\
 $fill\
 $status\
 $cmd_duration\
@@ -25,7 +24,7 @@ symbol = " "
 
 # Colours are ANSI names, so the terminal theme (carbonfox in all four) sets
 # the real values, and each kind of information gets its own: where is blue,
-# git is purple with pink for dirty, a nix shell is cyan, a venv stays grey
+# git is purple with pink for dirty, a venv stays grey
 # (the glyph is enough), outcomes are red (exit code) and yellow (duration), and the shell
 # name stays dim grey because it is metadata, not information.
 [directory]
@@ -47,17 +46,6 @@ style = "bright-black"
 disabled = false
 format = "[$status]($style) "
 style = "bold red"
-
-# Inside a `nix develop` or a nix-direnv `use flake` project, IN_NIX_SHELL is
-# set and this shows it -- the toolchain in front of you is the project's, not
-# the profile's, which is worth knowing at a glance.
-[nix_shell]
-format = "[$symbol$state]($style) "
-symbol = "❄ "
-impure_msg = "nix"
-pure_msg = "nix"
-unknown_msg = "nix"
-style = "cyan"
 
 [character]
 success_symbol = "[❯](purple)"
