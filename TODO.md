@@ -4,6 +4,7 @@ Next up / ideas for the dotfiles repo.
 
 - vscode
 - hermes
+- leaf (markdown viewer thing)
 
 ## Agent workflow — deferred items
 
