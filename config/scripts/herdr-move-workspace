@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# herdr-move-workspace - move the focused herdr workspace one place up or down
+# in the sidebar. Bound to prefix+shift+k/j in config/herdr/config.toml.
+#
+# herdr 0.8.2 has no keybinding action or CLI subcommand for this, but its
+# socket API does (`workspace.move`), which is what sidebar dragging uses.
+# insert_index counts positions before the workspace is removed, so moving
+# down one place is index+2, not index+1.
+#
+# Requires jq and socat.
+
+set -euo pipefail
+
+usage() {
+    echo "usage: herdr-move-workspace up|down" >&2
+    exit 2
+}
+
+[[ $# -eq 1 ]] || usage
+direction=$1
+[[ $direction == up || $direction == down ]] || usage
+
+sock=${HERDR_SOCKET_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/herdr/herdr.sock}
+
+# One newline-terminated JSON request per connection; the server replies and
+# closes, so socat returns as soon as the response arrives.
+call() {
+    jq -nc --arg method "$1" --argjson params "$2" \
+        '{id: "herdr-move-workspace", method: $method, params: $params}' |
+        socat -t 2 - "UNIX-CONNECT:$sock"
+}
+
+read -r id index count < <(
+    call workspace.list '{}' | jq -r '
+		.result.workspaces as $ws
+		| ($ws | map(.focused) | index(true)) as $i
+		| if $i == null then empty else "\($ws[$i].workspace_id) \($i) \($ws | length)" end'
+) || exit 0 # no focused workspace: nothing to move
+
+if [[ $direction == up ]]; then
+    ((index > 0)) || exit 0
+    target=$((index - 1))
+else
+    ((index < count - 1)) || exit 0
+    target=$((index + 2))
+fi
+
+response=$(call workspace.move "$(jq -nc --arg id "$id" --argjson i "$target" \
+    '{workspace_id: $id, insert_index: $i}')")
+if jq -e '.error' <<<"$response" >/dev/null; then
+    echo "herdr-move-workspace: $(jq -c '.error' <<<"$response")" >&2
+    exit 1
+fi

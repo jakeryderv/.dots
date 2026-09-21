@@ -102,8 +102,10 @@ previous_agent = "prefix+shift+a"
 focus_agent = "prefix+alt+1..9"
 
 # --- Tabs --------------------------------------------------------------------
-move_tab_previous = "prefix+shift+left"
-move_tab_next = "prefix+shift+right"
+# Shift+h/l moves the tab the way h/l steps between them (tmux.conf: swap-window).
+# Shift+k/j moves the workspace: see the herdr-move-workspace commands below.
+move_tab_previous = ["prefix+shift+h", "prefix+shift+left"]
+move_tab_next = ["prefix+shift+l", "prefix+shift+right"]
 
 # --- tmux parity -------------------------------------------------------------
 # herdr and tmux run side by side in two Ghostty tabs, so every verb they share
@@ -147,6 +149,22 @@ type = "popup"
 command = "lazygit"
 width = "80%"
 height = "80%"
+
+# --- Workspace reorder -------------------------------------------------------
+# herdr 0.8.2 has no keybinding action for this, only the socket API's
+# workspace.move (what sidebar dragging uses). config/scripts/herdr-move-workspace
+# calls it; `shell` runs it detached with no pane or popup.
+[[keys.command]]
+key = "prefix+shift+k"
+type = "shell"
+command = "herdr-move-workspace up"
+description = "move workspace up"
+
+[[keys.command]]
+key = "prefix+shift+j"
+type = "shell"
+command = "herdr-move-workspace down"
+description = "move workspace down"
 
 # --- Plugins -----------------------------------------------------------------
 # Install the pinned plugins first; see docs/herdr.md. The navigation bridge

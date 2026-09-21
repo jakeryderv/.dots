@@ -18,6 +18,15 @@ holding one symlink per tracked file, beside everything else that lands there.
 
 ## Scripts
 
+### `herdr-move-workspace`
+
+Move the focused [herdr](herdr.md) workspace one place `up` or `down` in the
+sidebar. Bound to `prefix + Shift+k/j`. herdr 0.8.2 has no keybinding action or
+CLI subcommand for reordering workspaces, but its socket API has
+`workspace.move` (what sidebar dragging uses), so the script sends that request
+directly to `$HERDR_SOCKET_PATH`. It does nothing at either end of the list.
+Needs `jq` and `socat`, both currently supplied by the host system.
+
 ### `tmux-sessionizer`
 
 fzf a project directory and attach or switch to a tmux session for it. Bound to

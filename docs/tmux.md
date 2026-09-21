@@ -104,6 +104,9 @@ place.
   window, `k`/`j` previous/next session, matching herdr's tabs and workspaces.
   This replaces tmux's default `prefix + l` (last-window). Pane focus stays on
   `Ctrl+hjkl`, with the default `prefix + arrows` as the fallback.
+  `prefix + H`/`L` swap the window left/right (replacing the default `L`,
+  last-session). Sessions are ordered by name, so unlike herdr workspaces
+  (`Shift+k/j`) they cannot be moved.
 - **Unified picker popups** — session switching (`prefix + S`), project sessions
   (`prefix + f`), and tmux-fzf (`prefix + F`) use 70% × 60% popups.
 - **Terminal text extraction** — Extrakto (`prefix + Tab`) fuzzy-finds text,

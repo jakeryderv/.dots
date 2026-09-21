@@ -122,7 +122,8 @@ What `config.toml` changes or adds:
 | `prefix + a` / `Shift+a` | Next / previous agent | Unbound upstream, and the point of the tool |
 | `prefix + Alt+1..9` | Focus agent by index | Upstream's own example — unreachable until Ghostty released `alt+1..9` |
 | `Ctrl+Shift+Alt+←↓↑→` | Resize pane directly | The chords Ghostty used for `resize_split` |
-| `prefix + Shift+←` / `→` | Move tab | — |
+| `prefix + Shift+h` / `l` (or `Shift+←` / `→`) | Move tab | Mirrors `h`/`l` |
+| `prefix + Shift+k` / `j` | Move workspace up / down | No built-in action; runs [`herdr-move-workspace`](scripts.md#herdr-move-workspace) |
 | `` prefix + ` `` | Floating terminal popup | Mirrors tmux's `Alt+`` ` `` toggle-popup, same 80%×80% |
 | `prefix + Alt+g` | lazygit popup | Same dimensions |
 | `prefix + ,` | Rename tab | tmux's rename-window key; default was `shift+t` |
