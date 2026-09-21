@@ -177,6 +177,7 @@ upstream Ruff/StyLua and Ubuntu's ShellCheck/shfmt; see below.
 | Git | [Git Linux installation](https://git-scm.com/install/linux) | configured apt: `ppa:git-core/ppa`, recommended by Git's Ubuntu instructions | `/usr/bin/git`; normal apt updates after adding the PPA |
 | GitHub CLI (`gh`) | [official apt setup](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) | configured apt: `https://cli.github.com/packages` | `/usr/bin/gh`; apt updates |
 | Glow | [official apt setup](https://github.com/charmbracelet/glow#installation) | configured apt: `https://repo.charm.sh/apt/` | `/usr/bin/glow`; apt updates |
+| Leaf | [installation](https://github.com/RivoLink/leaf#install), [updates](https://github.com/RivoLink/leaf#update) | upstream binary installer | `~/.local/bin/leaf`; `leaf --update` |
 | Delta | [installation](https://dandavison.github.io/delta/installation.html), [releases](https://github.com/dandavison/delta/releases) | official `.deb`: `git-delta_VERSION_amd64.deb` | `/usr/bin/delta`; download a newer package and install it with apt |
 | ripgrep (`rg`) | [installation](https://github.com/BurntSushi/ripgrep#installation), [releases](https://github.com/BurntSushi/ripgrep/releases) | official `.deb`: `ripgrep_VERSION_amd64.deb` | `/usr/bin/rg`; download a newer package and install it with apt |
 | bat | [installation](https://github.com/sharkdp/bat#installation), [releases](https://github.com/sharkdp/bat/releases) | official `.deb`: `bat_VERSION_amd64.deb` | `/usr/bin/bat`; download a newer package and install it with apt |
@@ -196,6 +197,12 @@ The verified release URLs and SHA-256 digests are recorded locally in
 `~/.local/state/dots-migrations/2026-09-20-cli/verified-downloads.json`.
 
 ### Installation and updates
+
+Leaf's upstream installer defaults to `~/.local/bin`, already on this repo's
+PATH. Use the linked installation instructions on a new machine and
+`leaf --update` for updates; do not install a second copy through npm or Cargo.
+Leaf **1.28.2** was verified locally on 2026-09-21. Its [configuration and
+editor mappings](leaf.md) are deployed separately from the executable.
 
 For Git, gh and Glow, follow the linked repository setup instructions once.
 Use `noble` on this Pop!_OS 24.04 machine when an Ubuntu codename is needed.

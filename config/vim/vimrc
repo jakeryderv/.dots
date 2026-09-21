@@ -95,3 +95,23 @@ nnoremap <silent> <C-k> :call <SID>Navigate('k', '-U')<CR>
 nnoremap <silent> <C-l> :call <SID>Navigate('l', '-R')<CR>
 nnoremap <silent> <C-\> :call <SID>Navigate('p', '-l')<CR>
 
+" Leaf previews the saved Markdown file in a terminal split, without plugins.
+function! s:LeafPreview() abort
+  if !has('terminal') || !executable('leaf')
+    echo 'Leaf preview requires Vim +terminal and leaf on PATH'
+    return
+  endif
+  let l:path = expand('%:p')
+  if empty(l:path) || !filereadable(l:path)
+    echo 'Save this Markdown file before opening Leaf'
+    return
+  endif
+  botright vnew
+  call term_start(['leaf', '--watch', '--', l:path], {'curwin': 1})
+endfunction
+
+augroup markdown_leaf
+  autocmd!
+  autocmd FileType markdown command! -buffer LeafPreview call <SID>LeafPreview()
+  autocmd FileType markdown nnoremap <buffer> <silent> <leader>ml :LeafPreview<CR>
+augroup END

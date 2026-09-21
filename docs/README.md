@@ -32,6 +32,7 @@ beyond linking, and any external dependencies.
 | [`herdr.md`](herdr.md) | `config/herdr` | `~/.config/herdr/` |
 | [`kanata.md`](kanata.md) | `config/kanata`, `config/kanata` | `~/.config/kanata/`, `~/.config/systemd/user/` |
 | [`kitty.md`](kitty.md) | `config/kitty` | `~/.config/kitty/` |
+| [`leaf.md`](leaf.md) | `config/leaf` | `~/.config/leaf/` |
 | [`nvim.md`](nvim.md) | `config/nvim` | `~/.config/nvim/` |
 | [`opencode.md`](opencode.md) | `config/opencode` | `~/.config/opencode/` |
 | [`scripts.md`](scripts.md) | `config/scripts` | `~/.local/bin/` |

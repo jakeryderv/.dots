@@ -68,6 +68,12 @@ and `git` for lazy.nvim clones; these use the
 [official CLI installations](software.md#everyday-cli-tools). `tmux` for
 vim-tmux-navigator uses an [official prebuilt release](software.md#editor-and-shell-tools).
 
+## Markdown preview
+
+For Markdown, **Space m l** / `:LeafPreview` opens [Leaf](leaf.md) in a terminal
+split and refreshes on save. Install `leaf` separately and deploy its config
+with `dots apply leaf`. **Space m p** keeps the existing Firefox preview.
+
 ## Multiplexer navigation
 
 `Ctrl+h/j/k/l` moves between Neovim splits and the surrounding multiplexer.

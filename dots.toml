@@ -72,6 +72,11 @@ target = "~/.config/shell"
 
 # --- ~/.config, the tool writes into its own directory -----------------------
 
+# Leaf keeps optional recent-file history beside config.toml.
+[packages.leaf]
+mode = "tree"
+target = "~/.config/leaf"
+
 # herdr keeps sockets, logs and session-history.json beside config.toml.
 [packages.herdr]
 mode = "tree"

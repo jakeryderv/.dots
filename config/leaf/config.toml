@@ -1,0 +1,3 @@
+theme = "carbonfox.toml"
+editor = 'nvim +{$line}'
+watch = true

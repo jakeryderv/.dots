@@ -51,6 +51,9 @@ beside them instead of landing in the repo.
   the terminal palette is itself carbonfox.
 - `Ctrl-h/j/k/l` and `Ctrl-\` navigation across Vim splits and tmux panes,
   implemented directly without a Vim plugin.
+- **Space m l** / `:LeafPreview` in Markdown buffers opens [Leaf](leaf.md) in
+  a terminal split, refreshing the saved file on write. Requires `leaf` on
+  PATH and Vim's `+terminal` feature; no plugin is needed.
 
 ## Requirements
 
