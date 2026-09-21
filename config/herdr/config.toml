@@ -86,6 +86,13 @@ focus_pane_left = "prefix+left"
 focus_pane_down = "prefix+down"
 focus_pane_up = "prefix+up"
 focus_pane_right = "prefix+right"
+# herdr's swap_pane_* actions (missing from `herdr --default-config`) default to
+# prefix+shift+hjkl, which the tab/workspace moves above now own. Unbind them so
+# each chord has one meaning; pane swapping lives in move mode (prefix+m).
+swap_pane_left = ""
+swap_pane_down = ""
+swap_pane_up = ""
+swap_pane_right = ""
 
 # --- Agents ------------------------------------------------------------------
 # Jump between agent panes without going through the sidebar. Unbound upstream,
@@ -149,6 +156,19 @@ type = "popup"
 command = "lazygit"
 width = "80%"
 height = "80%"
+
+# --- Move mode ---------------------------------------------------------------
+# prefix+m, then hjkl/arrows swaps the focused pane with its neighbour until
+# Esc/Enter/q -- the counterpart of resize mode (prefix+r), and of tmux.conf's
+# move-mode table. herdr has no user-defined key tables, so the "mode" is a
+# small popup running config/scripts/herdr-move-mode, which calls pane.swap.
+[[keys.command]]
+key = "prefix+m"
+type = "popup"
+command = "herdr-move-mode"
+width = 46
+height = 4
+description = "move mode: swap panes with hjkl"
 
 # --- Workspace reorder -------------------------------------------------------
 # herdr 0.8.2 has no keybinding action for this, only the socket API's

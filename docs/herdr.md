@@ -124,6 +124,7 @@ What `config.toml` changes or adds:
 | `Ctrl+Shift+Alt+←↓↑→` | Resize pane directly | The chords Ghostty used for `resize_split` |
 | `prefix + Shift+h` / `l` (or `Shift+←` / `→`) | Move tab | Mirrors `h`/`l` |
 | `prefix + Shift+k` / `j` | Move workspace up / down | No built-in action; runs [`herdr-move-workspace`](scripts.md#herdr-move-workspace) |
+| `prefix + m`, then `hjkl`/arrows | Move mode: swap pane with its neighbour | Popup running [`herdr-move-mode`](scripts.md#herdr-move-mode); `Esc`/`Enter`/`q` exits. Mirrors tmux's `move-mode` |
 | `` prefix + ` `` | Floating terminal popup | Mirrors tmux's `Alt+`` ` `` toggle-popup, same 80%×80% |
 | `prefix + Alt+g` | lazygit popup | Same dimensions |
 | `prefix + ,` | Rename tab | tmux's rename-window key; default was `shift+t` |
@@ -165,6 +166,12 @@ while Herdr's `prefix+e` opens scrollback in the editor.
 
 Tmux's synchronize-panes moved off `a` to `*`, so `prefix+a` means "agent"
 everywhere it means anything.
+
+**Hidden swap defaults.** herdr 0.8.2 also has `swap_pane_left/down/up/right`,
+bound to `prefix+Shift+h/j/k/l`, but `herdr --default-config` omits them. Those
+chords now move tabs and workspaces, so `config.toml` unbinds the swap actions
+(`""`) and pane swapping lives in move mode instead. When checking a key for
+conflicts, the upstream [keyboard docs](https://herdr.dev) are the fuller list.
 
 **Split naming is inverted from tmux.** Herdr names a split after the divider's
 orientation; tmux names it after the flag:

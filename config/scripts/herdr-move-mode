@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# herdr-move-mode - sticky "move mode" for herdr panes: hjkl (or arrows) swaps
+# the focused pane with its neighbour in that direction until Esc/Enter/q.
+# Bound to prefix+m in config/herdr/config.toml, running in a small popup; the
+# tmux equivalent is the move-mode key table in tmux.conf.
+#
+# herdr has no user-defined key tables, so the popup is the mode: it holds the
+# keyboard while the script calls the socket API's pane.swap, which keeps
+# focus on the moved pane and reports no_neighbor at a layout edge.
+#
+# Requires jq and socat.
+
+set -euo pipefail
+
+sock=${HERDR_SOCKET_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/herdr/herdr.sock}
+
+# One newline-terminated JSON request per connection; the server replies and
+# closes, so socat returns as soon as the response arrives.
+call() {
+    jq -nc --arg method "$1" --argjson params "$2" \
+        '{id: "herdr-move-mode", method: $method, params: $params}' |
+        socat -t 2 - "UNIX-CONNECT:$sock"
+}
+
+# The pane to move: the focused pane of the focused workspace's active tab.
+# Pane ids survive a swap, so resolving it once is enough.
+read -r workspace tab < <(call workspace.list '{}' | jq -r '
+    .result.workspaces[] | select(.focused) | "\(.workspace_id) \(.active_tab_id)"')
+pane=$(call pane.list "$(jq -nc --arg w "$workspace" '{workspace_id: $w}')" |
+    jq -r --arg t "$tab" '.result.panes[] | select(.tab_id == $t and .focused) | .pane_id')
+if [[ -z $pane ]]; then
+    printf ' MOVE  no focused pane found; press any key'
+    read -rsn1 || true
+    exit 1
+fi
+
+declare -A where=([left]="to the left" [right]="to the right" [up]=above [down]=below)
+
+swap() {
+    local response reason
+    response=$(call pane.swap "$(jq -nc --arg p "$pane" --arg d "$1" \
+        '{pane_id: $p, direction: $d}')")
+    reason=$(jq -r '.error.message // .result.swap.reason // empty' <<<"$response")
+    case $reason in
+    '') status="moved $1" ;;
+    no_neighbor) status="no pane ${where[$1]}" ;;
+    *) status=$reason ;;
+    esac
+}
+
+status=""
+tput civis 2>/dev/null || true
+trap 'tput cnorm 2>/dev/null || true' EXIT
+
+while :; do
+    printf '\r\033[2J\033[H MOVE  hjkl/arrows swap · esc/enter/q exit\n %s' "$status"
+    IFS= read -rsn1 key || break
+    if [[ $key == $'\e' ]]; then
+        # A bare Esc exits; an arrow key arrives as Esc [ A..D.
+        IFS= read -rsn2 -t 0.05 rest || true
+        case $rest in
+        '[A') key=k ;;
+        '[B') key=j ;;
+        '[C') key=l ;;
+        '[D') key=h ;;
+        *) break ;;
+        esac
+    fi
+    case $key in
+    h) swap left ;;
+    j) swap down ;;
+    k) swap up ;;
+    l) swap right ;;
+    q | '') break ;;
+    esac
+done

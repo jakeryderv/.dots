@@ -18,6 +18,15 @@ holding one symlink per tracked file, beside everything else that lands there.
 
 ## Scripts
 
+### `herdr-move-mode`
+
+A sticky "move mode" for [herdr](herdr.md) panes, bound to `prefix + m`: `hjkl`
+or the arrows swap the focused pane with its neighbour in that direction, and
+`Esc`/`Enter`/`q` exits. herdr has no user-defined key tables, so the key opens a
+small popup that holds the keyboard while the script calls the socket API's
+`pane.swap`. Focus stays on the moved pane; at a layout edge it reports that
+there is no neighbour instead of wrapping. Needs `jq` and `socat`.
+
 ### `herdr-move-workspace`
 
 Move the focused [herdr](herdr.md) workspace one place `up` or `down` in the

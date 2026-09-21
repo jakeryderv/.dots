@@ -125,9 +125,14 @@ place.
   tab labelled itself.
 - **Resize mode** — `prefix + r` enters a sticky mode where `hjkl`/`HJKL` resize
   panes until Escape/Enter/q.
+- **Move mode** — `prefix + m` enters a sticky mode where `hjkl`/arrows swap the
+  active pane with its neighbour until Escape/Enter/q. Focus follows the pane,
+  and an edge is a no-op rather than wrapping. Same gesture as herdr's
+  `prefix + m`. Replaces the default `m` (mark pane), still in the `prefix + >`
+  menu. The status bar shows a `MOVE` badge.
 - **Carbonfox-matched** status bar and pane borders.
 - **Persistent state badges** — the status bar shows `NORMAL`, `PREFIX`, `COPY`,
-  or `RESIZE`, with separate `SYNC` and `ZOOM` badges when pane synchronization
+  `RESIZE`, or `MOVE`, with separate `SYNC` and `ZOOM` badges when pane synchronization
   or pane zoom is active.
 - **True color + image passthrough** — `allow-passthrough` + terminal-features
   enable kitty/iTerm2 image protocols, which [`herdr`](herdr.md) forwards from
