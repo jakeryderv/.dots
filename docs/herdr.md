@@ -115,7 +115,9 @@ What `config.toml` changes or adds:
 |-----|--------|-----|
 | `prefix + \|` | Split side by side | Matches tmux's `\|`; Herdr's default is `prefix+v` |
 | `prefix + -` | Split stacked | Default; already matches |
-| `prefix + ↑` / `↓` | Previous / next workspace | Unbound upstream; sidebar stacks vertically |
+| `prefix + h` / `l` | Previous / next tab | Tab bar is horizontal; `n`/`p` still work too |
+| `prefix + k` / `j` | Previous / next workspace | Sidebar stacks vertically; unbound upstream |
+| `prefix + ←↓↑→` | Focus pane | Moved off `hjkl` (upstream default); matches tmux's arrows |
 | `prefix + Shift+1..9` | Switch workspace | Unbound upstream |
 | `prefix + a` / `Shift+a` | Next / previous agent | Unbound upstream, and the point of the tool |
 | `prefix + Alt+1..9` | Focus agent by index | Upstream's own example — unreachable until Ghostty released `alt+1..9` |
@@ -138,8 +140,9 @@ The side-by-side split key is **pipe** (`|`), usually typed with
 
 `Ctrl+h/j/k/l` uses the [Vim navigation plugin](#plugins) to move within Neovim
 first, crossing to another Herdr pane at an editor split's edge. In other
-processes it moves Herdr focus directly. `prefix+hjkl` remains the explicit
-Herdr-only fallback. The direct bindings shadow shell readline shortcuts such
+processes it moves Herdr focus directly. `prefix+arrows` is the explicit
+Herdr-only fallback; `prefix+hjkl` steps tabs (`h`/`l`) and workspaces
+(`k`/`j`), mirrored in tmux as windows and sessions. The direct bindings shadow shell readline shortcuts such
 as `Ctrl+k` (kill line) and `Ctrl+l` (clear screen), just as they do in tmux.
 
 ### Parity with tmux, and its limits
@@ -150,6 +153,7 @@ same key in both:
 ```
 c  new tab       x  close pane      n/p  next/prev tab
 |  split beside  z  zoom            1-9  jump to tab
+h/l prev/next tab   k/j prev/next workspace (tmux: session)
 -  split stacked r  resize mode     ?    help
 ,  rename        d  detach          ;    last pane
 ```
@@ -212,7 +216,7 @@ Vim receives the keys but cannot cross a split edge into Herdr.
 Other TUIs receive no special passthrough by default. If needed, set
 `HERDR_NAV_PASSTHROUGH_RE` in the environment that starts the Herdr server
 (e.g. `^(lazygit|k9s)$`) and restart the server when convenient. Such apps do
-not cross pane edges automatically; use `prefix+hjkl` to leave them.
+not cross pane edges automatically; use `prefix+arrows` to leave them.
 
 ### Preview picker
 
@@ -243,7 +247,7 @@ herdr plugin disable gh-pr   # example: disable its automatic hooks
 Remove/comment the corresponding `[[keys.command]]` blocks when disabling a
 plugin so they do not point at unavailable actions. Remove `$pr` from the
 sidebar rows if removing gh-pr. Without the Vim bridge, remove its direct
-Herdr bindings too; `prefix+hjkl` still works.
+Herdr bindings too; `prefix+arrows` still works.
 
 ## Shell
 

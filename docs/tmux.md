@@ -100,6 +100,10 @@ place.
   custom modes, and plugin bindings. Type to filter, `Ctrl+U` to clear the
   query, and `Escape` or `Ctrl+C` to close. The backing command also supports
   `--plain`/`--no-color` output for logs, pipes, and tests.
+- **`prefix + hjkl` steps windows and sessions** — `h`/`l` previous/next
+  window, `k`/`j` previous/next session, matching herdr's tabs and workspaces.
+  This replaces tmux's default `prefix + l` (last-window). Pane focus stays on
+  `Ctrl+hjkl`, with the default `prefix + arrows` as the fallback.
 - **Unified picker popups** — session switching (`prefix + S`), project sessions
   (`prefix + f`), and tmux-fzf (`prefix + F`) use 70% × 60% popups.
 - **Terminal text extraction** — Extrakto (`prefix + Tab`) fuzzy-finds text,

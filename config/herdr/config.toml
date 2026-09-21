@@ -67,12 +67,25 @@ prefix = "alt+a"
 split_vertical = "prefix+|"
 split_horizontal = "prefix+minus"
 
-# --- Workspaces --------------------------------------------------------------
-# Workspaces stack vertically in the sidebar, so up/down cycles them. Both
-# unbound upstream.
-previous_workspace = "prefix+up"
-next_workspace = "prefix+down"
+# --- Tab / workspace / pane movement ----------------------------------------
+# hjkl follows the layout: the tab bar runs horizontally, so h/l steps tabs;
+# the sidebar stacks workspaces vertically, so k/j steps workspaces. tmux.conf
+# binds the same letters to windows and sessions.
+#
+# That takes prefix+hjkl from herdr's default pane focus, which moves to the
+# arrows -- tmux's own default for select-pane. Everyday pane movement is
+# Ctrl+hjkl (vim-herdr-navigation, below); the arrows are the fallback for
+# passthrough TUIs or a missing Vim bridge. Setting a key replaces the default,
+# so n/p (herdr's and tmux's tab keys) are listed alongside.
+previous_tab = ["prefix+h", "prefix+p"]
+next_tab = ["prefix+l", "prefix+n"]
+previous_workspace = "prefix+k"
+next_workspace = "prefix+j"
 switch_workspace = "prefix+shift+1..9"
+focus_pane_left = "prefix+left"
+focus_pane_down = "prefix+down"
+focus_pane_up = "prefix+up"
+focus_pane_right = "prefix+right"
 
 # --- Agents ------------------------------------------------------------------
 # Jump between agent panes without going through the sidebar. Unbound upstream,
