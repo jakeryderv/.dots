@@ -217,9 +217,6 @@ description = "refresh PR status"
 # ============================================
 
 [ui]
-# Collapsing the sidebar hides it completely; keep it expanded at startup.
-sidebar_collapsed_mode = "hidden"
-
 # Identify agent panes at a glance. Manual pane names still take precedence.
 show_agent_labels_on_pane_borders = true
 
