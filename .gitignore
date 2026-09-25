@@ -79,3 +79,6 @@ config/nix/registry.json
 # nix build output symlink
 result
 result-*
+
+# Neovim log that landed in the repo root when nvim was run from here.
+/nvim.log

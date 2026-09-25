@@ -23,7 +23,8 @@ return {
       },
       opts = {},
     },
-    'folke/lazydev.nvim',
+    -- lazydev is deliberately not a dependency: that would load it at startup
+    -- with blink. The provider below requires it, which lazy-loads it on demand.
   },
   --- @module 'blink.cmp'
   --- @type blink.cmp.Config
