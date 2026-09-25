@@ -1,5 +1,6 @@
 return {
   'kawre/leetcode.nvim',
+  cmd = 'Leet',
   -- html parser is installed by the treesitter config (main branch), so the
   -- old `build = ':TSUpdate html'` (master-only syntax) is no longer needed.
   dependencies = {
