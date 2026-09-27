@@ -19,8 +19,13 @@ return {
     }
     vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
       group = vim.api.nvim_create_augroup('lint', { clear = true }),
-      callback = function()
+      callback = function(args)
         lint.try_lint()
+        -- actionlint only understands GitHub workflow files, so it is keyed on
+        -- the path rather than listed under the generic yaml filetype.
+        if vim.api.nvim_buf_get_name(args.buf):match('/%.github/workflows/[^/]+%.ya?ml$') then
+          lint.try_lint('actionlint')
+        end
       end,
     })
   end,

@@ -9,7 +9,7 @@ return {
     -- Grouped by category on purpose; stylua would explode it one per line.
     -- stylua: ignore
     require('nvim-treesitter').install {
-      'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline',
+      'bash', 'zsh', 'c', 'cpp', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline',
       'query', 'vim', 'vimdoc',
       'python', 'rust', 'javascript', 'typescript', 'tsx',
       'json', 'yaml', 'toml',

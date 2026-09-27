@@ -46,3 +46,14 @@ vim.o.winborder = 'none'
 vim.o.foldmethod = 'expr'
 vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 vim.o.foldlevelstart = 99
+
+-- Compose files are plain 'yaml' by default; the compound filetype lets
+-- docker_language_server attach while yaml tooling (yamlls, prettierd,
+-- treesitter) still applies. Covers compose.yml, docker-compose.yml and
+-- override files like compose.override.yaml / docker-compose.prod.yml.
+vim.filetype.add({
+  pattern = {
+    ['.*/docker%-compose[%w.-]*%.ya?ml'] = 'yaml.docker-compose',
+    ['.*/compose[%w.-]*%.ya?ml'] = 'yaml.docker-compose',
+  },
+})

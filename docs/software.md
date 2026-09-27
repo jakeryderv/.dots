@@ -134,6 +134,9 @@ longer installed.
 | shfmt | [project and installation](https://github.com/mvdan/sh) | normal apt: `shfmt` | `/usr/bin/shfmt` | normal apt updates |
 | prettierd | [installation](https://github.com/fsouza/prettierd#installation-guide) | npm global: `@fsouza/prettierd` | selected Node's bin directory | repeat npm install for each Node version used by Neovim |
 | eslint_d | [installation](https://github.com/mantoni/eslint_d.js#setup) | npm global: `eslint_d` | selected Node's bin directory | repeat npm install for each Node version used by Neovim |
+| clang-format | [documentation](https://clang.llvm.org/docs/ClangFormat.html) | normal apt: `clang-format` | `/usr/bin/clang-format` | normal apt updates |
+| rustfmt / rust-analyzer | [rustfmt](https://github.com/rust-lang/rustfmt#quick-start), [rust-analyzer](https://rust-analyzer.github.io/book/rust_analyzer_binary.html) | rustup components | `~/.cargo/bin` proxies; versions follow the active toolchain | `rustup update` |
+| actionlint | [installation](https://github.com/rhysd/actionlint/blob/main/docs/install.md), [releases](https://github.com/rhysd/actionlint/releases) | official release archive: Linux amd64, verified against the release's `checksums.txt` | `~/.local/bin/actionlint` | replace from a newer verified release |
 
 Group 3 migrated on 2026-09-20: Ruff **0.16.7**, StyLua **2.5.2**,
 prettierd **0.28.0**, and eslint_d **15.0.3**. npm resolved the bundled ESLint
@@ -141,12 +144,17 @@ to **10.11.0** (the former Nix build bundled **10.0.3**). ShellCheck **0.9.0**
 and shfmt **3.8.0** use the distro versions, replacing Nix's **0.11.0** and
 **3.14.1** respectively; both passed the repository's checks.
 
+Added for Neovim on 2026-09-27: actionlint **1.7.12**, the rust-analyzer
+rustup component (**1.98.1**), and the already-installed clang-format
+**18.1.3**. These are editor-only; CI and `dots check` do not run them.
+
 Standard installation/update commands:
 
 ```bash
 uv tool install ruff@latest
 cargo install stylua --locked --features lua52,lua53,lua54,luajit,luau
-sudo apt install shellcheck shfmt
+sudo apt install shellcheck shfmt clang-format
+rustup component add rust-analyzer   # rustfmt ships with the default profile
 
 nvm use default
 npm install -g --ignore-scripts @fsouza/prettierd eslint_d
@@ -166,9 +174,14 @@ them with nvm; no hard-coded Node paths or custom launchers are needed.
 The npm packages need no install lifecycle scripts. Both can use a project's
 local Prettier/ESLint when present, falling back to their bundled versions.
 
-Mason continues to own language servers; do not install duplicate copies of
-these six tools through Mason. CI uses the same formatting rules with pinned
-upstream Ruff/StyLua and Ubuntu's ShellCheck/shfmt; see below.
+Install actionlint from its release archive into `~/.local/bin` after checking
+the archive against the release's `actionlint_VERSION_checksums.txt`.
+
+Mason continues to own language servers (rust-analyzer is the exception: the
+rustup component keeps it matched to the toolchain). Do not install duplicate
+copies of these tools, or of rust-analyzer, through Mason. CI uses the same
+formatting rules with pinned upstream Ruff/StyLua and Ubuntu's ShellCheck/shfmt;
+see below.
 
 ## Everyday CLI tools
 

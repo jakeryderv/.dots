@@ -15,6 +15,8 @@ return {
       'mason-org/mason-lspconfig.nvim',
       { 'j-hui/fidget.nvim', opts = {} },
       'saghen/blink.cmp',
+      -- Schema catalog library for jsonls/yamlls; required from before_init.
+      { 'b0o/SchemaStore.nvim', version = false },
     },
     config = function()
       vim.api.nvim_create_autocmd('LspAttach', {
@@ -112,9 +114,54 @@ return {
         cssls = {},
         emmet_language_server = {},
         vtsls = {},
+
+        -- C/C++. clangd runs clang-tidy itself (a project .clang-tidy picks the
+        -- checks); real projects need a compile_commands.json.
+        clangd = {
+          cmd = { 'clangd', '--clang-tidy' },
+        },
+
+        -- Dockerfile + Compose (Compose files are detected in options.lua).
+        docker_language_server = {},
+
+        -- Data formats. SchemaStore supplies the JSON/YAML schema catalog
+        -- (package.json, tsconfig, GitHub workflows, compose, ...).
+        jsonls = {
+          before_init = function(_, config)
+            config.settings.json.schemas = require('schemastore').json.schemas()
+          end,
+          settings = { json = { validate = { enable = true } } },
+        },
+        yamlls = {
+          before_init = function(_, config)
+            config.settings.yaml.schemas = require('schemastore').yaml.schemas()
+          end,
+          settings = {
+            yaml = {
+              -- Disable yamlls's built-in catalog download; SchemaStore.nvim
+              -- provides the same catalog.
+              schemaStore = { enable = false, url = '' },
+            },
+          },
+        },
+        -- TOML: also the formatter, via conform's lsp_format fallback.
+        tombi = {},
       }
 
-      for name, cfg in pairs(servers) do
+      -- Enabled like the servers above but installed outside Mason.
+      -- rust-analyzer comes from rustup (`rustup component add rust-analyzer`)
+      -- so it always matches the active toolchain.
+      local external_servers = {
+        rust_analyzer = {
+          settings = {
+            ['rust-analyzer'] = {
+              check = { command = 'clippy' },
+            },
+          },
+        },
+      }
+
+      for name, cfg in pairs(vim.tbl_extend('error', servers, external_servers)) do
         vim.lsp.config(name, cfg)
       end
 
@@ -133,6 +180,7 @@ return {
       -- Start the servers (on matching filetypes). This replaces the removed
       -- mason-lspconfig `handlers` mechanism.
       vim.lsp.enable(vim.tbl_keys(servers))
+      vim.lsp.enable(vim.tbl_keys(external_servers))
     end,
   },
 }

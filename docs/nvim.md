@@ -30,14 +30,18 @@ sequence on a fresh machine:
 
 ## Tooling ownership
 
-Mason owns language servers. Formatters and linters are global tools installed
+Mason owns language servers, except `rust-analyzer`, which rustup provides so
+it matches the active toolchain. Formatters and linters are global tools installed
 using the methods in [the software inventory](software.md#formatters-and-linters).
 Neovim and local `dots check` resolve the same tools through PATH. CI uses
 Ubuntu packages and pinned upstream releases; see the software inventory.
 
 | Tool | Owner | Notes |
 |------|-------|-------|
-| LSP servers: `lua_ls`, `bashls`, `pyright`, `html`, `cssls`, `emmet_language_server`, `vtsls` | Mason (`mason-lspconfig`) | auto-installed |
+| LSP servers: `lua_ls`, `bashls`, `pyright`, `html`, `cssls`, `emmet_language_server`, `vtsls`, `clangd`, `docker_language_server`, `jsonls`, `yamlls`, `tombi` | Mason (`mason-lspconfig`) | auto-installed; `tombi` also formats TOML |
+| `rust-analyzer`, `rustfmt` | rustup components | `rustup component add rust-analyzer`; `rustfmt` ships with the default profile |
+| `clang-format` | normal apt | C/C++ formatting, only in projects with a `.clang-format` |
+| `actionlint` | [official release](software.md#formatters-and-linters) | GitHub workflow linting; runs ShellCheck on `run:` blocks |
 | `stylua` | Cargo | installed with the Lua syntax variants enabled |
 | `shfmt`, `shellcheck` | normal apt | shared by the editor and local `dots check` |
 | `prettierd`, `eslint_d` | npm under nvm | installed under both Node 24 and Node 22; install them for each Node version used to launch Neovim |
@@ -116,7 +120,11 @@ nvim --headless '+checkhealth' '+qa'
 ## Notable choices
 
 - **Format on save** via `conform.nvim` (`lsp_format = 'fallback'`,
-  `timeout_ms = 2000`); disabled for `c`/`cpp`.
+  `timeout_ms = 2000`). C/C++ only formats when a `.clang-format` (or
+  `_clang-format`) exists in the file's directory or a parent, so clangd's
+  LLVM default is never imposed on other projects. TOML has no conform entry;
+  the `tombi` server formats it through the LSP fallback. Markdown is **not**
+  formatted: prettier would pad every table, rewriting most of `docs/`.
 - **Indentation**: 4-space soft tabs by default (`softtabstop = -1`, so
   `<Tab>`/`<BS>` move a whole step); a `FileType` autocmd drops to 2 for lua,
   the web filetypes, and markdown, matching what `stylua`/`prettierd` emit. A
@@ -128,5 +136,19 @@ nvim --headless '+checkhealth' '+qa'
   purpose** — `bashls` runs ShellCheck internally, on every change rather than
   only on write, so listing it in `nvim-lint` too surfaced every warning twice.
   Settings live in `~/.dots/.shellcheckrc`, which bashls and CI both read.
+  `actionlint` runs only on `.github/workflows/*.yml`, matched by path rather
+  than filetype because it rejects other YAML.
+- **Rust** checks run `cargo clippy` through rust-analyzer; **C/C++** runs
+  clang-tidy inside clangd (`--clang-tidy`; a project `.clang-tidy` picks the
+  checks). clangd needs a `compile_commands.json` for real projects
+  (`cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON`, or `bear -- make`).
+- **Schemas**: `jsonls` and `yamlls` take their catalog from SchemaStore.nvim
+  (package.json, tsconfig, GitHub workflows, Compose, …). yamlls's own catalog
+  download is disabled so the two can't disagree.
+- **Compose files** (`compose*.yml`, `docker-compose*.yml`) get the compound
+  filetype `yaml.docker-compose` (set in `options.lua`), so
+  `docker_language_server` attaches alongside the normal YAML tooling.
+- **zsh** uses the `zsh` Treesitter parser (tier 2, community-maintained). No
+  LSP or formatter: bashls, ShellCheck and shfmt don't support zsh.
 - `lazy-lock.json` pins plugin versions — commit it when you intentionally
   update plugins (`:Lazy update`).
