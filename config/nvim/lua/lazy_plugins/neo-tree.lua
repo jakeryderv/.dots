@@ -8,7 +8,7 @@ return {
   },
   lazy = false,
   keys = {
-    { '\\', ':Neotree toggle<CR>', desc = 'NeoTree toggle', silent = true },
+    { '\\', ':Neotree toggle<CR>', desc = 'Toggle Neo-tree', silent = true },
   },
   opts = {
     filesystem = {

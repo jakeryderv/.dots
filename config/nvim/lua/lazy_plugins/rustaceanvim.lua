@@ -14,13 +14,13 @@ return {
               vim.cmd.RustLsp(cmd)
             end, { buffer = bufnr, desc = 'Rust: ' .. desc })
           end
-          map('<leader>rr', 'runnables', '[R]unnables')
-          map('<leader>rt', 'testables', '[T]estables')
-          map('<leader>rm', 'expandMacro', 'Expand [M]acro')
-          map('<leader>re', 'explainError', '[E]xplain error')
-          map('<leader>rd', 'renderDiagnostic', 'Render [D]iagnostic')
-          map('<leader>rc', 'openCargo', 'Open [C]argo.toml')
-          map('<leader>rp', 'parentModule', '[P]arent module')
+          map('<leader>rr', 'runnables', 'Runnables')
+          map('<leader>rt', 'testables', 'Testables')
+          map('<leader>rm', 'expandMacro', 'Expand macro')
+          map('<leader>re', 'explainError', 'Explain error')
+          map('<leader>rd', 'renderDiagnostic', 'Render diagnostic')
+          map('<leader>rc', 'openCargo', 'Open Cargo.toml')
+          map('<leader>rp', 'parentModule', 'Parent module')
         end,
         default_settings = {
           ['rust-analyzer'] = {

@@ -86,7 +86,7 @@ vim.api.nvim_create_autocmd('FileType', {
       vim.cmd('startinsert')
     end
     vim.api.nvim_buf_create_user_command(args.buf, 'LeafPreview', preview, { desc = 'Preview saved Markdown in Leaf' })
-    vim.keymap.set('n', '<leader>ml', preview, { buffer = args.buf, desc = 'Markdown [L]eaf preview' })
+    vim.keymap.set('n', '<leader>ml', preview, { buffer = args.buf, desc = 'Markdown: Leaf preview' })
   end,
 })
 
@@ -106,8 +106,8 @@ vim.api.nvim_create_autocmd('FileType', {
     -- Insert [name](/path.md) / [Heading](/path.md#anchor) via Telescope;
     -- in visual mode the selection becomes the link text.
     local links = require('markdown_links')
-    vim.keymap.set({ 'n', 'x' }, '<leader>mf', links.pick_file, { buffer = args.buf, desc = '[M]arkdown link to [F]ile' })
-    vim.keymap.set({ 'n', 'x' }, '<leader>mh', links.pick_heading, { buffer = args.buf, desc = '[M]arkdown link to [H]eading' })
+    vim.keymap.set({ 'n', 'x' }, '<leader>mf', links.pick_file, { buffer = args.buf, desc = 'Markdown: Link to file' })
+    vim.keymap.set({ 'n', 'x' }, '<leader>mh', links.pick_heading, { buffer = args.buf, desc = 'Markdown: Link to heading' })
 
     -- Local link targets resolve relative to this file (not the cwd), or to
     -- the git root when they start with '/'. An #anchor jumps to the heading.
@@ -183,6 +183,6 @@ vim.api.nvim_create_autocmd('FileType', {
       end
 
       vim.cmd('normal! +')
-    end, { buffer = args.buf, desc = 'Follow markdown link' })
+    end, { buffer = args.buf, desc = 'Markdown: Follow link' })
   end,
 })

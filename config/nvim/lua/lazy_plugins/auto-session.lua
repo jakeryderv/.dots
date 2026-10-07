@@ -4,10 +4,10 @@ return {
   -- <leader>S keymaps / :AutoSession commands below.
   cmd = 'AutoSession',
   keys = {
-    { '<leader>Ss', '<cmd>AutoSession search<cr>', desc = '[S]ession [s]earch/pick' },
-    { '<leader>Sw', '<cmd>AutoSession save<cr>', desc = '[S]ession [w]rite/save' },
-    { '<leader>Sr', '<cmd>AutoSession restore<cr>', desc = '[S]ession [r]estore (cwd)' },
-    { '<leader>Sd', '<cmd>AutoSession deletePicker<cr>', desc = '[S]ession [d]elete (pick)' },
+    { '<leader>Ss', '<cmd>AutoSession search<cr>', desc = 'Session: Search' },
+    { '<leader>Sw', '<cmd>AutoSession save<cr>', desc = 'Session: Save' },
+    { '<leader>Sr', '<cmd>AutoSession restore<cr>', desc = 'Session: Restore (cwd)' },
+    { '<leader>Sd', '<cmd>AutoSession deletePicker<cr>', desc = 'Session: Delete' },
   },
   opts = {
     auto_save = false,

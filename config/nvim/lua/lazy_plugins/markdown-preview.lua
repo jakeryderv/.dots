@@ -32,7 +32,7 @@ return {
       callback = function(args)
         vim.keymap.set('n', '<leader>mp', '<cmd>MarkdownPreviewToggle<cr>', {
           buffer = args.buf,
-          desc = 'Markdown [P]review toggle',
+          desc = 'Markdown: Toggle browser preview',
         })
       end,
     })

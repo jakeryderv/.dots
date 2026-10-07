@@ -10,7 +10,7 @@ return {
         require('render-markdown').toggle()
       end,
       ft = 'markdown',
-      desc = '[M]arkdown [R]ender toggle',
+      desc = 'Markdown: Toggle render',
     },
   },
   ---@module 'render-markdown'

@@ -24,19 +24,19 @@ return {
         callback = function(event)
           local map = function(keys, func, desc, mode)
             mode = mode or 'n'
-            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = desc })
           end
 
           -- Follow Neovim's built-in gr* LSP keys (grn rename, gra code action,
           -- grx codelens are left as defaults); only swap the list-producing
           -- ones to Telescope pickers instead of the quickfix list.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-          map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-          map('gri', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-          map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
-          map('gO', require('telescope.builtin').lsp_document_symbols, 'Open Document Symbols')
-          map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
+          map('gd', require('telescope.builtin').lsp_definitions, 'LSP: Goto definition')
+          map('gD', vim.lsp.buf.declaration, 'LSP: Goto declaration')
+          map('grr', require('telescope.builtin').lsp_references, 'LSP: Goto references')
+          map('gri', require('telescope.builtin').lsp_implementations, 'LSP: Goto implementation')
+          map('grt', require('telescope.builtin').lsp_type_definitions, 'LSP: Goto type definition')
+          map('gO', require('telescope.builtin').lsp_document_symbols, 'LSP: Document symbols')
+          map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'LSP: Workspace symbols')
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client:supports_method('textDocument/documentHighlight', event.buf) then
@@ -77,7 +77,7 @@ return {
             end
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
-            end, '[T]oggle Inlay [H]ints')
+            end, 'Toggle: Inlay hints')
           end
 
           -- Daily notes in natural language: :Daily, :Daily yesterday,
@@ -88,7 +88,7 @@ return {
               local when = args.args ~= '' and args.args or 'today'
               client:exec_cmd({ title = 'Daily note', command = 'jump', arguments = { when } }, { bufnr = event.buf })
             end, { nargs = '*', desc = 'Open daily note' })
-            map('<leader>md', '<cmd>Daily<cr>', "[M]arkdown today's [D]aily note")
+            map('<leader>md', '<cmd>Daily<cr>', "Markdown: Today's daily note")
           end
         end,
       })

@@ -220,6 +220,13 @@ nvim --headless '+checkhealth' '+qa'
 
 ## Notable choices
 
+- **Keymap descriptions** follow `Area: action` with no `[B]racket` letters,
+  where the area is the which-key group the key sits in (`Search: Files`,
+  `Git: Stage hunk`, `LSP: Goto references`; keys outside a group have no
+  prefix). Telescope's keymap picker (**Space s k**) shows the full text, and
+  which-key strips the prefix because the group title already shows it. A new
+  group needs its name added to `AREAS` in `which-key.lua`. Columns are capped
+  at 50 characters so long built-in descriptions can't force a single column.
 - **Format on save** via `conform.nvim` (`lsp_format = 'fallback'`,
   `timeout_ms = 2000`). C/C++ only formats when a `.clang-format` (or
   `_clang-format`) exists in the file's directory or a parent, so clangd's
