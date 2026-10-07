@@ -129,6 +129,7 @@ longer installed.
 | Tool | Official project and installation docs | Method | Local installation | Updates |
 | --- | --- | --- | --- | --- |
 | Ruff | [installation](https://docs.astral.sh/ruff/installation/) | uv tool | `~/.local/bin/ruff`; environment managed by uv | `uv tool install ruff@latest` |
+| ty | [installation](https://docs.astral.sh/ty/installation/), [Neovim integration](https://docs.astral.sh/ty/editors/#neovim) | uv tool | `~/.local/bin/ty`; Python language server and type checker | `uv tool upgrade ty` |
 | StyLua | [installation](https://github.com/JohnnyMorganz/StyLua#installation) | Cargo source build | `~/.cargo/bin/stylua` | repeat the Cargo command below to select the latest release |
 | ShellCheck | [installation](https://github.com/koalaman/shellcheck#installing) | normal apt: `shellcheck` | `/usr/bin/shellcheck` | normal apt updates |
 | shfmt | [project and installation](https://github.com/mvdan/sh) | normal apt: `shfmt` | `/usr/bin/shfmt` | normal apt updates |
@@ -148,10 +149,16 @@ Added for Neovim on 2026-09-27: actionlint **1.7.12**, the rust-analyzer
 rustup component (**1.98.1**), and the already-installed clang-format
 **18.1.3**. These are editor-only; CI and `dots check` do not run them.
 
+Python tooling verified on 2026-09-30: ty **0.0.84** and Ruff **0.16.9**,
+both installed as uv tools. Neovim uses ty instead of Pyright for its Python
+language server; Ruff remains the formatter and CLI linter. CI's pinned Ruff
+version is unchanged, and `dots check` does not run ty.
+
 Standard installation/update commands:
 
 ```bash
 uv tool install ruff@latest
+uv tool install ty
 cargo install stylua --locked --features lua52,lua53,lua54,luajit,luau
 sudo apt install shellcheck shfmt clang-format
 rustup component add rust-analyzer   # rustfmt ships with the default profile
@@ -177,9 +184,9 @@ local Prettier/ESLint when present, falling back to their bundled versions.
 Install actionlint from its release archive into `~/.local/bin` after checking
 the archive against the release's `actionlint_VERSION_checksums.txt`.
 
-Mason continues to own language servers (rust-analyzer is the exception: the
-rustup component keeps it matched to the toolchain). Do not install duplicate
-copies of these tools, or of rust-analyzer, through Mason. CI uses the same
+Mason continues to own the remaining language servers. ty is installed with uv,
+and the rust-analyzer rustup component keeps it matched to the toolchain.
+Do not install duplicate copies of these tools through Mason. CI uses the same
 formatting rules with pinned upstream Ruff/StyLua and Ubuntu's ShellCheck/shfmt;
 see below.
 

@@ -107,7 +107,6 @@ return {
           },
         },
         bashls = {},
-        pyright = {},
 
         -- Web: HTML/CSS/JS/TS. vtsls handles JS embedded in HTML <script> tags.
         html = {},
@@ -151,7 +150,9 @@ return {
       -- Enabled like the servers above but installed outside Mason.
       -- rust-analyzer comes from rustup (`rustup component add rust-analyzer`)
       -- so it always matches the active toolchain.
+      -- ty comes from uv (`uv tool install ty`); Ruff handles lint/format separately.
       local external_servers = {
+        ty = {},
         rust_analyzer = {
           settings = {
             ['rust-analyzer'] = {

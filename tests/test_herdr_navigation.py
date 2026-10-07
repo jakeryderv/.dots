@@ -21,7 +21,7 @@ class HerdrNavigationTests(unittest.TestCase):
             script = root / "test.lua"
             script.write_text(
                 r"""
-local spec = dofile('config/nvim/lua/plugins/vim-tmux-navigator.lua')
+local spec = dofile('config/nvim/lua/lazy_plugins/vim-tmux-navigator.lua')
 assert(spec.lazy == false, 'navigation must not be overwritten by lazy handlers')
 spec.init()
 assert(vim.g.tmux_navigator_no_mappings == 1)

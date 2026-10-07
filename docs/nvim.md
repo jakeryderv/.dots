@@ -2,20 +2,29 @@
 
 Personal Neovim config (Lua, `lazy.nvim`). Deployed to `~/.config/nvim/`.
 
+## Plugin management
+
+All plugins are managed by lazy.nvim. Specifications live in
+`lua/lazy_plugins/`, imported as `lazy_plugins`. The import name `lazy` is
+reserved by lazy.nvim.
+
+Manage plugins with `:Lazy` and track `lazy-lock.json`. mini.nvim enables
+`mini.ai` and `mini.surround`.
+
 ## Requirements
 
 - **Neovim ≥ 0.12** — the config uses modern APIs (`vim.lsp.config()` /
   `vim.lsp.enable()`, `vim.hl.on_yank()`, `vim.o.winborder`,
-  `client:supports_method()`). It has a runtime fallback for `nvim-0.11`, but is
-  developed and tested against 0.12. Installed from an [official release archive](software.md#editor-and-shell-tools).
+  `client:supports_method()`). Installed from an
+  [official release archive](software.md#editor-and-shell-tools).
 - **git**, **curl** — plugin + tool fetching.
 - A **Nerd Font** (the repo ships `0xProto Nerd Font`; see root README for
   `fc-cache`/`fc-match`). Icons assume `vim.g.have_nerd_font`.
 
 ## First-run order
 
-Plugins install on first launch via `lazy.nvim`; Mason then installs the
-language servers. Install the [distro prerequisites](../README.md#setup-on-a-new-machine)
+Plugins install on first launch via `lazy.nvim`; Mason then
+installs the language servers. Install the [distro prerequisites](../README.md#setup-on-a-new-machine)
 and the [editor tools](software.md#editor-and-shell-tools) first. Neovim and
 `tree-sitter` use official releases; the C compiler and make come from the
 distro's `build-essential`. Recommended
@@ -30,15 +39,16 @@ sequence on a fresh machine:
 
 ## Tooling ownership
 
-Mason owns language servers, except `rust-analyzer`, which rustup provides so
-it matches the active toolchain. Formatters and linters are global tools installed
+Mason owns language servers, except `ty`, installed with uv, and `rust-analyzer`,
+which rustup provides so it matches the active toolchain. Formatters and linters are global tools installed
 using the methods in [the software inventory](software.md#formatters-and-linters).
 Neovim and local `dots check` resolve the same tools through PATH. CI uses
 Ubuntu packages and pinned upstream releases; see the software inventory.
 
 | Tool | Owner | Notes |
 |------|-------|-------|
-| LSP servers: `lua_ls`, `bashls`, `pyright`, `html`, `cssls`, `emmet_language_server`, `vtsls`, `clangd`, `docker_language_server`, `jsonls`, `yamlls`, `tombi` | Mason (`mason-lspconfig`) | auto-installed; `tombi` also formats TOML |
+| LSP servers: `lua_ls`, `bashls`, `html`, `cssls`, `emmet_language_server`, `vtsls`, `clangd`, `docker_language_server`, `jsonls`, `yamlls`, `tombi` | Mason (`mason-lspconfig`) | auto-installed; `tombi` also formats TOML |
+| `ty` (Python LSP + type checking) | uv tool | `~/.local/bin/ty`; install with `uv tool install ty` |
 | `rust-analyzer`, `rustfmt` | rustup components | `rustup component add rust-analyzer`; `rustfmt` ships with the default profile |
 | `clang-format` | normal apt | C/C++ formatting, only in projects with a `.clang-format` |
 | `actionlint` | [official release](software.md#formatters-and-linters) | GitHub workflow linting; runs ShellCheck on `run:` blocks |
@@ -47,6 +57,26 @@ Ubuntu packages and pinned upstream releases; see the software inventory.
 | `prettierd`, `eslint_d` | npm under nvm | installed under both Node 24 and Node 22; install them for each Node version used to launch Neovim |
 | `tree-sitter` CLI | [official release](software.md#editor-and-shell-tools) | builds parsers; Mason owns language servers |
 | **`ruff`** (Python format + lint) | uv tool | `~/.local/bin/ruff` |
+
+## Python
+
+[ty](https://docs.astral.sh/ty/editors/#neovim) is the Python language server,
+providing type diagnostics, completion, hover, navigation, renaming and signature
+help. It runs `ty server` from PATH and is enabled outside Mason. Pyright is no
+longer enabled or requested from Mason.
+
+Ruff remains separate: nvim-lint runs it on buffer entry, after saving and on
+leaving insert mode. Conform organizes imports and formats Python on save, or
+with **Space c f**. Ruff's language server is not enabled. Blink displays ty's
+completion suggestions; LuaSnip and Treesitter keep their existing configuration.
+
+ty [discovers the environment](https://docs.astral.sh/ty/modules/#python-environment)
+from `VIRTUAL_ENV`, otherwise from a `.venv` in the project root or working
+directory. For uv projects, launch with `uv run nvim` or activate `.venv` before
+launching Neovim. An explicit interpreter can be configured with
+`[tool.ty.environment]` / `python` in the project's `pyproject.toml`, or
+`[environment]` / `python` in `ty.toml`; the former Pyright-specific interpreter
+command does not apply to ty.
 
 ## External (non-Mason) dependencies
 
@@ -67,7 +97,7 @@ These features need system binaries and are **not** installed by Mason:
   [nvm and npm](software.md#node-and-npm-tools). Launch Neovim from a shell
   with the intended Node version selected.
 
-Other plugin dependencies include `rg` and `fd` for Telescope, `lazygit`,
+Other plugin dependencies include `rg` and `fd` for Telescope,
 and `git` for lazy.nvim clones; these use the
 [official CLI installations](software.md#everyday-cli-tools). `tmux` for
 vim-tmux-navigator uses an [official prebuilt release](software.md#editor-and-shell-tools).
@@ -84,7 +114,7 @@ with `dots apply leaf`. **Space m p** keeps the existing Firefox preview.
 Outside Herdr the existing `vim-tmux-navigator` mappings remain unchanged,
 including `Ctrl+\` for the previous window/pane.
 
-Inside a Herdr pane, `lua/plugins/vim-tmux-navigator.lua` asks
+Inside a Herdr pane, `lua/lazy_plugins/vim-tmux-navigator.lua` asks
 `herdr plugin list --plugin vim-herdr-navigation --json` for the installed
 plugin root and loads its `editor/nvim.lua`. It uses `HERDR_BIN_PATH` when
 provided, otherwise `herdr` on `PATH`. This shares the pinned Herdr checkout
