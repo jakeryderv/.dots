@@ -47,7 +47,7 @@ Ubuntu packages and pinned upstream releases; see the software inventory.
 
 | Tool | Owner | Notes |
 |------|-------|-------|
-| LSP servers: `lua_ls`, `bashls`, `html`, `cssls`, `emmet_language_server`, `vtsls`, `clangd`, `docker_language_server`, `jsonls`, `yamlls`, `tombi` | Mason (`mason-lspconfig`) | auto-installed; `tombi` also formats TOML |
+| LSP servers: `lua_ls`, `bashls`, `html`, `cssls`, `emmet_language_server`, `vtsls`, `clangd`, `docker_language_server`, `jsonls`, `yamlls`, `tombi`, `markdown_oxide` | Mason (`mason-lspconfig`) | auto-installed; `tombi` also formats TOML; `markdown_oxide` settings are the [moxide](moxide.md) package |
 | `ty` (Python LSP + type checking) | uv tool | `~/.local/bin/ty`; install with `uv tool install ty` |
 | `rust-analyzer`, `rustfmt` | rustup components | `rustup component add rust-analyzer`; `rustfmt` ships with the default profile |
 | `clang-format` | normal apt | C/C++ formatting, only in projects with a `.clang-format` |
@@ -96,6 +96,12 @@ These features need system binaries and are **not** installed by Mason:
   Its `build` step also shells out to `node`/`yarn`, which come from
   [nvm and npm](software.md#node-and-npm-tools). Launch Neovim from a shell
   with the intended Node version selected.
+- **`img-clip`** — reads the clipboard through `wl-paste` (`wl-clipboard`) on
+  Wayland or `xclip` on X11.
+- **`inotifywait`** (apt `inotify-tools`, optional) — markdown-oxide asks
+  Neovim to watch the vault for file changes. Without `inotifywait`, Neovim on
+  Linux falls back to scanning and watching every directory itself, which is
+  slower in large repos.
 
 Other plugin dependencies include `rg` and `fd` for Telescope,
 and `git` for lazy.nvim clones; these use the
@@ -107,6 +113,31 @@ vim-tmux-navigator uses an [official prebuilt release](software.md#editor-and-sh
 For Markdown, **Space m l** / `:LeafPreview` opens [Leaf](leaf.md) in a terminal
 split and refreshes on save. Install `leaf` separately and deploy its config
 with `dots apply leaf`. **Space m p** keeps the existing Firefox preview.
+
+**Space m r** toggles in-buffer rendering (render-markdown.nvim; on by
+default). It switches back to raw text on the cursor line and in insert mode.
+
+## Notes (markdown-oxide)
+
+Every git repo is a notes vault; layout and settings are in [moxide.md](moxide.md).
+markdown-oxide attaches to Markdown buffers inside a vault and works through
+the normal LSP keys:
+
+| Key / command | Action |
+|---|---|
+| `[[` | Complete note, heading and block links (blink) |
+| `<CR>` on a link | Follow it, vault-wide; `gd` also works |
+| `grr` | On body text: backlinks to the file. On a heading, link or `#tag`: its references |
+| `grn` | Rename a note or heading and update links |
+| `gra` | Code actions, e.g. create the file for an unresolved link |
+| `gW` | Search notes, headings and tags in the vault |
+| **Space m d**, `:Daily [when]` | Daily note: `:Daily yesterday`, `:Daily next monday`, `:Daily -3` |
+| **Space m i** | Paste a clipboard image into `notes/assets/` and insert the link |
+
+`<CR>` asks the language server first. If it finds nothing, as with `../`
+relative links (the server resolves Markdown links from the vault root), or
+outside a vault, it opens the path relative to the current file. Links to
+non-Markdown files open directly, and URLs open in the browser.
 
 ## Multiplexer navigation
 

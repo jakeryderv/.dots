@@ -91,12 +91,39 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 -- Follow markdown links with <CR>: [[wiki]] links open <name>.md, [text](url)
--- links open URLs externally / local paths in nvim. Falls back to next line.
+-- links open URLs externally / local paths (relative to the file) in nvim.
+-- Falls back to next line.
+-- Inside a markdown-oxide vault, links go to the LSP first, which resolves
+-- them across the whole vault (and #headings / ^blocks). It reads [text](path)
+-- as vault-root relative, so ../ style links fall through to the path rules.
 vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('markdown-links', { clear = true }),
   pattern = { 'markdown', 'quarto', 'rmd' },
   callback = function(args)
     vim.bo[args.buf].suffixesadd = '.md'
+
+    -- Local link targets resolve relative to this file, not the cwd.
+    local function open_relative(path)
+      if not path:match('^/') then
+        path = vim.fs.joinpath(vim.fs.dirname(vim.api.nvim_buf_get_name(args.buf)), path)
+      end
+      vim.cmd.edit(vim.fn.fnameescape(vim.fs.normalize(path)))
+    end
+
+    local function lsp_or(fallback)
+      local client = vim.lsp.get_clients({ bufnr = args.buf, name = 'markdown_oxide' })[1]
+      if not client then
+        return fallback()
+      end
+      local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
+      client:request('textDocument/definition', params, function(err, result)
+        local loc = result and (result.uri and result or result[1])
+        if err or not loc then
+          return fallback()
+        end
+        vim.lsp.util.show_document(loc, client.offset_encoding, { focus = true })
+      end, args.buf)
+    end
 
     vim.keymap.set('n', '<CR>', function()
       local line = vim.api.nvim_get_current_line()
@@ -104,8 +131,10 @@ vim.api.nvim_create_autocmd('FileType', {
 
       for s, target, e in line:gmatch('()%[%[([^%]|]+)[^%]]*%]%]()') do
         if col >= s and col < e then
-          local file = target:match('^([^#]+)') or target
-          vim.cmd.edit(vim.fn.fnameescape(file .. '.md'))
+          lsp_or(function()
+            local file = target:match('^([^#]+)') or target
+            open_relative(file .. '.md')
+          end)
           return
         end
       end
@@ -114,9 +143,18 @@ vim.api.nvim_create_autocmd('FileType', {
         if col >= s and col < e then
           if url:match('^https?://') or url:match('^mailto:') then
             vim.ui.open(url)
+            return
+          end
+          local file = url:match('^([^#]+)') or url
+          local function open_path()
+            open_relative(file)
+          end
+          -- Note links are .md or extensionless; other files (images,
+          -- scripts) are opened directly even inside a vault.
+          if url:match('%.md$') or url:match('%.md#') or not url:match('%.%w+$') then
+            lsp_or(open_path)
           else
-            local file = url:match('^([^#]+)') or url
-            vim.cmd.edit(vim.fn.fnameescape(file))
+            open_path()
           end
           return
         end

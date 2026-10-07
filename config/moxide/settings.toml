@@ -1,0 +1,12 @@
+# Global markdown-oxide settings for every vault. A vault is any git repo
+# (nearest .git / .obsidian / .moxide.toml), so root files, docs/ and notes/
+# all link together. See docs/moxide.md.
+
+# New notes from the "create file for unresolved link" code action.
+new_file_folder_path = "notes"
+
+# :Daily / :LspToday, and unresolved links that match the daily-note format.
+daily_notes_folder = "notes/daily"
+
+# Dependency and build trees, matched by directory name at any depth.
+excluded_folders = ["node_modules", "target", ".venv", "venv", "dist"]

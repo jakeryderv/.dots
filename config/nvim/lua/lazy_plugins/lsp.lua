@@ -67,6 +67,17 @@ return {
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
             end, '[T]oggle Inlay [H]ints')
           end
+
+          -- Daily notes in natural language: :Daily, :Daily yesterday,
+          -- :Daily next monday, :Daily -3. lspconfig's own on_attach also adds
+          -- :LspToday / :LspYesterday / :LspTomorrow.
+          if client and client.name == 'markdown_oxide' then
+            vim.api.nvim_buf_create_user_command(event.buf, 'Daily', function(args)
+              local when = args.args ~= '' and args.args or 'today'
+              client:exec_cmd({ title = 'Daily note', command = 'jump', arguments = { when } }, { bufnr = event.buf })
+            end, { nargs = '*', desc = 'Open daily note' })
+            map('<leader>md', '<cmd>Daily<cr>', "[M]arkdown today's [D]aily note")
+          end
         end,
       })
 
@@ -145,6 +156,17 @@ return {
         },
         -- TOML: also the formatter, via conform's lsp_format fallback.
         tombi = {},
+
+        -- Markdown notes: Obsidian-style [[links]], backlinks (grr), tags and
+        -- daily notes. The vault is the nearest .git / .obsidian / .moxide.toml
+        -- root; settings are in ~/.config/moxide/settings.toml (config/moxide).
+        markdown_oxide = {
+          -- Required by markdown-oxide so it sees files created outside the
+          -- buffer, e.g. by its "create unresolved file" code action.
+          capabilities = {
+            workspace = { didChangeWatchedFiles = { dynamicRegistration = true } },
+          },
+        },
       }
 
       -- Enabled like the servers above but installed outside Mason.
