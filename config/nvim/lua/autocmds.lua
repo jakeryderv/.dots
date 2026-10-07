@@ -66,30 +66,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- Leaf previews the saved file; keep the browser preview on <leader>mp.
-vim.api.nvim_create_autocmd('FileType', {
-  group = vim.api.nvim_create_augroup('markdown-leaf', { clear = true }),
-  pattern = 'markdown',
-  callback = function(args)
-    local function preview()
-      if vim.fn.executable('leaf') == 0 then
-        vim.notify('Leaf is not installed or not on PATH', vim.log.levels.WARN)
-        return
-      end
-      local path = vim.api.nvim_buf_get_name(args.buf)
-      if path == '' or vim.fn.filereadable(path) == 0 then
-        vim.notify('Save this Markdown file before opening Leaf', vim.log.levels.WARN)
-        return
-      end
-      vim.cmd('botright vnew')
-      vim.fn.jobstart({ 'leaf', '--watch', '--', path }, { term = true })
-      vim.cmd('startinsert')
-    end
-    vim.api.nvim_buf_create_user_command(args.buf, 'LeafPreview', preview, { desc = 'Preview saved Markdown in Leaf' })
-    vim.keymap.set('n', '<leader>ml', preview, { buffer = args.buf, desc = 'Markdown: Leaf preview' })
-  end,
-})
-
 -- Follow markdown links with <CR>: [[wiki]] links open <name>.md, [text](url)
 -- links open URLs externally / local paths in nvim, GitHub-style: relative to
 -- the file, or to the repo root with a leading '/'; #anchors use GitHub slugs.

@@ -132,9 +132,9 @@ vim-tmux-navigator uses an [official prebuilt release](software.md#editor-and-sh
 
 ## Markdown preview
 
-For Markdown, **Space m l** / `:LeafPreview` opens [Leaf](leaf.md) in a terminal
-split and refreshes on save. Install `leaf` separately and deploy its config
-with `dots apply leaf`. **Space m p** keeps the existing Firefox preview.
+**Space m p** toggles a Firefox preview (markdown-preview.nvim) that follows
+the focused Markdown buffer. For a terminal preview, run the [Leaf](leaf.md)
+CLI (`leaf --watch FILE`) outside Neovim.
 
 **Space m r** toggles in-buffer rendering (render-markdown.nvim; on by
 default). It switches back to raw text on the cursor line and in insert mode.
