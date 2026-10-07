@@ -15,9 +15,12 @@ dots apply moxide
 
 ## Vault layout
 
-A vault is the nearest directory containing `.git`, `.obsidian` or
-`.moxide.toml`, so every git repo is its own vault. Its root files,
-`docs/` and `notes/` all resolve against each other:
+A vault is the nearest directory containing `.obsidian` or `.moxide.toml`,
+otherwise the enclosing git repo, so every git repo is its own vault. (The
+explicit markers win over `.git`, so an Obsidian vault inside a repo is its
+own vault; `lua/markdown_links.lua` holds the marker list, shared by
+markdown-oxide, the link pickers, `<CR>` and image paste.) A git repo's root
+files, `docs/` and `notes/` all resolve against each other:
 
 ```text
 project/
@@ -34,9 +37,25 @@ project/
 - **Excluded**: `node_modules`, `target`, `.venv`, `venv` and `dist`, matched by
   directory name at any depth.
 
-The main Obsidian vault is kept separate and is edited in the Obsidian app.
 A project can override any setting with its own `.moxide.toml`; a
 `.moxide.toml` in a subdirectory also makes that subdirectory its own vault.
+
+## Obsidian vaults
+
+markdown-oxide reads a vault's `.obsidian/daily-notes.json` (folder, format)
+and `.obsidian/app.json` (new-file folder), but only as fallbacks: the global
+`settings.toml` above outranks them. A vault whose Obsidian settings differ
+from the global `notes/` layout needs a `.moxide.toml` at its root mirroring
+them. `~/obsidian/main` has one:
+
+```toml
+daily_notes_folder = "daily"
+new_file_folder_path = "notes"
+```
+
+Image paste (**Space m i**) uses the vault's `attachmentFolderPath` from
+`.obsidian/app.json` (`attachments/` there) instead of `notes/assets/`. Hidden
+folders such as Obsidian's `.trash` are never indexed.
 
 ## Link resolution
 

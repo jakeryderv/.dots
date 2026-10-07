@@ -68,7 +68,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- Follow markdown links with <CR>: [[wiki]] links open <name>.md, [text](url)
 -- links open URLs externally / local paths in nvim, GitHub-style: relative to
--- the file, or to the repo root with a leading '/'; #anchors use GitHub slugs.
+-- the file, or to the vault root (an Obsidian/moxide vault, else the git repo)
+-- with a leading '/'; #anchors use GitHub slugs.
 -- Falls back to next line.
 -- Inside a markdown-oxide vault, links go to the LSP first, which resolves
 -- them across the whole vault (and #headings / ^blocks). Anything it can't
@@ -86,9 +87,10 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.keymap.set({ 'n', 'x' }, '<leader>mh', links.pick_heading, { buffer = args.buf, desc = 'Markdown: Link to heading' })
 
     -- Local link targets resolve relative to this file (not the cwd), or to
-    -- the git root when they start with '/'. An #anchor jumps to the heading.
+    -- the vault root (links.root) when they start with '/'. An #anchor jumps
+    -- to the heading.
     local function open_relative(path, anchor)
-      local root = path:match('^/') and vim.fs.root(args.buf, '.git')
+      local root = path:match('^/') and links.root(args.buf)
       if root then
         path = root .. path
       elseif path ~= '' and not path:match('^/') then

@@ -1,12 +1,24 @@
 -- Telescope pickers that insert plain markdown links to other markdown files
 -- in the repo: [name](/path/to/file.md) and [Heading](/path/to/file.md#slug).
--- Paths start at the git root, a form both GitHub and markdown-oxide resolve.
--- In visual mode the selected text becomes the link text.
+-- Paths start at the vault root (see M.root), a form both GitHub and
+-- markdown-oxide resolve. In visual mode the selected text becomes the link
+-- text.
 local M = {}
 
+-- Vault root markers, shared with markdown-oxide (lsp.lua), <CR> link
+-- following (autocmds.lua) and image paste (img-clip.lua). An explicit vault
+-- (.obsidian / .moxide.toml) wins over the enclosing git repo; the nested
+-- table gives those two equal priority, so the nearest one is used.
+M.root_markers = { { '.obsidian', '.moxide.toml' }, '.git' }
+
+--- Vault root for a buffer, or nil outside any vault.
+function M.root(buf)
+  return vim.fs.root(buf or 0, M.root_markers)
+end
+
 -- Markdown files, honouring .gitignore (so untracked notes are included but
--- node_modules and build output are not).
-local FD = { 'fd', '--type', 'f', '--extension', 'md', '--hidden', '--exclude', '.git' }
+-- node_modules and build output are not). .trash is Obsidian's deleted notes.
+local FD = { 'fd', '--type', 'f', '--extension', 'md', '--hidden', '--exclude', '.git', '--exclude', '.trash' }
 
 -- GitHub's heading anchor: lowercase, punctuation dropped, each space a '-'.
 -- Bytes >= 0x80 are kept so non-ASCII letters survive.
@@ -46,9 +58,9 @@ local function insert(buf, win, selection, label, target)
 end
 
 local function root_or_warn()
-  local root = vim.fs.root(0, '.git')
+  local root = M.root(0)
   if not root then
-    vim.notify('Markdown links: not inside a git repository', vim.log.levels.WARN)
+    vim.notify('Markdown links: not inside a vault or git repository', vim.log.levels.WARN)
   end
   return root
 end

@@ -178,6 +178,10 @@ return {
         -- daily notes. The vault is the nearest .git / .obsidian / .moxide.toml
         -- root; settings are in ~/.config/moxide/settings.toml (config/moxide).
         markdown_oxide = {
+          -- lspconfig's flat { '.git', '.obsidian', '.moxide.toml' } searches
+          -- for .git first, so a vault inside a git repo (or under a stray
+          -- ~/.git) took the outer root. Explicit vault markers win here.
+          root_markers = require('markdown_links').root_markers,
           -- Required by markdown-oxide so it sees files created outside the
           -- buffer, e.g. by its "create unresolved file" code action.
           capabilities = {

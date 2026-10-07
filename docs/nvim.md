@@ -156,15 +156,15 @@ the normal LSP keys:
 | `gra` | Code actions, e.g. create the file for an unresolved link |
 | `gW` | Search notes, headings and tags in the vault |
 | **Space m d**, `:Daily [when]` | Daily note: `:Daily yesterday`, `:Daily next monday`, `:Daily -3` |
-| **Space m i** | Paste a clipboard image into `notes/assets/` and insert the link |
+| **Space m i** | Paste a clipboard image into `notes/assets/` (Obsidian vaults: their attachment folder) and insert the link |
 
 ### GitHub-compatible links
 
 **Space m f** and **Space m h** (`lua/markdown_links.lua`) insert plain
-Markdown links whose paths start at the repo root, such as `/docs/guide.md`
-or `/docs/guide.md#next-steps`. GitHub resolves a leading `/` from the
-repository root, and markdown-oxide resolves the same form, so these links
-work in both places. The file name is the link text for files, and the heading
+Markdown links whose paths start at the vault root (the repo root, or an
+Obsidian vault's root), such as `/docs/guide.md` or `/docs/guide.md#next-steps`.
+GitHub resolves a leading `/` from the repository root, and markdown-oxide
+resolves the same form, so these links work in both places. The file name is the link text for files, and the heading
 text for headings. In visual mode, the selection becomes the link text.
 
 Both pickers list every `.md` file in the repo that `.gitignore` does not
@@ -174,7 +174,7 @@ headings get `-1`, `-2` suffixes. A heading in the current file is linked as a
 bare `#anchor`. Paths containing spaces are wrapped in `<...>`.
 
 `<CR>` asks the language server first. If it finds nothing, it resolves the
-link GitHub's way: relative to the current file, or to the repo root with a
+link GitHub's way: relative to the current file, or to the vault root with a
 leading `/`, then jumps to the `#anchor` heading. That covers `../` links and
 anchors the server doesn't match, such as `#setup-1`, as well as files outside
 a vault. Links to non-Markdown files open directly, and URLs open in the browser.
