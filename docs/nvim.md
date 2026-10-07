@@ -125,7 +125,9 @@ the normal LSP keys:
 
 | Key / command | Action |
 |---|---|
-| `[[` | Complete note, heading and block links (blink) |
+| **Space m f** | Telescope: pick a Markdown file, insert a link to it |
+| **Space m h** | Telescope: pick a heading anywhere in the repo, insert a link to it |
+| `[[` | Complete wikilinks (blink); these do not render on GitHub |
 | `<CR>` on a link | Follow it, vault-wide; `gd` also works |
 | `grr` | On body text: backlinks to the file. On a heading, link or `#tag`: its references |
 | `grn` | Rename a note or heading and update links |
@@ -134,10 +136,26 @@ the normal LSP keys:
 | **Space m d**, `:Daily [when]` | Daily note: `:Daily yesterday`, `:Daily next monday`, `:Daily -3` |
 | **Space m i** | Paste a clipboard image into `notes/assets/` and insert the link |
 
-`<CR>` asks the language server first. If it finds nothing, as with `../`
-relative links (the server resolves Markdown links from the vault root), or
-outside a vault, it opens the path relative to the current file. Links to
-non-Markdown files open directly, and URLs open in the browser.
+### GitHub-compatible links
+
+**Space m f** and **Space m h** (`lua/markdown_links.lua`) insert plain
+Markdown links whose paths start at the repo root, such as `/docs/guide.md`
+or `/docs/guide.md#next-steps`. GitHub resolves a leading `/` from the
+repository root, and markdown-oxide resolves the same form, so these links
+work in both places. The file name is the link text for files, and the heading
+text for headings. In visual mode, the selection becomes the link text.
+
+Both pickers list every `.md` file in the repo that `.gitignore` does not
+exclude, so new notes appear before they are committed. Heading anchors follow
+GitHub's rules: lowercase, punctuation removed, spaces become `-`, and repeated
+headings get `-1`, `-2` suffixes. A heading in the current file is linked as a
+bare `#anchor`. Paths containing spaces are wrapped in `<...>`.
+
+`<CR>` asks the language server first. If it finds nothing, it resolves the
+link GitHub's way: relative to the current file, or to the repo root with a
+leading `/`, then jumps to the `#anchor` heading. That covers `../` links and
+anchors the server doesn't match, such as `#setup-1`, as well as files outside
+a vault. Links to non-Markdown files open directly, and URLs open in the browser.
 
 ## Multiplexer navigation
 

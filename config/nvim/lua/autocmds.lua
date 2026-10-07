@@ -91,23 +91,44 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 -- Follow markdown links with <CR>: [[wiki]] links open <name>.md, [text](url)
--- links open URLs externally / local paths (relative to the file) in nvim.
+-- links open URLs externally / local paths in nvim, GitHub-style: relative to
+-- the file, or to the repo root with a leading '/'; #anchors use GitHub slugs.
 -- Falls back to next line.
 -- Inside a markdown-oxide vault, links go to the LSP first, which resolves
--- them across the whole vault (and #headings / ^blocks). It reads [text](path)
--- as vault-root relative, so ../ style links fall through to the path rules.
+-- them across the whole vault (and #headings / ^blocks). Anything it can't
+-- resolve (../ paths, slugs like #setup-1) falls through to the path rules.
 vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('markdown-links', { clear = true }),
   pattern = { 'markdown', 'quarto', 'rmd' },
   callback = function(args)
     vim.bo[args.buf].suffixesadd = '.md'
 
-    -- Local link targets resolve relative to this file, not the cwd.
-    local function open_relative(path)
-      if not path:match('^/') then
+    -- Insert [name](/path.md) / [Heading](/path.md#anchor) via Telescope;
+    -- in visual mode the selection becomes the link text.
+    local links = require('markdown_links')
+    vim.keymap.set({ 'n', 'x' }, '<leader>mf', links.pick_file, { buffer = args.buf, desc = '[M]arkdown link to [F]ile' })
+    vim.keymap.set({ 'n', 'x' }, '<leader>mh', links.pick_heading, { buffer = args.buf, desc = '[M]arkdown link to [H]eading' })
+
+    -- Local link targets resolve relative to this file (not the cwd), or to
+    -- the git root when they start with '/'. An #anchor jumps to the heading.
+    local function open_relative(path, anchor)
+      local root = path:match('^/') and vim.fs.root(args.buf, '.git')
+      if root then
+        path = root .. path
+      elseif path ~= '' and not path:match('^/') then
         path = vim.fs.joinpath(vim.fs.dirname(vim.api.nvim_buf_get_name(args.buf)), path)
       end
-      vim.cmd.edit(vim.fn.fnameescape(vim.fs.normalize(path)))
+      if path ~= '' then
+        vim.cmd.edit(vim.fn.fnameescape(vim.fs.normalize(path)))
+      end
+      if anchor then
+        for _, h in ipairs(links.headings(vim.api.nvim_buf_get_lines(0, 0, -1, false))) do
+          if h.anchor == anchor:lower() then
+            vim.api.nvim_win_set_cursor(0, { h.lnum, 0 })
+            break
+          end
+        end
+      end
     end
 
     local function lsp_or(fallback)
@@ -145,13 +166,14 @@ vim.api.nvim_create_autocmd('FileType', {
             vim.ui.open(url)
             return
           end
-          local file = url:match('^([^#]+)') or url
+          -- <...> wraps destinations that contain spaces.
+          local file, anchor = url:gsub('^<(.*)>$', '%1'):match('^([^#]*)#?(.*)$')
           local function open_path()
-            open_relative(file)
+            open_relative(file, anchor ~= '' and anchor or nil)
           end
           -- Note links are .md or extensionless; other files (images,
           -- scripts) are opened directly even inside a vault.
-          if url:match('%.md$') or url:match('%.md#') or not url:match('%.%w+$') then
+          if file:match('%.md$') or not file:match('%.%w+$') then
             lsp_or(open_path)
           else
             open_path()
