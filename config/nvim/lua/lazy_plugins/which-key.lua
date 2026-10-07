@@ -44,6 +44,7 @@ return {
       { '<leader>h', group = '[H]arpoon' },
       { '<leader>c', group = '[C]ode' },
       { '<leader>m', group = '[M]arkdown' },
+      { '<leader>r', group = '[R]ust' },
       { '<leader>x', group = 'Trouble' },
     },
   },

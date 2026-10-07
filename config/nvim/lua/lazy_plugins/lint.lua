@@ -4,8 +4,8 @@ return {
   config = function()
     local lint = require('lint')
     lint.linters_by_ft = {
-      -- Ruff comes from uv; eslint_d comes from the selected nvm Node's npm.
-      python = { 'ruff' },
+      -- No python entry: the ruff language server (lsp.lua) lints as you type.
+      -- eslint_d comes from the selected nvm Node's npm.
       -- No shell entry on purpose: bash-language-server runs shellcheck itself,
       -- on every change rather than only on write. Listing it here too produced
       -- every warning twice (namespaces 'shellcheck' + 'nvim.lsp.bashls.N').

@@ -65,9 +65,11 @@ providing type diagnostics, completion, hover, navigation, renaming and signatur
 help. It runs `ty server` from PATH and is enabled outside Mason. Pyright is no
 longer enabled or requested from Mason.
 
-Ruff remains separate: nvim-lint runs it on buffer entry, after saving and on
-leaving insert mode. Conform organizes imports and formats Python on save, or
-with **Space c f**. Ruff's language server is not enabled. Blink displays ty's
+Ruff's language server (`ruff server`, from the same uv-installed `ruff`) runs
+alongside ty for lint diagnostics as you type, with quick fixes on **g r a**
+(fix this, fix all, add `# noqa`). Its hover is disabled so **K** shows ty's.
+Conform still organizes imports and formats Python on save, or with
+**Space c f**; nvim-lint no longer runs Ruff. Blink displays ty's
 completion suggestions; LuaSnip and Treesitter keep their existing configuration.
 
 ty [discovers the environment](https://docs.astral.sh/ty/modules/#python-environment)
@@ -77,6 +79,26 @@ launching Neovim. An explicit interpreter can be configured with
 `[tool.ty.environment]` / `python` in the project's `pyproject.toml`, or
 `[environment]` / `python` in `ty.toml`; the former Pyright-specific interpreter
 command does not apply to ty.
+
+## Rust
+
+[rustaceanvim](https://github.com/mrcjkb/rustaceanvim) starts rust-analyzer
+(from PATH, so rustup's) instead of nvim-lspconfig; enabling `rust_analyzer` in
+`lsp.lua` as well would attach a second instance. Its client is named
+`rust-analyzer` (hyphen), which is what `LspAttach` checks to turn inlay hints
+on. Checks run `cargo clippy`. Rust buffers add **Space r** commands:
+
+| Keys | Command |
+| --- | --- |
+| **Space r r** / **Space r t** | pick and run a runnable / test in a terminal |
+| **Space r m** | expand the macro under the cursor |
+| **Space r e** / **Space r d** | explain the error / render the diagnostic as cargo prints it |
+| **Space r c** / **Space r p** | open `Cargo.toml` / the parent module |
+
+[crates.nvim](https://github.com/saecki/crates.nvim) loads with `Cargo.toml`.
+It marks outdated dependencies, completes crate versions and features through
+its in-process language server (so blink's `lsp` source picks them up), and
+offers upgrade actions on **g r a**. tombi still validates and formats the file.
 
 ## External (non-Mason) dependencies
 
@@ -217,7 +239,9 @@ nvim --headless '+checkhealth' '+qa'
   Settings live in `~/.dots/.shellcheckrc`, which bashls and CI both read.
   `actionlint` runs only on `.github/workflows/*.yml`, matched by path rather
   than filetype because it rejects other YAML.
-- **Rust** checks run `cargo clippy` through rust-analyzer; **C/C++** runs
+- **Rust** checks run `cargo clippy` through rust-analyzer (started by
+  rustaceanvim, see [Rust](#rust)), and inlay hints start on in Rust buffers
+  (**Space t h** toggles them); **C/C++** runs
   clang-tidy inside clangd (`--clang-tidy`; a project `.clang-tidy` picks the
   checks). clangd needs a `compile_commands.json` for real projects
   (`cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON`, or `bear -- make`).

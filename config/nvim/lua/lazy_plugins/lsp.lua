@@ -62,7 +62,19 @@ return {
             })
           end
 
+          -- ty owns Python hover; ruff's only explains rule codes and would
+          -- compete with it for the K float.
+          if client and client.name == 'ruff' then
+            client.server_capabilities.hoverProvider = false
+          end
+
           if client and client:supports_method('textDocument/inlayHint', event.buf) then
+            -- Rust leans on inference, so its type/parameter hints start on.
+            -- (rustaceanvim names the client 'rust-analyzer', not lspconfig's
+            -- 'rust_analyzer'.)
+            if client.name == 'rust-analyzer' then
+              vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
+            end
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
             end, '[T]oggle Inlay [H]ints')
@@ -170,18 +182,12 @@ return {
       }
 
       -- Enabled like the servers above but installed outside Mason.
-      -- rust-analyzer comes from rustup (`rustup component add rust-analyzer`)
-      -- so it always matches the active toolchain.
-      -- ty comes from uv (`uv tool install ty`); Ruff handles lint/format separately.
+      -- ty comes from uv (`uv tool install ty`); so does ruff, whose server
+      -- adds lint diagnostics and quick fixes (formatting stays in conform).
+      -- rust-analyzer is not listed: rustaceanvim.lua starts it.
       local external_servers = {
         ty = {},
-        rust_analyzer = {
-          settings = {
-            ['rust-analyzer'] = {
-              check = { command = 'clippy' },
-            },
-          },
-        },
+        ruff = {},
       }
 
       for name, cfg in pairs(vim.tbl_extend('error', servers, external_servers)) do
