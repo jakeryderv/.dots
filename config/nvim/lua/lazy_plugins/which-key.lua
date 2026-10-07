@@ -91,10 +91,9 @@ return {
 
       -- Descriptions for built-in mappings (entries without a rhs only set the
       -- description). A spec desc wins over the mapping's own, so only list
-      -- keys nothing in this config redefines: grr/gri/grt/gO get theirs from
-      -- lsp.lua's LspAttach.
+      -- keys nothing in this config redefines: grr/gri/grt/grA/gO get theirs
+      -- from lsp.lua's LspAttach, gra from tiny-code-action.lua.
       { 'gr', group = 'LSP', mode = { 'n', 'x' } },
-      { 'gra', desc = 'LSP: Code action', mode = { 'n', 'x' } },
       { 'grn', desc = 'LSP: Rename' },
       { 'grx', desc = 'LSP: Run codelens' },
       { 'gx', desc = 'Open path/URL', mode = { 'n', 'x' } },

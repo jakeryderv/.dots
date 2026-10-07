@@ -27,9 +27,10 @@ return {
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = desc })
           end
 
-          -- Follow Neovim's built-in gr* LSP keys (grn rename, gra code action,
-          -- grx codelens are left as defaults); only swap the list-producing
-          -- ones to Telescope pickers instead of the quickfix list.
+          -- Follow Neovim's built-in gr* LSP keys (grn rename, grx codelens are
+          -- left as defaults); only swap the list-producing ones to Telescope
+          -- pickers instead of the quickfix list. gra is tiny-code-action's
+          -- previewing picker (tiny-code-action.lua).
           map('gd', require('telescope.builtin').lsp_definitions, 'LSP: Goto definition')
           map('gD', vim.lsp.buf.declaration, 'LSP: Goto declaration')
           map('grr', require('telescope.builtin').lsp_references, 'LSP: Goto references')
@@ -37,6 +38,10 @@ return {
           map('grt', require('telescope.builtin').lsp_type_definitions, 'LSP: Goto type definition')
           map('gO', require('telescope.builtin').lsp_document_symbols, 'LSP: Document symbols')
           map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'LSP: Workspace symbols')
+          -- The built-in code action menu without a preview: a fallback for gra.
+          -- Shadows Vim's virtual-replace `gr{char}` for 'A' only, which
+          -- differs from `rA` just on Tabs.
+          map('grA', vim.lsp.buf.code_action, 'LSP: Code action (no preview)', { 'n', 'x' })
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client:supports_method('textDocument/documentHighlight', event.buf) then

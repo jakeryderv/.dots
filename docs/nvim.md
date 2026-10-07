@@ -220,6 +220,16 @@ nvim --headless '+checkhealth' '+qa'
 
 ## Notable choices
 
+- **Code actions**: **g r a** (tiny-code-action.nvim) opens a Telescope
+  picker with a delta diff of the highlighted action: type to filter, `<CR>`
+  applies. (Its compact buffer picker, with a hotkey per action, is kept
+  commented out in `tiny-code-action.lua`.) **g r A** is Neovim's built-in
+  menu without a preview, kept as a fallback. In normal mode both cover
+  what's under the cursor; prefix **V** for the whole line. (gra also sends
+  every diagnostic on the line, but only servers that use that list, like
+  Ruff, act on it; rust-analyzer only looks at the cursor or selection.) delta runs
+  with `--no-gitconfig`, because the git config's side-by-side layout wraps
+  badly in the small preview.
 - **Keymap descriptions** follow `Area: action` with no `[B]racket` letters,
   where the area is the which-key group the key sits in (`Search: Files`,
   `Git: Stage hunk`, `LSP: Goto references`; keys outside a group have no
