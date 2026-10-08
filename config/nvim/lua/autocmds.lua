@@ -68,12 +68,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- Follow markdown links with <CR>: [[wiki]] links open <name>.md, [text](url)
 -- links open URLs externally / local paths in nvim, GitHub-style: relative to
--- the file, or to the vault root (an Obsidian/moxide vault, else the git repo)
--- with a leading '/'; #anchors use GitHub slugs.
+-- the file, or to the vault root (an Obsidian vault or .marksman.toml root,
+-- else the git repo) with a leading '/'; #anchors use GitHub slugs.
 -- Falls back to next line.
--- Inside a markdown-oxide vault, links go to the LSP first, which resolves
--- them across the whole vault (and #headings / ^blocks). Anything it can't
--- resolve (../ paths, slugs like #setup-1) falls through to the path rules.
+-- Links go to the language server (marksman) first, which resolves them
+-- across the whole root, including [[wiki]] names and #headings. Anything it
+-- can't resolve falls through to the path rules.
 vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('markdown-links', { clear = true }),
   pattern = { 'markdown', 'quarto', 'rmd' },
@@ -110,7 +110,7 @@ vim.api.nvim_create_autocmd('FileType', {
     end
 
     local function lsp_or(fallback)
-      local client = vim.lsp.get_clients({ bufnr = args.buf, name = 'markdown_oxide' })[1]
+      local client = vim.lsp.get_clients({ bufnr = args.buf, method = 'textDocument/definition' })[1]
       if not client then
         return fallback()
       end

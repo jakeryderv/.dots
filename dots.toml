@@ -50,10 +50,6 @@ target = "~/.config/direnv"
 mode = "link"
 target = "~/.config/tealdeer"
 
-[packages.moxide]
-mode = "link"
-target = "~/.config/moxide"
-
 [packages.starship]
 mode = "link"
 source = "config/starship/starship.toml"

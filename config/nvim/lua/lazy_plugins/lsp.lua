@@ -84,17 +84,6 @@ return {
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
             end, 'Toggle: Inlay hints')
           end
-
-          -- Daily notes in natural language: :Daily, :Daily yesterday,
-          -- :Daily next monday, :Daily -3. lspconfig's own on_attach also adds
-          -- :LspToday / :LspYesterday / :LspTomorrow.
-          if client and client.name == 'markdown_oxide' then
-            vim.api.nvim_buf_create_user_command(event.buf, 'Daily', function(args)
-              local when = args.args ~= '' and args.args or 'today'
-              client:exec_cmd({ title = 'Daily note', command = 'jump', arguments = { when } }, { bufnr = event.buf })
-            end, { nargs = '*', desc = 'Open daily note' })
-            map('<leader>md', '<cmd>Daily<cr>', "Markdown: Today's daily note")
-          end
         end,
       })
 
@@ -174,16 +163,17 @@ return {
         -- TOML: also the formatter, via conform's lsp_format fallback.
         tombi = {},
 
-        -- Markdown notes: Obsidian-style [[links]], backlinks (grr), tags and
-        -- daily notes. The vault is the nearest .git / .obsidian / .moxide.toml
-        -- root; settings are in ~/.config/moxide/settings.toml (config/moxide).
-        markdown_oxide = {
-          -- lspconfig's flat { '.git', '.obsidian', '.moxide.toml' } searches
-          -- for .git first, so a vault inside a git repo (or under a stray
-          -- ~/.git) took the outer root. Explicit vault markers win here.
+        -- Markdown: standard links resolved the way GitHub does (relative to
+        -- the file, or the root with a leading '/'), plus [[wiki]] links,
+        -- backlinks (grr), rename and broken-link diagnostics. Outside any
+        -- root it runs in single-file mode (in-file headings only).
+        marksman = {
+          -- lspconfig's { '.marksman.toml', '.git' } misses Obsidian vaults
+          -- that aren't git repos, leaving them in single-file mode. The shared
+          -- markers add .obsidian and let it win over an enclosing repo.
           root_markers = require('markdown_links').root_markers,
-          -- Required by markdown-oxide so it sees files created outside the
-          -- buffer, e.g. by its "create unresolved file" code action.
+          -- Lets marksman see files created outside the buffer, e.g. by its
+          -- "create missing linked file" code action.
           capabilities = {
             workspace = { didChangeWatchedFiles = { dynamicRegistration = true } },
           },

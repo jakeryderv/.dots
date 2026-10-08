@@ -1,15 +1,14 @@
 -- Telescope pickers that insert plain markdown links to other markdown files
 -- in the repo: [name](/path/to/file.md) and [Heading](/path/to/file.md#slug).
 -- Paths start at the vault root (see M.root), a form both GitHub and
--- markdown-oxide resolve. In visual mode the selected text becomes the link
--- text.
+-- marksman resolve. In visual mode the selected text becomes the link text.
 local M = {}
 
--- Vault root markers, shared with markdown-oxide (lsp.lua), <CR> link
--- following (autocmds.lua) and image paste (img-clip.lua). An explicit vault
--- (.obsidian / .moxide.toml) wins over the enclosing git repo; the nested
+-- Vault root markers, shared with marksman (lsp.lua), <CR> link following
+-- (autocmds.lua) and image paste (img-clip.lua). An explicit root
+-- (.obsidian / .marksman.toml) wins over the enclosing git repo; the nested
 -- table gives those two equal priority, so the nearest one is used.
-M.root_markers = { { '.obsidian', '.moxide.toml' }, '.git' }
+M.root_markers = { { '.obsidian', '.marksman.toml' }, '.git' }
 
 --- Vault root for a buffer, or nil outside any vault.
 function M.root(buf)

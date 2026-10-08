@@ -47,7 +47,7 @@ Ubuntu packages and pinned upstream releases; see the software inventory.
 
 | Tool | Owner | Notes |
 |------|-------|-------|
-| LSP servers: `lua_ls`, `bashls`, `html`, `cssls`, `emmet_language_server`, `vtsls`, `clangd`, `docker_language_server`, `jsonls`, `yamlls`, `tombi`, `markdown_oxide` | Mason (`mason-lspconfig`) | auto-installed; `tombi` also formats TOML; `markdown_oxide` settings are the [moxide](moxide.md) package |
+| LSP servers: `lua_ls`, `bashls`, `html`, `cssls`, `emmet_language_server`, `vtsls`, `clangd`, `docker_language_server`, `jsonls`, `yamlls`, `tombi`, `marksman` | Mason (`mason-lspconfig`) | auto-installed; `tombi` also formats TOML |
 | `ty` (Python LSP + type checking) | uv tool | `~/.local/bin/ty`; install with `uv tool install ty` |
 | `rust-analyzer`, `rustfmt` | rustup components | `rustup component add rust-analyzer`; `rustfmt` ships with the default profile |
 | `clang-format` | normal apt | C/C++ formatting, only in projects with a `.clang-format` |
@@ -120,8 +120,8 @@ These features need system binaries and are **not** installed by Mason:
   with the intended Node version selected.
 - **`img-clip`** — reads the clipboard through `wl-paste` (`wl-clipboard`) on
   Wayland or `xclip` on X11.
-- **`inotifywait`** (apt `inotify-tools`, optional) — markdown-oxide asks
-  Neovim to watch the vault for file changes. Without `inotifywait`, Neovim on
+- **`inotifywait`** (apt `inotify-tools`, optional) — marksman asks
+  Neovim to watch the project for file changes. Without `inotifywait`, Neovim on
   Linux falls back to scanning and watching every directory itself, which is
   slower in large repos.
 
@@ -139,31 +139,47 @@ CLI (`leaf --watch FILE`) outside Neovim.
 **Space m r** toggles in-buffer rendering (render-markdown.nvim; on by
 default). It switches back to raw text on the cursor line and in insert mode.
 
-## Notes (markdown-oxide)
+## Markdown links (marksman)
 
-Every git repo is a notes vault; layout and settings are in [moxide.md](moxide.md).
-markdown-oxide attaches to Markdown buffers inside a vault and works through
-the normal LSP keys:
+[marksman](https://github.com/artempyanykh/marksman) is the Markdown language
+server. It resolves standard links the way GitHub does: relative to the
+current file, or from the root with a leading `/`. It also handles `[[wiki]]`
+links and warns about links to missing documents. Its root is the nearest
+`.obsidian` or `.marksman.toml`, otherwise the git repo (markers shared from
+`lua/markdown_links.lua`). Outside any root it runs in single-file mode.
 
 | Key / command | Action |
 |---|---|
 | **Space m f** | Telescope: pick a Markdown file, insert a link to it |
 | **Space m h** | Telescope: pick a heading anywhere in the repo, insert a link to it |
-| `[[` | Complete wikilinks (blink); these do not render on GitHub |
-| `<CR>` on a link | Follow it, vault-wide; `gd` also works |
-| `grr` | On body text: backlinks to the file. On a heading, link or `#tag`: its references |
-| `grn` | Rename a note or heading and update links |
-| `gra` | Code actions, e.g. create the file for an unresolved link |
-| `gW` | Search notes, headings and tags in the vault |
-| **Space m d**, `:Daily [when]` | Daily note: `:Daily yesterday`, `:Daily next monday`, `:Daily -3` |
+| `[[` | Complete wiki-links (blink); these do not render on GitHub |
+| `<CR>` on a link | Follow it (marksman first, then the path rules below); `gd` also works |
+| `grr` | References: backlinks to a file or heading |
+| `grn` | Rename a heading and update links to it |
+| `gra` | Code actions: create a missing linked file, insert a table of contents |
+| `gW` | Search headings across the root |
 | **Space m i** | Paste a clipboard image into `notes/assets/` (Obsidian vaults: their attachment folder) and insert the link |
+
+### Obsidian vaults
+
+`~/obsidian/main` has two marksman-related dotfiles at its root:
+
+- `.marksman.toml` sets `title_from_heading = false`, so wiki-links resolve
+  and complete by file name, as in Obsidian, rather than by first heading.
+- `.ignore` lists `.trash/`, so deleted notes don't make links ambiguous
+  (`rg` and `fd` honor it too).
+
+Known gaps: wiki-links with an escaped alias pipe inside tables
+(`[[note\|label]]`) and links to non-Markdown attachments (`[[slides.pdf]]`)
+show as missing, though Obsidian handles both. There are no daily-note
+commands; obsidian.nvim is the planned replacement for vault features.
 
 ### GitHub-compatible links
 
 **Space m f** and **Space m h** (`lua/markdown_links.lua`) insert plain
 Markdown links whose paths start at the vault root (the repo root, or an
 Obsidian vault's root), such as `/docs/guide.md` or `/docs/guide.md#next-steps`.
-GitHub resolves a leading `/` from the repository root, and markdown-oxide
+GitHub resolves a leading `/` from the repository root, and marksman
 resolves the same form, so these links work in both places. The file name is the link text for files, and the heading
 text for headings. In visual mode, the selection becomes the link text.
 

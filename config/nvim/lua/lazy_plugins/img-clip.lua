@@ -24,7 +24,7 @@ return {
     default = {
       -- Obsidian vaults: the vault's own attachment folder (attachments/ in
       -- ~/obsidian/main). Other vaults and git repos: <root>/notes/assets,
-      -- matching the notes/ layout in config/moxide/settings.toml.
+      -- the usual notes/ folder for project notes.
       -- Returned relative to cwd when possible: img-clip leaves the inserted
       -- path untouched when the current file sits in cwd, so an absolute dir
       -- would leak into the link.
