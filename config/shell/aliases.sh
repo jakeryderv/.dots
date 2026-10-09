@@ -41,10 +41,12 @@ alias activate="source .venv/bin/activate"
 
 # Keep shared Playwright CLI browser sessions separate when coding agents run
 # concurrently. An explicitly supplied session name still wins.
-alias codex='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-codex}" codex'
-alias claude='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-claude}" claude'
+# alias codex='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-codex}" codex'
+# alias claude='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-claude}" claude'
+# alias pi='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-pi}" pi'
+
+# claude dangerously-skip-permissions alias
 alias claude-danger='claude --dangerously-skip-permissions'
-alias pi='PLAYWRIGHT_CLI_SESSION="${PLAYWRIGHT_CLI_SESSION:-pi}" pi'
 
 # color aliases
 # LC_COLLATE=C = GitHub-style byte-order sorting: dotfiles first, then
