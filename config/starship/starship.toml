@@ -1,8 +1,8 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 # Two lines. Line one is every piece of information: where, git, the active
-# environment, and -- right-aligned by $fill -- what just happened and which
-# shell this is. Line two is the prompt symbol alone, so the input never
+# environment, and -- right-aligned by $fill -- what just happened.
+# Line two is the prompt symbol alone, so the input never
 # shares its line with anything.
 format = """
 $username\
@@ -15,7 +15,6 @@ $python\
 $fill\
 $status\
 $cmd_duration\
-$shell\
 $line_break\
 $character"""
 
@@ -25,20 +24,9 @@ symbol = " "
 # Colours are ANSI names, so the terminal theme (carbonfox in all four) sets
 # the real values, and each kind of information gets its own: where is blue,
 # git is purple with pink for dirty, a venv stays grey
-# (the glyph is enough), outcomes are red (exit code) and yellow (duration), and the shell
-# name stays dim grey because it is metadata, not information.
+# (the glyph is enough), and outcomes are red (exit code) and yellow (duration).
 [directory]
 style = "bold blue"
-
-# Which shell this prompt belongs to, while zsh is under evaluation beside
-# bash (docs/zsh.md). Off by default in starship; delete this table once one
-# shell has won and the reminder is noise.
-[shell]
-disabled = false
-bash_indicator = "bash"
-zsh_indicator = "zsh"
-format = "[$indicator]($style)"
-style = "bright-black"
 
 # The exit code of the last command, only when non-zero. The red ❯ already
 # says something failed; this says what, which matters for 130 vs 1 vs 127.
