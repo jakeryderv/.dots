@@ -29,8 +29,17 @@ return {
         -- vim.treesitter.start() resolves the language from the filetype and
         -- errors if no parser is installed -> pcall keeps non-TS filetypes quiet.
         if pcall(vim.treesitter.start, args.buf) then
-          -- experimental treesitter-based indentation (replaces the old indent module)
-          vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          -- experimental treesitter-based indentation (replaces the old indent module).
+          -- Only where nvim-treesitter ships an indents query: without one the TS
+          -- indenter just copies the previous line, which is worse than the built-in
+          -- indent/<ft>.vim it would replace (zsh, vim, tex, make, ...).
+          -- Rust keeps the built-in indent/rust.vim: inside macro calls the TS
+          -- indenter uses the injected token_tree parse, which has no context, so
+          -- `println!(<CR>` lands at the wrong column.
+          local lang = vim.treesitter.language.get_lang(args.match)
+          if args.match ~= 'rust' and lang and vim.treesitter.query.get(lang, 'indents') then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
         end
       end,
     })
