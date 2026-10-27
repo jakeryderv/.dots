@@ -27,6 +27,10 @@ spec.init()
 assert(vim.g.tmux_navigator_no_mappings == 1)
 assert(#spec.keys == 5, 'preserve four tmux directions and previous-window binding')
 assert(spec.keys[5][1] == '<c-\\>')
+-- <Cmd> runs its text as-is: a <C-U> there reaches Ex as a literal ^U (E492).
+for _, key in ipairs(spec.keys) do
+  assert(key[2]:match('^<cmd>TmuxNavigate%a+<cr>$'), 'bad mapping: ' .. key[2])
+end
 
 local calls, warnings = 0, 0
 local result = { code = 0, stdout = '' }
