@@ -73,13 +73,10 @@ return {
             client.server_capabilities.hoverProvider = false
           end
 
-          if client and client:supports_method('textDocument/inlayHint', event.buf) then
-            -- Rust leans on inference, so its type/parameter hints start on.
-            -- (rustaceanvim names the client 'rust-analyzer', not lspconfig's
-            -- 'rust_analyzer'.)
-            if client.name == 'rust-analyzer' then
-              vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
-            end
+          -- Inlay hints start off everywhere (Neovim's default); <leader>th
+          -- toggles them in all buffers. rust-analyzer's <leader>th lives in
+          -- rustaceanvim.lua, where it shares state with <leader>rh.
+          if client and client.name ~= 'rust-analyzer' and client:supports_method('textDocument/inlayHint', event.buf) then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
             end, 'Toggle: Inlay hints')
