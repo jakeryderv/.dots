@@ -1,7 +1,7 @@
 return {
   'MeanderingProgrammer/render-markdown.nvim',
   -- render-markdown attaches to the lazy.nvim `ft` list itself.
-  ft = { 'markdown' },
+  ft = { 'markdown', 'quarto' },
   dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
   keys = {
     {
@@ -9,7 +9,7 @@ return {
       function()
         require('render-markdown').toggle()
       end,
-      ft = 'markdown',
+      ft = { 'markdown', 'quarto' },
       desc = 'Markdown: Toggle render',
     },
   },

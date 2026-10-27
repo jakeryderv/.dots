@@ -287,6 +287,7 @@ Pop!_OS dependencies; the upstream tool provides the separate `fd` command.
 | tmux | [official prebuilt releases](https://github.com/tmux/tmux-builds) | official Linux x86_64 release archive | `~/.local/bin/tmux`; replace from a newer verified release |
 | Starship | [installation](https://starship.rs/guide/) | official installer | `~/.local/bin/starship`; rerun the upstream installer to update |
 | direnv | [installation](https://direnv.net/docs/installation.html), [releases](https://github.com/direnv/direnv/releases) | official `direnv.linux-amd64` binary | `~/.local/bin/direnv`; replace from a newer verified release |
+| Quarto | [get started](https://quarto.org/docs/get-started/), [releases](https://github.com/quarto-dev/quarto-cli/releases) | official Linux amd64 release archive | complete tree under `~/.local/opt/quarto-VERSION`; stable `~/.local/opt/quarto` link, `~/.local/bin/quarto` launcher link |
 
 Group 5 migrated on 2026-09-20, preserving Neovim **0.12.5**, Tree-sitter
 **0.26.11**, tmux **3.7c**, Starship **1.26.0**, and direnv **2.37.1**.
@@ -309,6 +310,17 @@ after downloading and verifying the matching official release. Tree-sitter's
 `.gz` file decompresses to one executable. Use tmux's stable release builds,
 not its preview builds. Test tmux changes on a separate `tmux -L NAME` server;
 existing servers keep their running binary until their sessions end.
+
+Quarto installed on 2026-10-14 at **1.10.19**. Its archive bundles Pandoc,
+Typst, Deno and Dart Sass, so it does not use the system `pandoc`. Quarto has
+no apt repository; the official `.deb` would need the same manual updates.
+Verify a new `quarto-VERSION-linux-amd64.tar.gz` against the release's
+`quarto-VERSION-checksums.txt`, extract it with `--strip-components=1` into a
+new `~/.local/opt/quarto-VERSION` directory, then repoint `~/.local/opt/quarto`
+and run `quarto check`. The launcher link
+`~/.local/bin/quarto -> ../opt/quarto/bin/quarto` does not change. Jupyter
+belongs in each project's environment (`uv add jupyter`), not globally. Quarto
+has no completion generator.
 
 For Starship, use the official installer with the user bin directory:
 

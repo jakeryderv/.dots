@@ -9,6 +9,7 @@ local AREAS = {
   Harpoon = true,
   LSP = true,
   Markdown = true,
+  Quarto = true,
   Rust = true,
   Search = true,
   Session = true,
@@ -86,6 +87,7 @@ return {
       { '<leader>h', group = 'Harpoon' },
       { '<leader>c', group = 'Code' },
       { '<leader>m', group = 'Markdown' },
+      { '<leader>q', group = 'Quarto' },
       { '<leader>r', group = 'Rust' },
       { '<leader>x', group = 'Trouble' },
 

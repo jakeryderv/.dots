@@ -18,7 +18,7 @@ end
 return {
   'HakonHarnes/img-clip.nvim',
   keys = {
-    { '<leader>mi', '<cmd>PasteImage<cr>', ft = 'markdown', desc = 'Markdown: Paste image' },
+    { '<leader>mi', '<cmd>PasteImage<cr>', ft = { 'markdown', 'quarto' }, desc = 'Markdown: Paste image' },
   },
   opts = {
     default = {
