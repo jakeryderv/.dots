@@ -1,12 +1,15 @@
 # tools
 
-There are currently no maintained installer scripts. Tool/package sources,
-installation methods, official documentation and machine-specific conventions
-live in [docs/software.md](../docs/software.md).
+Tool/package sources, installation methods, official documentation and
+machine-specific conventions live in [docs/software.md](../docs/software.md).
+`dots tools` lists the installer scripts here; `dots install NAME` runs one.
+
+- `install-completions.sh` regenerates the Bash and Zsh completions of every
+  tool that can print its own. See
+  [the software inventory](../docs/software.md#completions-manuals-and-integrations).
 
 The former npm globals installer was retired during the Node/nvm migration.
-Use the standard npm commands recorded in the inventory. `dots tools` lists
-any installer scripts present; it is currently empty.
+Use the standard npm commands recorded in the inventory.
 
 This directory is not deployed by `dots apply`. The notes below retain the
 reasons some applications were kept outside the Nix bundle.

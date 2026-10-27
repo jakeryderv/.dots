@@ -260,11 +260,17 @@ Pop!_OS dependencies; the upstream tool provides the separate `fd` command.
 - The fd and Just archives include Bash/Zsh completions and man pages.
   Tealdeer publishes completion files alongside its binary. ast-grep generates
   them with `ast-grep completions bash` / `ast-grep completions zsh`;
-  Lazygit uses `lazygit completion bash` / `lazygit completion zsh`.
+  Lazygit uses `lazygit completion bash` / `lazygit completion zsh`; maturin
+  uses `maturin completions bash` / `maturin completions zsh`.
 - Put user Bash completions under
   `~/.local/share/bash-completion/completions/COMMAND`, Zsh completions under
   `~/.local/share/zsh/site-functions/_COMMAND`, and manuals under
   `~/.local/share/man/man1/`. Refresh these alongside each binary update.
+- `dots install completions` (`tools/install-completions.sh`) regenerates
+  every generated completion above and in the runtime-manager and Starship
+  notes, for both shells, and skips tools that are not installed. Run it after
+  any tool update. Archive and apt completions are not generated, so they are
+  not part of it; a new generated one is added to the script's list.
 - fzf embeds the existing `fzf --bash` / `fzf --zsh` hooks. Its separate
   `bin/fzf-tmux` helper and `man/man1/fzf*.1` manuals come from the same
   tagged [upstream source](https://github.com/junegunn/fzf). The Nix-specific
