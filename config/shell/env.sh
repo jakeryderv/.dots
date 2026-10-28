@@ -10,7 +10,8 @@ case ":$PATH:" in
 esac
 
 # Upstream language managers and their installed commands.
-for runtime_bin in "${CARGO_HOME:-$HOME/.cargo}/bin" "${BUN_INSTALL:-$HOME/.bun}/bin"; do
+for runtime_bin in "${CARGO_HOME:-$HOME/.cargo}/bin" "${BUN_INSTALL:-$HOME/.bun}/bin" \
+    "${ELAN_HOME:-$HOME/.elan}/bin"; do
     case ":$PATH:" in
     *":$runtime_bin:"*) ;;
     *) export PATH="$runtime_bin:$PATH" ;;
