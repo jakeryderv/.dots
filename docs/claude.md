@@ -13,11 +13,11 @@ untracked, with `.gitignore` guards in the repo root as a safety net.
 | `.claude/settings.json` | Permissions, enabled plugins, marketplaces, model, statusline, UI prefs |
 | `.claude/statusline-command.sh` | Custom statusline script referenced by settings |
 
-No skills are tracked. Everything under
-`~/.claude/skills/` is third-party and untracked — managed by skills.sh or a
-vendor CLI, and reproducible from `~/.agents/.skill-lock.json`. Portable
-skills live in the shared `~/.agents/skills/` tree; Claude Code does not read
-that tree natively, so they appear here as relative symlinks into it.
+No skills are tracked, and none are installed locally. The only entry under
+`~/.claude/skills/` is `synced/`, Anthropic's skills synced from the claude.ai
+account. There is no shared skills tree (`~/.agents/skills/`) and no skills.sh
+installer; if a tool's skill is wanted later, prefer its vendor's installer
+(`playwright-cli install --skills claude --global`, `gh skill install`).
 
 ## Deliberately not tracked
 
