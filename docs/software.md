@@ -270,7 +270,9 @@ Pop!_OS dependencies; the upstream tool provides the separate `fd` command.
   Tealdeer publishes completion files alongside its binary. ast-grep generates
   them with `ast-grep completions bash` / `ast-grep completions zsh`;
   Lazygit uses `lazygit completion bash` / `lazygit completion zsh`; maturin
-  uses `maturin completions bash` / `maturin completions zsh`.
+  uses `maturin completions bash` / `maturin completions zsh`. Herdr and tuios
+  use `herdr completion bash|zsh` / `tuios completion bash|zsh`; both update
+  themselves (`herdr update`, `tuios update`), so regenerate afterwards.
 - Put user Bash completions under
   `~/.local/share/bash-completion/completions/COMMAND`, Zsh completions under
   `~/.local/share/zsh/site-functions/_COMMAND`, and manuals under
@@ -300,6 +302,7 @@ Pop!_OS dependencies; the upstream tool provides the separate `fd` command.
 | Neovim | [installation](https://github.com/neovim/neovim/blob/master/INSTALL.md#linux), [releases](https://github.com/neovim/neovim/releases) | official Linux x86_64 release archive | complete runtime under `~/.local/opt/nvimVERSION`; stable `~/.local/opt/nvim` link, `~/.local/bin/nvim` launcher link |
 | Tree-sitter CLI | [releases](https://github.com/tree-sitter/tree-sitter/releases) | official `tree-sitter-linux-x64.gz` binary | `~/.local/bin/tree-sitter`; replace from a newer verified release |
 | tmux | [official prebuilt releases](https://github.com/tmux/tmux-builds) | official Linux x86_64 release archive | `~/.local/bin/tmux`; replace from a newer verified release |
+| tuios | [installation](https://github.com/Gaurav-Gosain/tuios#installation), [releases](https://github.com/Gaurav-Gosain/tuios/releases) | upstream installer (`install.sh`; downloads the Linux x86_64 release archive and checks it against the release's `checksums.txt`) | `~/.local/bin/tuios`; `tuios update` |
 | Starship | [installation](https://starship.rs/guide/) | official installer | `~/.local/bin/starship`; rerun the upstream installer to update |
 | direnv | [installation](https://direnv.net/docs/installation.html), [releases](https://github.com/direnv/direnv/releases) | official `direnv.linux-amd64` binary | `~/.local/bin/direnv`; replace from a newer verified release |
 | Quarto | [get started](https://quarto.org/docs/get-started/), [releases](https://github.com/quarto-dev/quarto-cli/releases) | official Linux amd64 release archive | complete tree under `~/.local/opt/quarto-VERSION`; stable `~/.local/opt/quarto` link, `~/.local/bin/quarto` launcher link |
