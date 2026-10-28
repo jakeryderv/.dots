@@ -26,6 +26,12 @@ return {
     vim.api.nvim_create_autocmd('FileType', {
       group = vim.api.nvim_create_augroup('treesitter-start', { clear = true }),
       callback = function(args)
+        -- LaTeX keeps VimTeX's syntax highlighting: its math-zone detection
+        -- (i$/a$, math-only snippets) reads those syntax groups. The latex
+        -- parser stays installed for plugins that query the tree.
+        if args.match == 'tex' then
+          return
+        end
         -- vim.treesitter.start() resolves the language from the filetype and
         -- errors if no parser is installed -> pcall keeps non-TS filetypes quiet.
         if pcall(vim.treesitter.start, args.buf) then

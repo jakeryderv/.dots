@@ -175,6 +175,24 @@ return {
             workspace = { didChangeWatchedFiles = { dynamicRegistration = true } },
           },
         },
+
+        -- LaTeX: label/citation completion, references, rename and symbols.
+        -- Building and viewing stay with VimTeX (vimtex.lua). texlab runs
+        -- chktex itself, so nvim-lint has no tex entry (same reason as
+        -- shellcheck there).
+        texlab = {
+          settings = {
+            texlab = {
+              chktex = { onOpenAndSave = true, onEdit = false },
+            },
+          },
+        },
+        -- Grammar and spelling through LanguageTool. Limited to LaTeX: the
+        -- lspconfig default also attaches to markdown, gitcommit, text, ...
+        ltex_plus = {
+          filetypes = { 'tex', 'plaintex' },
+          settings = { ltex = { language = 'en-US' } },
+        },
       }
 
       -- Enabled like the servers above but installed outside Mason.

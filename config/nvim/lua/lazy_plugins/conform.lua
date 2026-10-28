@@ -59,6 +59,13 @@ return {
       json = { 'prettierd', 'prettier', stop_after_first = true },
       jsonc = { 'prettierd', 'prettier', stop_after_first = true },
       yaml = { 'prettierd', 'prettier', stop_after_first = true },
+      -- Without an entry, the lsp_format fallback would run texlab, which
+      -- shells out to the much slower latexindent.
+      tex = { 'tex-fmt' },
+    },
+    formatters = {
+      -- Indentation only: don't rewrap prose to 80 columns on save.
+      ['tex-fmt'] = { prepend_args = { '--nowrap' } },
     },
   },
 }

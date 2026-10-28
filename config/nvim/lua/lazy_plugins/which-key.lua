@@ -88,6 +88,8 @@ return {
       { '<leader>h', group = 'Harpoon' },
       { '<leader>i', group = 'REPL', mode = { 'n', 'x' } },
       { '<leader>c', group = 'Code' },
+      -- VimTeX's <localleader>l maps (localleader is also Space), tex only.
+      { '<leader>l', group = 'LaTeX' },
       { '<leader>m', group = 'Markdown' },
       { '<leader>q', group = 'Quarto' },
       { '<leader>r', group = 'Rust' },

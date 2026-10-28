@@ -21,7 +21,13 @@ return {
           end,
         },
       },
-      opts = {},
+      config = function()
+        -- Autosnippets expand without a key; luasnippets/tex.lua uses them
+        -- for math shorthand.
+        require('luasnip').setup({ enable_autosnippets = true })
+        -- Our own snippets: luasnippets/<filetype>.lua in the config dir.
+        require('luasnip.loaders.from_lua').lazy_load()
+      end,
     },
     -- lazydev is deliberately not a dependency: that would load it at startup
     -- with blink. The provider below requires it, which lazy-loads it on demand.

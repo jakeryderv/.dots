@@ -137,6 +137,7 @@ longer installed.
 | eslint_d | [installation](https://github.com/mantoni/eslint_d.js#setup) | npm global: `eslint_d` | selected Node's bin directory | repeat npm install for each Node version used by Neovim |
 | clang-format | [documentation](https://clang.llvm.org/docs/ClangFormat.html) | normal apt: `clang-format` | `/usr/bin/clang-format` | normal apt updates |
 | rustfmt / rust-analyzer | [rustfmt](https://github.com/rust-lang/rustfmt#quick-start), [rust-analyzer](https://rust-analyzer.github.io/book/rust_analyzer_binary.html) | rustup components | `~/.cargo/bin` proxies; versions follow the active toolchain | `rustup update` |
+| tex-fmt | [installation](https://github.com/WGUNDERWOOD/tex-fmt#installation) | Cargo source build | `~/.cargo/bin/tex-fmt`; LaTeX formatter used by conform | repeat the Cargo command below to select the latest release |
 | actionlint | [installation](https://github.com/rhysd/actionlint/blob/main/docs/install.md), [releases](https://github.com/rhysd/actionlint/releases) | official release archive: Linux amd64, verified against the release's `checksums.txt` | `~/.local/bin/actionlint` | replace from a newer verified release |
 
 Group 3 migrated on 2026-09-20: Ruff **0.16.7**, StyLua **2.5.2**,
@@ -154,12 +155,20 @@ both installed as uv tools. Neovim uses ty instead of Pyright for its Python
 language server; Ruff remains the formatter and CLI linter. CI's pinned Ruff
 version is unchanged, and `dots check` does not run ty.
 
+LaTeX tooling added for Neovim on 2026-10-28: tex-fmt **0.5.7** from Cargo.
+The rest of the toolchain comes from normal apt: TeX Live (`texlive-full`
+**2023**, which provides latexmk, chktex, biber and latexindent) and Zathura
+**0.5.4** with `zathura-pdf-poppler`, which must be built against libsynctex for
+VimTeX's forward and inverse search. Mason installs texlab and ltex-ls-plus.
+These are editor-only; CI and `dots check` do not run them.
+
 Standard installation/update commands:
 
 ```bash
 uv tool install ruff@latest
 uv tool install ty
 cargo install stylua --locked --features lua52,lua53,lua54,luajit,luau
+cargo install tex-fmt --locked
 sudo apt install shellcheck shfmt clang-format
 rustup component add rust-analyzer   # rustfmt ships with the default profile
 
