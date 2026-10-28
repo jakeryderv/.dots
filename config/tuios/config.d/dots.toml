@@ -1,0 +1,13 @@
+# tuios - terminal window manager with agent awareness.
+# The repo's baseline, loaded from config.d before config.toml. tuios keeps
+# config.toml for itself: a new key set from the settings page, `set-config` or
+# the keybind manager lands there, while a change to a key set here is written
+# back into this file. See docs/tuios.md. Every option, with its default:
+# `tuios list-options`. Which file sets a key: `tuios config origin`.
+
+[startup]
+# Both default to true, but read as false when no config file has a [startup]
+# table. tuios writes them into config.toml on first start unless another file
+# sets them, so they live here to keep config.toml free of repo-owned keys.
+daemon = true
+tiled = true

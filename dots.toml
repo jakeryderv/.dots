@@ -82,6 +82,11 @@ target = "~/.config/leaf"
 mode = "tree"
 target = "~/.config/herdr"
 
+# tuios keeps config.toml, layouts/, themes/ and any secrets beside config.d/.
+[packages.tuios]
+mode = "tree"
+target = "~/.config/tuios"
+
 # OpenCode installs dependencies here; Herdr also owns its integration scripts.
 [packages.opencode]
 mode = "tree"

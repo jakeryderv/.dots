@@ -40,6 +40,7 @@ beyond linking, and any external dependencies.
 | [`starship.md`](starship.md) | `config/starship/starship.toml` | `~/.config/starship.toml` |
 | [`tealdeer.md`](tealdeer.md) | `config/tealdeer` | `~/.config/tealdeer/` |
 | [`tmux.md`](tmux.md) | `config/tmux/tmux.conf` | `~/.tmux.conf` |
+| [`tuios.md`](tuios.md) | `config/tuios` | `~/.config/tuios/` |
 | [`vim.md`](vim.md) | `config/vim` | `~/.vim/` |
 | [`wezterm.md`](wezterm.md) | `config/wezterm` | `~/.config/wezterm/` |
 | [`zsh.md`](zsh.md) | `config/zsh/zshrc` | `~/.zshrc` |

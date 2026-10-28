@@ -51,6 +51,19 @@ config/herdr/session-history.json
 config/herdr/.plugins.lock
 config/herdr/config.toml.bak*
 
+# tuios — track config.d/dots.toml; config.toml is tuios's own layer, and the
+# rest is saved layouts, applied looks, plugin state, secrets, and the temp file
+# a config save writes beside its target before renaming it into place.
+config/tuios/config.toml
+config/tuios/config.d/look.toml
+config/tuios/layouts/
+config/tuios/plugins/
+config/tuios/plugin-config/
+config/tuios/authorized_keys
+config/tuios/web-password
+config/tuios/*-token
+config/tuios/**/.config.toml.*
+
 # OpenCode — dependencies and Herdr-generated integrations stay machine-local.
 config/opencode/.gitignore
 config/opencode/node_modules/

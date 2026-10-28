@@ -107,7 +107,8 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 
 **Coding agents** — [claude](docs/claude.md), [opencode](docs/opencode.md),
 [agent-skills](docs/agent-skills.md) (skills shared by every agent),
-[herdr](docs/herdr.md) (terminal workspace manager).
+[herdr](docs/herdr.md) (terminal workspace manager),
+[tuios](docs/tuios.md) (terminal window manager, on trial).
 
 **Desktop & misc** — [fonts](docs/fonts.md),
 [scripts](docs/scripts.md), [dots](docs/dots.md),
