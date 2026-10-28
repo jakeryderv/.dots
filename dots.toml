@@ -87,11 +87,6 @@ target = "~/.config/herdr"
 mode = "tree"
 target = "~/.config/tuios"
 
-# OpenCode installs dependencies here; Herdr also owns its integration scripts.
-[packages.opencode]
-mode = "tree"
-target = "~/.config/opencode"
-
 # --- shared targets, other installers write here too -------------------------
 
 [packages.dots]

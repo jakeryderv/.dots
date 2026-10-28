@@ -34,7 +34,6 @@ beyond linking, and any external dependencies.
 | [`kitty.md`](kitty.md) | `config/kitty` | `~/.config/kitty/` |
 | [`leaf.md`](leaf.md) | `config/leaf` | `~/.config/leaf/` |
 | [`nvim.md`](nvim.md) | `config/nvim` | `~/.config/nvim/` |
-| [`opencode.md`](opencode.md) | `config/opencode` | `~/.config/opencode/` |
 | [`scripts.md`](scripts.md) | `config/scripts` | `~/.local/bin/` |
 | [`shell.md`](shell.md) | `config/shell` | `~/.config/shell/` |
 | [`starship.md`](starship.md) | `config/starship/starship.toml` | `~/.config/starship.toml` |
