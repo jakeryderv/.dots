@@ -167,6 +167,7 @@
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "verbose": false,
+  "autoCompactEnabled": true,
   "remoteControlAtStartup": false,
   "skipAutoPermissionPrompt": true
 }
