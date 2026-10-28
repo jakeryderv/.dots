@@ -103,7 +103,8 @@ bell-features = no-system,no-audio,no-attention,no-title,no-border
 gtk-single-instance = detect
 
 # --- Keybinds: tabs yes, splits no ---
-# Ghostty runs exactly two tabs: one for tmux, one for herdr. That separation is
+# Ghostty runs two tabs: one for tmux, one for herdr (tuios, on trial, gets a
+# window of its own when it runs; see docs/tuios.md). That separation is
 # the whole layout -- splits and panes belong to the layer inside each tab, so
 # Ghostty's own split bindings and the ctrl+alt scheme built on them are gone.
 #

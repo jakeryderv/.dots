@@ -3,7 +3,8 @@
 # config.toml for itself: a new key set from the settings page, `set-config` or
 # the keybind manager lands there, while a change to a key set here is written
 # back into this file. See docs/tuios.md. Every option, with its default:
-# `tuios list-options`. Which file sets a key: `tuios config origin`.
+# `tuios list-options`. Which file sets a key: `tuios config origin`. Keys after
+# an edit: `tuios keybinds doctor`.
 
 [startup]
 # Both default to true, but read as false when no config file has a [startup]
@@ -11,3 +12,172 @@
 # sets them, so they live here to keep config.toml free of repo-owned keys.
 daemon = true
 tiled = true
+# Attach typing into the pane, as tmux does. Window mode's single-letter keys
+# (q quits, x closes) are one Alt+Esc away, not the first thing a keystroke hits.
+start_in_terminal_mode = true
+
+[appearance]
+# Use Ghostty's palette (carbonfox) rather than a tuios theme, as herdr's
+# theme.name = "terminal" does. The accents stay tuios's own.
+theme = "none"
+# tmux and herdr both scroll the wheel one line at a time.
+scroll_lines = 1
+
+[plugins]
+# herdr's own checkout, which tuios finds by itself; nothing is installed here.
+# Its Neovim half is loaded by lua/lazy_plugins/vim-tmux-navigator.lua, which
+# takes its herdr branch in tuios because every pane carries HERDR_PANE_ID.
+enabled = ["vim-herdr-navigation"]
+
+# ============================================================================
+# Keys
+# ============================================================================
+# tmux's keys after the leader, as tmux.conf and herdr's config.toml use them.
+# In the preset a tmux window is a tuios workspace, and a tmux pane a tuios
+# window. Listing an action replaces its keys, preset or default; an empty list
+# unbinds it. `tuios keybinds cheatsheet tmux` shows what moved.
+#
+# Lock mode (keybindings.lock) would be the tidy way to keep tuios's keys out of
+# the panes, but a locked pane gets every key but the leader, the Ctrl+hjkl
+# command keys below included. So lock stays off and the keys that collide are
+# unbound one by one instead.
+
+[keybindings]
+preset = "tmux"
+# Same prefix as tmux and herdr. They never nest, so there is nothing to
+# contend over, and Ctrl+b stays readline's backward-char.
+leader_key = "alt+a"
+
+# --- Keys tuios would take from every pane ----------------------------------
+[keybindings.global]
+# The palette stays on prefix+: and prefix+P (the preset); the launcher is in
+# the palette.
+command_palette = []
+launcher = []
+
+[keybindings.terminal_mode]
+# Ctrl+hjkl and prefix+arrows move focus; Alt+arrows go to the program.
+terminal_focus_left = []
+terminal_focus_down = []
+terminal_focus_up = []
+terminal_focus_right = []
+terminal_next_window = []
+terminal_prev_window = []
+
+[keybindings.workspaces]
+# prefix+1..9 switches workspaces. Alt+digits reach the program in the pane.
+switch_workspace_1 = []
+switch_workspace_2 = []
+switch_workspace_3 = []
+switch_workspace_4 = []
+switch_workspace_5 = []
+switch_workspace_6 = []
+switch_workspace_7 = []
+switch_workspace_8 = []
+switch_workspace_9 = []
+
+# --- After the leader --------------------------------------------------------
+[keybindings.prefix_mode]
+# hjkl follows the layout, as in tmux.conf and herdr: h/l step workspaces (tmux
+# windows, herdr tabs), k/j step sessions. n/p and ( ) are kept alongside.
+prev_workspace = ["p", "h"]
+next_workspace = ["n", "l"]
+prev_session = ["(", "k"]
+next_session = [")", "j"]
+last_workspace = []
+# Shift+h/l moves the workspace, like tmux's swap-window and herdr's move_tab.
+move_workspace_left = ["H"]
+move_workspace_right = ["L"]
+last_session = []
+
+# Sticky resize and move menus, as tmux.conf's key tables and herdr's prefix+r
+# and prefix+m. Esc ends either; any key a menu does not bind ends it too and
+# goes to the pane.
+"open_menu:resize" = ["r"]
+"open_menu:move" = ["m"]
+mark_pane = []
+reload_config = ["R"]
+prefix_rotate_split = []
+
+# tmux.conf: X kills the window (workspace), v enters copy mode, * synchronizes
+# panes, N makes a session. Each takes a tuios default off that key: closing the
+# session, the agent review, and the last message all stay in the palette.
+close_workspace = ["X"]
+prefix_close_session = []
+prefix_selection = ["[", "v"]
+prefix_review = []
+toggle_multifocus_all = ["*"]
+new_session = ["N"]
+prefix_last_message = []
+
+[keybindings.menus.resize]
+title = "Resize"
+sticky = true
+
+[keybindings.menus.resize.keys]
+resize_pane_left_5 = ["h", "left"]
+resize_pane_down_5 = ["j", "down"]
+resize_pane_up_5 = ["k", "up"]
+resize_pane_right_5 = ["l", "right"]
+resize_pane_left_20 = ["H"]
+resize_pane_down_20 = ["J"]
+resize_pane_up_20 = ["K"]
+resize_pane_right_20 = ["L"]
+
+[keybindings.menus.move]
+title = "Move"
+sticky = true
+
+[keybindings.menus.move.keys]
+swap_left = ["h", "left"]
+swap_down = ["j", "down"]
+swap_up = ["k", "up"]
+swap_right = ["l", "right"]
+
+# --- Command keys ------------------------------------------------------------
+# Vim-aware navigation, bound exactly as in herdr's config.toml. The plugin
+# sends the key to Neovim when a split lies that way, and moves the pane focus
+# otherwise.
+[[keybindings.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "vim-herdr-navigation.left"
+description = "navigate left (vim/tuios)"
+
+[[keybindings.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "vim-herdr-navigation.down"
+description = "navigate down (vim/tuios)"
+
+[[keybindings.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "vim-herdr-navigation.up"
+description = "navigate up (vim/tuios)"
+
+[[keybindings.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "vim-herdr-navigation.right"
+description = "navigate right (vim/tuios)"
+
+# Popups on the prefix, at the 80%x80% tmux and herdr use. A popup runs a
+# command, not a shell, so zsh is named; keep it in step with `chsh`.
+[[keybindings.command]]
+name = "shell"
+key = "prefix+`"
+type = "popup"
+command = "zsh"
+description = "floating shell"
+width = "80%"
+height = "80%"
+
+[[keybindings.command]]
+name = "lazygit"
+key = "prefix+alt+g"
+type = "popup"
+command = "lazygit"
+description = "lazygit"
+width = "80%"
+height = "80%"
