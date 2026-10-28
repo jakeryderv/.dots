@@ -136,13 +136,3 @@ target = "~/.vim"
 [packages.claude]
 mode = "tree"
 target = "~/.claude"
-
-# Skills shared by every coding agent. ~/.agents/skills is also written by
-# skill installers, so the skill is linked, not the directory. Claude Code reads
-# ~/.claude/skills; the second link mirrors the installer's own per-skill links.
-[packages.agent-skills]
-mode = "link"
-links = [
-  { source = "project-practices", target = "~/.agents/skills/project-practices" },
-  { source = "project-practices", target = "~/.claude/skills/project-practices" },
-]

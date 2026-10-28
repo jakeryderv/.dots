@@ -18,7 +18,6 @@ beyond linking, and any external dependencies.
 
 | Doc | Source | Deploys to |
 | --- | --- | --- |
-| [`agent-skills.md`](agent-skills.md) | `config/agent-skills/project-practices` | `~/.agents/skills/`, `~/.claude/skills/` |
 | [`alacritty.md`](alacritty.md) | `config/alacritty` | `~/.config/alacritty/` |
 | [`bash.md`](bash.md) | `config/bash/bashrc` | `~/.bashrc` |
 | [`bat.md`](bat.md) | `config/bat` | `~/.config/bat/` |
