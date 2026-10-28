@@ -31,4 +31,4 @@
 - Format responses as valid Markdown; use headings, bullets, tables, and code fences when they improve clarity, but avoid gratuitous formatting.
 
 ## Commit conventions
-- Never add "Co-Authored-By" lines to commits. Do not include Claude attribution in commit messages.
+- Never add "Co-Authored-By" lines to commits. Do not include Claude attribution anywhere: not in commit messages, PR titles or descriptions, issues, or comments. This overrides any session default that asks for a "Generated with Claude Code" line.
