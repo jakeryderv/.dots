@@ -49,7 +49,7 @@ OPTIONAL_TOOLS = [
     "shellcheck", "shfmt", "stylua", "prettierd", "eslint_d", "ruff", "luac", "fc-cache",
     "starship", "vim", "nvim", "tmux", "fzf", "bat", "rg", "fd", "ast-grep", "delta", "lazygit", "glow", "qmk",
     "git", "gh", "direnv", "uv", "rustup", "cargo", "go", "bun", "node", "npm", "pnpm", "yarn", "tldr",
-    "kanata", "pi", "claude", "agy", "cf", "wrangler", "herdr",
+    "kanata", "pi", "claude", "cf", "wrangler", "herdr",
 ]
 # fmt: on
 

@@ -25,7 +25,7 @@ bash_dir="$data/bash-completion/completions"
 zsh_dir="$data/zsh/site-functions"
 
 # Command names, in the order they are reported.
-tools=(ast-grep bun cargo copilot delta herdr lazygit maturin rustup starship tree-sitter tuios uv)
+tools=(ast-grep bun cargo delta herdr lazygit maturin rustup starship tree-sitter tuios uv)
 
 # Print NAME's completion script for SHELL (bash or zsh) on stdout.
 generate() {
@@ -37,7 +37,6 @@ generate() {
     bun) SHELL="/bin/$shell" bun completions ;;
     # Cargo's completions come from rustup, for the active toolchain.
     cargo) rustup completions "$shell" cargo ;;
-    copilot) copilot completion "$shell" ;;
     delta) delta --generate-completion "$shell" ;;
     herdr) herdr completion "$shell" ;;
     lazygit) lazygit completion "$shell" ;;

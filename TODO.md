@@ -14,8 +14,7 @@ speculatively. Context: docs/claude.md history note.
 **Next up (only uncovered gap):**
 
 - pre-commit + linters (Ruff/Biome) + gitleaks — mechanical quality gates,
-  per-repo. Replaces superpowers' hard gates; agent-agnostic. Natural pilot:
-  agy-plugin-cc.
+  per-repo. Replaces superpowers' hard gates; agent-agnostic.
 
 **Waiting on trigger:**
 
@@ -23,4 +22,4 @@ speculatively. Context: docs/claude.md history note.
 - Claude Squad / git worktrees — only when actually running parallel changes.
 
 **Covered already (don't rebuild):** code-quality review =
-`/agy:adversarial-review` / codex (cross-model); library docs = Context7.
+the codex plugin (cross-model); library docs = Context7.
