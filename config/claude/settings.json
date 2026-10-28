@@ -112,7 +112,9 @@
     "cloudflare@cloudflare": true,
     "runpod@runpod": true,
     "i-have-adhd@i-have-adhd": true,
-    "figma@claude-plugins-official": true
+    "figma@claude-plugins-official": true,
+    "aws-core@claude-plugins-official": true,
+    "railway@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "openai-codex": {

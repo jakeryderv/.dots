@@ -31,16 +31,33 @@ that tree natively, so they appear here as relative symlinks into it.
   on a new machine with:
 
   ```bash
-  claude mcp add railway -s user -- railway mcp
   claude mcp add context7 -s user -t http https://mcp.context7.com/mcp \
     --header "CONTEXT7_API_KEY: \${CONTEXT7_API_KEY}"
   ```
 
-  (`CONTEXT7_API_KEY` comes from the untracked machine-local bash config;
-  the railway MCP needs the `railway` CLI installed and authed.)
+  (`CONTEXT7_API_KEY` comes from the untracked machine-local bash config.)
+  The AWS, Railway, Cloudflare and Runpod servers come with their plugins
+  (below), so they are not registered by hand.
 - `~/.claude/settings.local.json` — machine-local permission grants.
 - Plugin installs — declared in `settings.json` (`enabledPlugins` +
   `extraKnownMarketplaces`); Claude Code materializes the plugin cache itself.
+
+## Service plugins
+
+Cloud services reach Claude Code only through their official plugins, each
+bundling its skills and MCP server, declared in `settings.json`:
+
+| Plugin | Marketplace | Brings |
+| --- | --- | --- |
+| `aws-core` | `claude-plugins-official` | AWS skills and the `aws-mcp` server |
+| `railway` | `claude-plugins-official` | `use-railway`, Railway's hosted MCP, and a hook that auto-approves single `railway` CLI and API-helper calls |
+| `cloudflare` | `cloudflare` | see below |
+| `runpod` | `runpod` | Runpod skills and its hosted MCP |
+
+No other agent is configured for these services: their loose skill copies and
+MCP entries were removed from `~/.agents/skills`, Codex, Cursor, Copilot,
+Antigravity, OpenCode and Pi on 2026-10-28. An installer that copies skills
+into several agents at once would bring them back; prefer the plugin.
 
 ## Cloudflare toolchain
 

@@ -53,9 +53,8 @@ Recommend using these when they fit the project:
 
 ### MCP servers configured here
 - **context7** — current library/framework docs
-- **railway** — deploys, services, logs, variables
 - **1password** — environments and secrets
-- **aws-mcp** — AWS APIs
+- Plugin-bundled: **aws-mcp** (aws-core), **railway**, **cloudflare** and **runpod** servers
 
 ### Built-in capabilities (no install needed)
 - **Auto memory** — corrections and preferences persist automatically
