@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# Claude Code status line — two-line left/right split layout
+# Claude Code status line — two lines, left-aligned.
+#   1: model │ git │ dir │ wt │ session │ output style │ adhd
+#   2: context bar │ rate limits │ vim mode
+# Input schema: https://code.claude.com/docs/en/statusline#available-data
 input=$(cat)
 
 # ---------------------------------------------------------------------------
@@ -18,46 +21,54 @@ CYAN=$'\033[36m'
 MAGENTA=$'\033[35m'
 GRAY=$'\033[90m'
 
+# Ink wraps all output in dimColor, so undecorated text is already dim.
+# Use NODIM or color codes to make text stand out.
+SEP=" │ "
+
 # ---------------------------------------------------------------------------
-# Parse ALL JSON fields in a single jq call
+# Parse every field, and do the number formatting, in a single jq call
 #
 # Declared up front because the eval below is the only assignment, and
 # ShellCheck cannot see through eval -- without these it reports SC2154 at
 # every use site. Initialising also means a failed jq leaves these empty
 # rather than inheriting whatever happened to be exported.
+#
+# Strings are emitted single-quoted for eval: esc turns newlines into spaces
+# and ' into '\''. Numbers are emitted bare, or empty when the field is absent.
 # ---------------------------------------------------------------------------
-model_id='' session_name='' output_style='' cwd='' project_dir=''
-wt_name='' vim_mode='' ctx_total=0 ctx_used_pct=''
+model='' session_name='' output_style='' cwd='' project_dir='' wt_name=''
+vim_mode='' ctx_pct='' ctx_used_k='' ctx_total_k='' rl_5h='' rl_7d=''
 
-eval "$(echo "$input" | jq -r '
-  def esc: gsub("[\n\r]"; " ") | gsub("'\''"; "'\''\\'\'''\''");
-  "model_id='\''\(.model.id // "" | esc)'\''",
-  "session_name='\''\(.session_name // "" | esc)'\''",
-  "output_style='\''\(.output_style.name // "" | esc)'\''",
-  "cwd='\''\(.workspace.current_dir // .cwd // "" | esc)'\''",
-  "project_dir='\''\(.workspace.project_dir // "" | esc)'\''",
-  "wt_name='\''\(.worktree.name // "" | esc)'\''",
-  "vim_mode='\''\(.vim.mode // "" | esc)'\''",
-  "ctx_total=\(.context_window.context_window_size // 0)",
-  "ctx_used_pct=\(.context_window.used_percentage // "\"\"")"
-')"
+read -r -d '' jq_program <<'JQ'
+def esc: gsub("[\n\r]"; " ") | gsub("'"; "'\\''");
+def str(f): "'\(f // "" | esc)'";
+def pct: if . == null then "" else (round | tostring) end;
+# 950 -> 950, 84600 -> 84.6k, 200000 -> 200k, 1000000 -> 1M
+def k:
+  if . >= 1000000 then "\((. / 100000 | round) / 10)M"
+  elif . >= 1000 then "\((. / 100 | round) / 10)k"
+  else "\(round)" end;
+
+(.context_window.context_window_size // 0) as $total
+| .context_window.used_percentage as $used
+| "model=\(str(.model.display_name // .model.id // "" | sub(" *\\(.*\\)$"; "")))",
+  "session_name=\(str(.session_name))",
+  "output_style=\(str(.output_style.name))",
+  "cwd=\(str(.workspace.current_dir // .cwd))",
+  "project_dir=\(str(.workspace.project_dir))",
+  "wt_name=\(str(.worktree.name))",
+  "vim_mode=\(str(.vim.mode))",
+  "ctx_pct=\($used | pct)",
+  "ctx_used_k=\(if $used == null then "--" else ($total * $used / 100 | k) end)",
+  "ctx_total_k=\($total | k)",
+  "rl_5h=\(.rate_limits.five_hour.used_percentage | pct)",
+  "rl_7d=\(.rate_limits.seven_day.used_percentage | pct)"
+JQ
+eval "$(jq -r "$jq_program" <<<"$input")"
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-fmt_k() {
-    local n="$1"
-    [[ -z "$n" || "$n" == "null" ]] && {
-        echo "0"
-        return
-    }
-    awk -v n="$n" 'BEGIN {
-    if (n >= 1000) {
-      s = sprintf("%.1f", n/1000); sub(/\.0$/, "", s); print s "k"
-    } else print n
-  }'
-}
 
 # Unicode progress bar: █ for filled, ░ for empty
 make_bar() {
@@ -71,63 +82,56 @@ make_bar() {
     printf '%s' "$bar"
 }
 
-# Print a line — no right-padding; Ink's flex layout handles positioning
-print_line() {
-    printf '%s\n' "$1"
+# Visible width of a string: strip the SGR escapes, count characters.
+shopt -s extglob
+visible_width() {
+    local plain=${1//$'\033['*([0-9;])m/}
+    printf '%d' "${#plain}"
 }
 
-# Ink wraps all output in dimColor, so undecorated text is already dim.
-# Use NODIM or color codes to make text stand out.
-SEP=" │ "
-
 # ---------------------------------------------------------------------------
-# LINE 1 — LEFT
+# LINE 1
 # ---------------------------------------------------------------------------
 
-# Short model name
-if [ -n "$model_id" ]; then
-    short_model="${model_id#claude-}"
-    # Drop a bracketed variant (e.g. "[1m]") — the context bar on line 2 already
-    # shows the window size.
-    short_model="${short_model%%\[*}"
-    # Drop a trailing release date, then dot the version: a dash between two
-    # digits becomes a dot ("opus-4-8" -> "opus-4.8"), while the name/version
-    # dash is left alone ("opus-5" stays "opus-5").
-    short_model=$(echo "$short_model" | sed -E 's/-[0-9]{8}$//; :a; s/([0-9])-([0-9])/\1.\2/; ta')
-else
-    short_model="unknown"
-fi
+[ -z "$model" ] && model="unknown"
 
-# Git branch + colored status
+# Git branch + colored status, from one `git status` call. Porcelain v2 with
+# --branch and --show-stash (git >= 2.35) prints headers for the branch,
+# ahead/behind and stash count before the file entries:
+#   # branch.oid <sha> | (initial)    # branch.head <name> | (detached)
+#   # branch.ab +<ahead> -<behind>    # stash <n>
+#   1 XY ... (changed)  2 XY ... (renamed/copied)  u XY ... (unmerged)  ? path
+# XY is the index and worktree status, with "." for unchanged.
 git_info=""
 if [ -n "$cwd" ] && cd "$cwd" 2>/dev/null; then
-    branch=$(GIT_OPTIONAL_LOCKS=0 timeout 0.5 git symbolic-ref --short HEAD 2>/dev/null ||
-        GIT_OPTIONAL_LOCKS=0 timeout 0.5 git rev-parse --short HEAD 2>/dev/null)
-    if [ -n "$branch" ]; then
-        added=0 modified=0 deleted=0 untracked=0
-        while IFS= read -r line; do
-            xy="${line:0:2}"
-            idx="${xy:0:1}"
-            wt_c="${xy:1:1}"
-            if [[ "$idx" == "?" && "$wt_c" == "?" ]]; then
-                ((untracked++))
-                continue
-            fi
+    branch="" oid="" ahead=0 behind=0 stash=0
+    added=0 modified=0 deleted=0 untracked=0
+    while IFS= read -r line; do
+        case $line in
+        '# branch.oid '*) oid=${line#\# branch.oid } ;;
+        '# branch.head '*) branch=${line#\# branch.head } ;;
+        '# branch.ab '*)
+            read -r _ _ ahead behind <<<"$line"
+            ahead=${ahead#+} behind=${behind#-}
+            ;;
+        '# stash '*) stash=${line#\# stash } ;;
+        '? '*) ((untracked++)) ;;
+        [12u]' '*)
+            idx=${line:2:1} wt_c=${line:3:1}
             [[ "$idx" == "A" ]] && ((added++))
             # R/C (staged rename/copy) count as modified — one test, so a
             # combined status like "RM" counts the file once.
-            [[ "$idx" == "M" || "$idx" == "R" || "$idx" == "C" || "$wt_c" == "M" ]] && ((modified++))
+            [[ "$idx" == [MRC] || "$wt_c" == "M" ]] && ((modified++))
             [[ "$idx" == "D" || "$wt_c" == "D" ]] && ((deleted++))
-        done < <(GIT_OPTIONAL_LOCKS=0 timeout 0.5 git status --porcelain 2>/dev/null)
+            ;;
+        esac
+    done < <(GIT_OPTIONAL_LOCKS=0 timeout 0.5 \
+        git status --porcelain=v2 --branch --show-stash 2>/dev/null)
 
-        # One call for both counts: "behind<TAB>ahead". With no upstream git
-        # errors out, so both stay empty and the guards below skip them.
-        behind="" ahead=""
-        read -r behind ahead < <(GIT_OPTIONAL_LOCKS=0 timeout 0.5 \
-            git rev-list --left-right --count '@{u}...HEAD' 2>/dev/null)
+    # Detached HEAD: show the short commit instead.
+    [[ "$branch" == "(detached)" ]] && branch=${oid:0:7}
 
-        stash=$(GIT_OPTIONAL_LOCKS=0 timeout 0.5 git stash list 2>/dev/null | wc -l)
-
+    if [ -n "$branch" ]; then
         # In-progress operation. The state lives in the git dir, which is a
         # *file* in a linked worktree — so ask git instead of testing
         # "$cwd/.git". Exact paths only: a leftover rerere MERGE_RR must not
@@ -153,8 +157,8 @@ if [ -n "$cwd" ] && cd "$cwd" 2>/dev/null; then
 
         git_info="${CYAN}${branch}${RESET}"
         [ -n "$op" ] && git_info="${git_info} ${MAGENTA}${op}${RESET}"
-        [[ -n "$ahead" && "$ahead" -gt 0 ]] && git_info="${git_info} ${CYAN}↑${ahead}${RESET}"
-        [[ -n "$behind" && "$behind" -gt 0 ]] && git_info="${git_info} ${CYAN}↓${behind}${RESET}"
+        ((ahead > 0)) && git_info="${git_info} ${CYAN}↑${ahead}${RESET}"
+        ((behind > 0)) && git_info="${git_info} ${CYAN}↓${behind}${RESET}"
         ((added > 0)) && git_info="${git_info} ${GREEN}+${added}${RESET}"
         ((modified > 0)) && git_info="${git_info} ${YELLOW}~${modified}${RESET}"
         ((deleted > 0)) && git_info="${git_info} ${RED}-${deleted}${RESET}"
@@ -196,41 +200,65 @@ if [ -f "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.i-have-adhd-always" ]; then
     adhd_flag="${MAGENTA}adhd${RESET}"
 fi
 
-line1_left="${BOLD}${short_model}${RESET}"
-[ -n "$git_info" ] && line1_left="${line1_left}${SEP}${git_info}"
-[ -n "$dir_display" ] && line1_left="${line1_left}${SEP}${dir_display}"
-[ -n "$wt_name" ] && line1_left="${line1_left}${SEP}wt:${wt_name}"
-[ -n "$session_name" ] && line1_left="${line1_left}${SEP}${session_name}"
-[ -n "$output_style" ] && [ "$output_style" != "default" ] && line1_left="${line1_left}${SEP}${output_style}"
-[ -n "$adhd_flag" ] && line1_left="${line1_left}${SEP}${adhd_flag}"
+# Everything on line 1 except the session name, which goes in the middle and
+# is the one segment trimmed to fit.
+line1_head="${BOLD}${model}${RESET}"
+[ -n "$git_info" ] && line1_head="${line1_head}${SEP}${git_info}"
+[ -n "$dir_display" ] && line1_head="${line1_head}${SEP}${dir_display}"
+[ -n "$wt_name" ] && line1_head="${line1_head}${SEP}wt:${wt_name}"
+line1_tail=""
+[ -n "$output_style" ] && [ "$output_style" != "default" ] && line1_tail="${line1_tail}${SEP}${output_style}"
+[ -n "$adhd_flag" ] && line1_tail="${line1_tail}${SEP}${adhd_flag}"
+
+# session_name falls back to the AI-generated session title, so it is nearly
+# always set and can be long. Claude Code exports COLUMNS for the script (tput
+# cannot see the terminal); trim the name to the room left, with a few columns
+# of slack for Ink's own padding. Too little room and it is dropped. With no
+# COLUMNS, it is shown whole.
+if [ -n "$session_name" ] && ((${COLUMNS:-0} > 0)); then
+    room=$((COLUMNS - 4 - $(visible_width "${line1_head}${line1_tail}") - ${#SEP}))
+    if ((room < 8)); then
+        session_name=""
+    elif ((${#session_name} > room)); then
+        session_name="${session_name:0:room-1}…"
+    fi
+fi
+line1="$line1_head"
+[ -n "$session_name" ] && line1="${line1}${SEP}${session_name}"
+line1="${line1}${line1_tail}"
 
 # ---------------------------------------------------------------------------
-# LINE 2 — LEFT  (context bar)
+# LINE 2
 # ---------------------------------------------------------------------------
 
-if [ -n "$ctx_used_pct" ]; then
-    used_int=$(printf "%.0f" "$ctx_used_pct")
-    bar=$(make_bar "$used_int")
-    tokens_used=$(awk -v t="$ctx_total" -v p="$ctx_used_pct" 'BEGIN { printf "%.0f", t*p/100 }')
-    # Color bar based on usage
-    if ((used_int >= 80)); then
+# Context bar: green < 50% ≤ yellow < 80% ≤ red.
+if [ -n "$ctx_pct" ]; then
+    if ((ctx_pct >= 80)); then
         bar_color="$RED"
-    elif ((used_int >= 50)); then
+    elif ((ctx_pct >= 50)); then
         bar_color="$YELLOW"
     else
         bar_color="$GREEN"
     fi
-    line2_left="${bar_color}${bar}${RESET} ${NODIM}${used_int}%${RESET} ($(fmt_k "$tokens_used")/$(fmt_k "$ctx_total"))"
+    line2="${bar_color}$(make_bar "$ctx_pct")${RESET} ${NODIM}${ctx_pct}%${RESET} (${ctx_used_k}/${ctx_total_k})"
 else
-    line2_left="░░░░░░░░░░ --% (--/$(fmt_k "$ctx_total"))"
+    line2="░░░░░░░░░░ --% (--/${ctx_total_k})"
 fi
 
-# ---------------------------------------------------------------------------
-# Output — left-aligned only; Ink's flexbox handles right-side built-in widgets
-# ---------------------------------------------------------------------------
+# Plan rate limits (Pro/Max only, and only after the first response). Each
+# window may be absent on its own. Plain (dim) while low; yellow from 50%,
+# red from 80%, the same thresholds as the context bar.
+rate_segment() {
+    local label="$1" pct="$2" color=""
+    ((pct >= 80)) && color="$RED"
+    ((pct >= 50 && pct < 80)) && color="$YELLOW"
+    printf '%s' "${label} ${color}${pct}%${color:+$RESET}"
+}
+rates=""
+[ -n "$rl_5h" ] && rates=$(rate_segment 5h "$rl_5h")
+[ -n "$rl_7d" ] && rates="${rates:+$rates · }$(rate_segment 7d "$rl_7d")"
+[ -n "$rates" ] && line2="${line2}${SEP}${rates}"
 
-# Append vim mode to line 2 if present
-[ -n "$vim_mode" ] && line2_left="${line2_left}${SEP}${vim_mode}"
+[ -n "$vim_mode" ] && line2="${line2}${SEP}${vim_mode}"
 
-print_line "$line1_left"
-print_line "$line2_left"
+printf '%s\n' "$line1" "$line2"
