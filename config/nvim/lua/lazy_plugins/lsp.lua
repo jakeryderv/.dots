@@ -189,9 +189,25 @@ return {
         },
         -- Grammar and spelling through LanguageTool. Limited to LaTeX: the
         -- lspconfig default also attaches to markdown, gitcommit, text, ...
+        -- Packages and classes (.sty, .cls) are also filetype tex but are
+        -- code, where every option name reads as a misspelling, so the server
+        -- is not started for them.
         ltex_plus = {
           filetypes = { 'tex', 'plaintex' },
-          settings = { ltex = { language = 'en-US' } },
+          root_dir = function(bufnr, on_dir)
+            local name = vim.api.nvim_buf_get_name(bufnr)
+            if name:match('%.sty$') or name:match('%.cls$') then
+              return
+            end
+            on_dir(vim.fs.root(bufnr, '.git') or vim.fs.dirname(name))
+          end,
+          settings = {
+            ltex = {
+              language = 'en-US',
+              -- Personal word list, one word per line (product names etc.).
+              dictionary = { ['en-US'] = vim.fn.readfile(vim.fn.stdpath('config') .. '/spell/ltex.en-US.txt') },
+            },
+          },
         },
       }
 

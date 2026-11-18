@@ -19,6 +19,11 @@ return {
       -- declares one. Returning nil also skips the LSP fallback, which would
       -- otherwise let clangd impose LLVM style.
       local ft = vim.bo[bufnr].filetype
+      -- LaTeX is formatted on request only (<leader>cf): tex-fmt flattens
+      -- hand-aligned continuation lines in macro arguments and class files.
+      if ft == 'tex' then
+        return nil
+      end
       if ft == 'c' or ft == 'cpp' then
         local style = vim.fs.find({ '.clang-format', '_clang-format' }, {
           upward = true,
