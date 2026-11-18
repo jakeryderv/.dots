@@ -10,8 +10,7 @@ untracked, with `.gitignore` guards in the repo root as a safety net.
 | File | Purpose |
 | --- | --- |
 | `.claude/CLAUDE.md` | Global agent instructions (all projects) |
-| `.claude/settings.json` | Permissions, enabled plugins, marketplaces, model, statusline, UI prefs |
-| `.claude/statusline-command.sh` | Custom statusline script referenced by settings |
+| `.claude/statusline-command.sh` | Custom statusline script, wired up in `settings.json` (below) |
 
 No skills are tracked, and none are installed locally. The only entry under
 `~/.claude/skills/` is `synced/`, Anthropic's skills synced from the claude.ai
@@ -21,6 +20,27 @@ installer; if a tool's skill is wanted later, prefer its vendor's installer
 
 ## Deliberately not tracked
 
+- `~/.claude/settings.json` — untracked since 2026-11-18. Claude Code rewrites
+  it on `/model`, `/config` and plugin changes, and herdr's integration
+  rewrites its hooks, so tracking it produced a steady stream of noise commits.
+  It is now an ordinary file owned by those tools. On a new machine, set it up
+  by hand:
+
+  ```json
+  "statusLine": { "type": "command", "command": "bash ~/.claude/statusline-command.sh" }
+  ```
+
+  Plugins, enabled with `/plugin` (marketplaces first):
+
+  | Plugin | Marketplace (GitHub repo) |
+  | --- | --- |
+  | `codex@openai-codex` | `openai/codex-plugin-cc` |
+  | `cloudflare@cloudflare` | `cloudflare/skills` |
+  | `runpod@runpod` | `runpod/runpod-plugins-official` |
+  | `i-have-adhd@i-have-adhd` | `ayghri/i-have-adhd` |
+  | `figma`, `aws-core`, `railway` | `claude-plugins-official` (built in) |
+
+  The herdr hook comes from `herdr integration install claude`.
 - `~/.claude.json` — a large mutable state file (telemetry, per-project state)
   that also holds user-scope MCP server registrations. Re-register MCP servers
   on a new machine with:
@@ -77,11 +97,6 @@ the MCP set is a convenience, not a dependency.
   `~/.claude/` is always created as a real directory holding one symlink per
   tracked file — Claude Code's session state, history, and credentials stay
   outside the repo by construction rather than by `.gitignore` alone.
-- **Symlinked settings.json:** Claude Code rewrites `settings.json` when
-  plugins are enabled/disabled or settings change via the UI. If it ever
-  replaces the file atomically (rename-over), the symlink breaks silently and
-  the repo copy goes stale — `dots status claude` will show it. Re-adopt with
-  `dots adopt --apply claude` if that happens.
 
 ## History note
 
