@@ -61,9 +61,8 @@ mentions them.
   Herdr, and coding-agent interfaces a consistent backdrop.
 - **No window decorations** + zero padding, matching the kitty/alacritty setups.
 - **Keybinds — tabs yes, splits no.** Ghostty runs two tabs, one for
-  [`tmux`](tmux.md) and one for [`herdr`](herdr.md); [`tuios`](tuios.md), on
-  trial, gets a window of its own when it runs. That separation is the whole
-  layout: splits and panes belong to the layer inside each tab, so Ghostty's own
+  [`tmux`](tmux.md) and one for [`herdr`](herdr.md). That separation is the
+  whole layout: splits and panes belong to the layer inside each tab, so Ghostty's own
   split bindings and the `ctrl+alt` scheme built on them were removed.
 
   | Kept | Released |

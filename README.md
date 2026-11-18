@@ -106,8 +106,7 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 [editorconfig](docs/editorconfig.md), [tealdeer](docs/tealdeer.md).
 
 **Coding agents** — [claude](docs/claude.md),
-[herdr](docs/herdr.md) (terminal workspace manager),
-[tuios](docs/tuios.md) (terminal window manager, on trial).
+[herdr](docs/herdr.md) (terminal workspace manager).
 
 **Desktop & misc** — [fonts](docs/fonts.md),
 [scripts](docs/scripts.md), [dots](docs/dots.md),
