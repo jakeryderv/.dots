@@ -30,7 +30,7 @@ there is no neighbour instead of wrapping. Needs `jq` and `socat`.
 ### `herdr-move-workspace`
 
 Move the focused [herdr](herdr.md) workspace one place `up` or `down` in the
-sidebar. Bound to `prefix + Shift+k/j`. herdr 0.8.2 has no keybinding action or
+sidebar. Bound to `prefix + Shift+k/j`. herdr (as of 0.9.5) has no keybinding action or
 CLI subcommand for reordering workspaces, but its socket API has
 `workspace.move` (what sidebar dragging uses), so the script sends that request
 directly to `$HERDR_SOCKET_PATH`. It does nothing at either end of the list.

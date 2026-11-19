@@ -47,8 +47,13 @@ config/claude/statsig/
 # keeps in the same directory.
 config/herdr/*.sock
 config/herdr/*.log
+config/herdr/session.json
 config/herdr/session-history.json
+config/herdr/session-snapshots/
+config/herdr/plugins/
+config/herdr/plugins.json
 config/herdr/.plugins.lock
+config/herdr/release-notes.json
 config/herdr/config.toml.bak*
 
 # nix — track nix.conf; ignore the flake registry it writes beside it.

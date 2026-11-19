@@ -2,7 +2,7 @@
 # herdr-move-workspace - move the focused herdr workspace one place up or down
 # in the sidebar. Bound to prefix+shift+k/j in config/herdr/config.toml.
 #
-# herdr 0.8.2 has no keybinding action or CLI subcommand for this, but its
+# herdr (as of 0.9.5) has no keybinding action or CLI subcommand for this, but its
 # socket API does (`workspace.move`), which is what sidebar dragging uses.
 # insert_index counts positions before the workspace is removed, so moving
 # down one place is index+2, not index+1.

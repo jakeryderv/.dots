@@ -47,7 +47,10 @@ Herdr keeps its runtime state in the same directory it reads config from:
 | `herdr.sock`, `herdr-client.sock` | the server, on every start |
 | `herdr-server.log`, `herdr-client.log` | append-only logs |
 | `session.json` | workspace/pane layout, saved every few seconds |
-| `.plugins.lock` | plugin machinery |
+| `session-snapshots/` | up to 48 older layouts, kept for manual recovery |
+| `session-history.json` | pane scrollback, because `experimental.pane_history` is on |
+| `plugins/`, `plugins.json`, `.plugins.lock` | plugin checkouts, registry, and lock |
+| `release-notes.json` | the notes shown once after an update |
 
 A `link` row would place one symlink at `~/.config/herdr`, which would land all
 of that inside this repo. `tree` gives a real directory holding one symlink per
@@ -130,6 +133,7 @@ What `config.toml` changes or adds:
 | `prefix + ,` | Rename tab | tmux's rename-window key; default was `shift+t` |
 | `prefix + d` | Detach | tmux's detach key; default was `q` |
 | `prefix + ;` | Last pane | tmux's last-pane key; unbound upstream |
+| `prefix + Ctrl+l` | Clear pane screen and scrollback, keeping the prompt line | Stand-in for the `Ctrl+l` navigation took; unbound upstream |
 | `Ctrl+h/j/k/l` | Navigate Neovim splits / Herdr panes | vim-herdr-navigation plugin; no prefix |
 | `prefix + f` | Picker with terminal previews | herdr-picker plugin; built-in `prefix+g` is unchanged |
 | `prefix + u` | Open current branch's PR in browser | gh-pr plugin |
@@ -137,7 +141,7 @@ What `config.toml` changes or adds:
 
 The side-by-side split key is **pipe** (`|`), usually typed with
 **Shift+backslash**, not bare backslash. With this config, press `Alt+a`, then
-`|`. Herdr 0.8.2 defaults to `prefix+v` for side-by-side splits and
+`|`. Herdr defaults to `prefix+v` for side-by-side splits and
 `prefix+minus` for stacked splits.
 
 `Ctrl+h/j/k/l` uses the [Vim navigation plugin](#plugins) to move within Neovim
@@ -167,7 +171,7 @@ while Herdr's `prefix+e` opens scrollback in the editor.
 Tmux's synchronize-panes moved off `a` to `*`, so `prefix+a` means "agent"
 everywhere it means anything.
 
-**Hidden swap defaults.** herdr 0.8.2 also has `swap_pane_left/down/up/right`,
+**Hidden swap defaults.** herdr (checked on 0.9.5) also has `swap_pane_left/down/up/right`,
 bound to `prefix+Shift+h/j/k/l`, but `herdr --default-config` omits them. Those
 chords now move tabs and workspaces, so `config.toml` unbinds the swap actions
 (`""`) and pane swapping lives in move mode instead. When checking a key for
@@ -192,7 +196,7 @@ sandboxed**, and are not installed by `dots apply`. Review changes before
 updating a pin; the commands below install the reviewed revisions rather than
 following each repository's default branch.
 
-Requirements: Herdr **0.8.2+**, Git, Bash, `jq`, Go **1.24+** (picker build),
+Requirements: Herdr **0.9.2+** (`keys.clear_pane`), Git, Bash, `jq`, Go **1.24+** (picker build),
 Bun, and authenticated GitHub CLI (`gh auth status`). Go and Bun use the
 [upstream installations](software.md); Git and `gh` use the
 [configured apt repositories](software.md#everyday-cli-tools).
@@ -200,7 +204,7 @@ Bun, and authenticated GitHub CLI (`gh auth status`). Go and Bun use the
 GitHub credentials or permissions are needed when `gh` is already logged in.
 
 ```bash
-herdr plugin install paulbkim-dev/vim-herdr-navigation --ref 79679dacc791f70fc34de8b29a3cf9706c0f5b2f
+herdr plugin install paulbkim-dev/vim-herdr-navigation --ref 7873100eb47212269005c693effb2a844986b30f
 herdr plugin install bkarpinos/herdr-picker --ref 73c345789370e029db587cf859bb442177a177b2
 herdr plugin install wyattjoh/herdr-plugin-gh-pr --ref 6fe22de9a90c569f2186595cfddc3707f55ba1bd
 herdr plugin list
@@ -211,7 +215,9 @@ herdr server reload-config
 Installation previews the manifest and commands before confirmation. The picker
 builds with Go; the other two run scripts directly. Plugin checkouts, registry,
 logs, and state remain outside this repo. Re-run an install with a newly
-reviewed `--ref` to update; record that revision here too.
+reviewed `--ref` to update; record that revision here too. `herdr plugin
+update` is not the way: it refetches the ref recorded at install, so against a
+commit pin it finds nothing new.
 
 ### Vim-aware navigation
 

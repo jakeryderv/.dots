@@ -126,6 +126,13 @@ rename_tab = "prefix+comma"
 detach = "prefix+d"
 last_pane = "prefix+;"
 
+# --- Clear -------------------------------------------------------------------
+# Ctrl+l belongs to navigation (below), so the shell's clear-screen never
+# arrives. This is the prefixed stand-in, and it does more: screen and
+# scrollback go, the prompt line stays. It sends no input to the program and
+# does nothing on the alternate screen (Vim, lazygit). Unbound upstream.
+clear_pane = "prefix+ctrl+l"
+
 # --- Resize ------------------------------------------------------------------
 # Direct resize without entering resize mode, in the space config.ghostty gave
 # up (it used these exact chords for resize_split). prefix+r still opens the
@@ -171,7 +178,7 @@ height = 4
 description = "move mode: swap panes with hjkl"
 
 # --- Workspace reorder -------------------------------------------------------
-# herdr 0.8.2 has no keybinding action for this, only the socket API's
+# herdr (as of 0.9.5) has no keybinding action for this, only the socket API's
 # workspace.move (what sidebar dragging uses). config/scripts/herdr-move-workspace
 # calls it; `shell` runs it detached with no pane or popup.
 [[keys.command]]
@@ -305,9 +312,9 @@ delay_seconds = 1
 # ============================================
 
 [experimental]
-# Forward Kitty graphics from pane applications to compatible outer terminals
-# so Pi and tools such as Yazi can render inline images through Herdr.
-kitty_graphics = true
+# Kitty graphics (inline images for Pi, Yazi, ...) needs no key here: it is
+# `terminal.kitty_graphics`, on by default. `experimental.kitty_graphics` is its
+# deprecated alias.
 
 # Keep pane scrollback across a full server restart. Agent transcripts are the
 # reason to scroll back at all, and re-running the agent does not reproduce them.
