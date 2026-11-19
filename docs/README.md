@@ -23,7 +23,6 @@ beyond linking, and any external dependencies.
 | [`bat.md`](bat.md) | `config/bat` | `~/.config/bat/` |
 | [`claude.md`](claude.md) | `config/claude` | `~/.claude/` |
 | [`dots.md`](dots.md) | `dots.py` | `~/.local/bin/dots` |
-| [`direnv.md`](direnv.md) | `config/direnv` | `~/.config/direnv/` |
 | [`editorconfig.md`](editorconfig.md) | `config/editorconfig/editorconfig` | `~/.editorconfig` |
 | [`fonts.md`](fonts.md) | `config/fonts` | `~/.local/share/fonts/` |
 | [`ghostty.md`](ghostty.md) | `config/ghostty` | `~/.config/ghostty/` |

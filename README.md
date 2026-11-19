@@ -102,7 +102,7 @@ and a Nightfox-family theme; a font or theme change must be mirrored in each.
 **Editors & shell** — [shell](docs/shell.md) (shared by every shell),
 [bash](docs/bash.md), [zsh](docs/zsh.md), [nvim](docs/nvim.md), [vim](docs/vim.md),
 [tmux](docs/tmux.md), [starship](docs/starship.md), [git](docs/git.md),
-[bat](docs/bat.md), [direnv](docs/direnv.md),
+[bat](docs/bat.md),
 [editorconfig](docs/editorconfig.md), [tealdeer](docs/tealdeer.md).
 
 **Coding agents** — [claude](docs/claude.md),

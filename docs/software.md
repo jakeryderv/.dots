@@ -389,15 +389,16 @@ its optional C module is not built. Plugin configuration stays in the tracked
 
 ### direnv and retired Nix integration
 
-direnv remains for ordinary `.envrc` files and the `use_gh_account` helper.
-The global nix-direnv hook and package were removed. The active work project
-`.envrc` files found in `winch-cad` and `winch-lab` use only the GitHub-account
-helper. Plugin development checkouts contain some upstream Nix examples;
-those files are not runtime dependencies and were left untouched.
+direnv remains for ordinary `.envrc` files; the Bash/Zsh rc files hook it in
+when the binary is present. No global `direnvrc` is tracked: the
+`use_gh_account` helper and its package were removed along with the work
+GitHub account that used it. The global nix-direnv hook and package were
+removed earlier. Plugin development checkouts contain some upstream Nix
+examples; those files are not runtime dependencies and were left untouched.
 
 Project Python environments use uv; Node version selection uses explicit
 `nvm use`. This dotfiles configuration no longer loads nix-direnv's flake
-caching extension. See [direnv configuration](direnv.md).
+caching extension.
 
 ## Keyboard tools and dots
 

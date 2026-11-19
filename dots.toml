@@ -42,10 +42,6 @@ target = "~/.config/kitty"
 mode = "link"
 target = "~/.config/wezterm"
 
-[packages.direnv]
-mode = "link"
-target = "~/.config/direnv"
-
 [packages.tealdeer]
 mode = "link"
 target = "~/.config/tealdeer"
