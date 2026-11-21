@@ -312,6 +312,9 @@ Installed Zsh plugin revisions are listed below. Release digests and plugin
 commit IDs are recorded locally under
 `~/.local/state/dots-migrations/2026-09-20-editor-shell/`.
 
+tmux updated to **3.8** on 2026-11-19 from `tmux-3.8-linux-x86_64.tar.gz`
+(`sha256:147849ff18b62a8aa3d5d8f75dd07c3f9fdfad529f932236afdec838fc1d15e1`).
+
 ### Installation and updates
 
 Keep Neovim's **whole extracted directory**, including its runtime files.
